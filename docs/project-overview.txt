@@ -1,0 +1,230 @@
+📄 SME ERP System – Project Documentation
+1. 🧠 Project Overview
+📌 System Name
+
+SME ERP System (Small Business ERP)
+
+📌 Description
+
+A simplified ERP system designed for small businesses. It aims to unify core processes (sales, inventory, purchasing, and customer management) within a single, user-friendly platform, reducing the complexity of larger systems.
+
+2. 🎯 Problem Statement
+
+Small businesses suffer from:
+
+Using disparate tools (Excel, Paper, WhatsApp)
+Lack of a unified data source
+Difficulty tracking:
+Sales
+Inventory
+Orders
+Frequent human error
+Weak decision-making
+3. ✅ Proposed Solution
+
+The system offers:
+
+Sales Management
+Inventory Management
+Customer and Supplier Management
+Purchasing Management
+Dashboard
+
+👉 Objective:
+Simplifying operations without the complexity of traditional ERP
+
+4. 👥 Target Users
+Small businesses (10–50 employees)
+Retail stores
+Service companies
+Distribution companies
+5. 🏗️ System Architecture
+🔹 Frontend
+React + TypeScript + Tailwind (Installed ✔️)
+Layout:
+Header
+Sidebar
+Body
+🔹 Backend
+Modular Architecture
+REST API
+/modules
+
+/sales
+/inventory
+
+/purchases
+
+/customers
+
+/users
+
+/reports
+🔹 Database
+PostgreSQL (You have it ready ✔️)
+🔹 Roles
+👨‍💼 Admin
+Uses the system daily
+Manages operations
+🛠️ SysAdmin
+System administration
+Users
+Maintenance
+6. 🧱 Modules Structure
+6.1 📊 Dashboard
+Total Sales
+Best Selling Products
+Inventory Status
+Alerts (Low Stock)
+6.2 🧾 Sales Module
+Contains:
+Customers
+Quotations
+Orders
+Invoices
+Workflow:
+Customer → Quotation → Order → Invoice
+6.3 📦 Inventory Module
+Contains:
+Products
+Stock
+Warehouses
+Logic:
+Purchase → Stock Increase
+Sale → Stock Decrease
+6.4 🧾 Purchases Module
+Contains:
+Suppliers
+Purchase Orders
+Purchase Invoices
+6.5 👥 Customers & Suppliers Module
+Customer Management
+Supplier Management
+6.6 ⚙️ Configuration
+Users
+Roles
+Permissions
+Departments
+(Installed ✔️)
+
+6.7 📁 Document Management
+
+(Reuse from EnMS ✔️)
+
+6.8 📊 Reports
+Sales Reports
+Inventory Reports
+Purchase Reports
+6.9 🧰 Tasks (Optional)
+Assign tasks
+Track progress
+7. 🔄 Module Relationships
+🧠 Essential Relationships
+Sales ↔ Inventory
+Each sale → decreases inventory
+Purchases ↔ Inventory
+Each purchase → increases inventory
+Customers ↔ Sales
+Each order is linked to a customer
+Suppliers ↔ Purchases
+Each Purchase is linked to a Supplier
+Users ↔ All Modules
+Permissions control access
+8. 🔄 System Workflows (Detailed)
+🔹 Sales Workflow
+Create Customer
+Create Quotation
+Convert to Order
+Create Invoice
+Update Inventory
+🔹 Purchase Workflow
+Create Supplier
+Create Purchase Order
+Receive Goods
+Update Inventory
+🔹 Inventory Workflow
+Auto update from:
+Sales
+Purchases
+9. 🔁 Reuse from Existing EnMS System
+✅ Reused Modules
+EnMS ERP
+Users
+Permissions
+Document Management
+Dashboard
+Integrations
+APIs
+⚠️ Modified Modules
+EnMS ERP
+Measurements
+Inventory
+Pipelines
+Order Flow
+Planning Orders
+❌ Removed Modules
+Commitment
+Energy Analysis
+ISO Modules
+Energy KPIs
+10. 🧩 UI Structure
+Header
+Language selector
+Navigation
+Profile
+Sidebar
+Admin:
+Dashboard
+Sales
+Inventory
+Purchases
+Customers
+Reports
+Documents
+Configuration
+SystemAdmin:
+Users
+System Info
+Jobs
+Maintenance
+11. 📊 Reports Structure
+Must include:
+Summary
+Filters (date range)
+Tables
+Charts (optional)
+Example:
+
+Sales Report
+
+Total Sales
+Orders Count
+Top Customers
+12. ⚠️ Limitations
+Does not support advanced accounting
+Does not support HR
+Does not support AI or advanced analytics
+13. 🚀 Future Improvements
+Add Accounting
+Mobile App
+Notifications system
+💣 Final Evaluation (Honestly)
+
+If you adhere to this structure:
+
+✅ Your project is strong
+✅ Clear
+✅ Able to For understanding
+✅ It has real logic.
+
+If you mess with it and start adding extra things:
+
+❌ It will become messed up.
+
+❌ The professor will notice.
+
+🔥 If you want to continue professionally,
+
+tell me:
+
+Do you want ERD (DB tables) or API design?
