@@ -1,6 +1,9 @@
 # SME ERP System
 
-An ERP workspace for small and medium businesses, with a React/Vite frontend, Express API, and PostgreSQL/Drizzle data layer.
+An ERP workspace for small and medium businesses, with a 
+- React/Vite frontend, 
+- Express API, 
+- PostgreSQL/Drizzle data layer.
 
 ## Requirements
 
