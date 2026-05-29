@@ -9,10 +9,10 @@
   "include": ["src"],
   "references": [
     {
-      "path": "../../packages/database"
+      "path": "../database"
     },
     {
-      "path": "../../packages/api-validation"
+      "path": "../api-validation"
     }
   ]
 }

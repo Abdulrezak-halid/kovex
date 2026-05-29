@@ -1,0 +1,161 @@
+SME ERP System - Project Explanation And Logical Flowchart
+
+1. Project Purpose
+
+SME ERP System is a business management system for small and medium businesses. Its purpose is to collect the daily operational work of a company into one application: sales, purchases, inventory, planning, reports, and users.
+
+The system helps a business avoid scattered records in spreadsheets, paper, and messages. Instead, customers, suppliers, products, orders, invoices, stock, and reports are managed from one shared database.
+
+2. Folder Structure
+
+packages/front
+Frontend application. This is the user interface built with React, Vite, TypeScript, and Tailwind CSS. It contains screens, layouts, tables, forms, navigation, and the mock API used for fast frontend development.
+
+packages/back
+Backend application. This is the Express server and REST API. It receives requests from the frontend, validates incoming data, applies business logic, and communicates with the database package.
+
+packages/database
+Database layer. This package contains the Drizzle ORM setup and database schema files for customers, suppliers, products, stock, warehouses, quotations, orders, invoices, purchases, users, projects, and tasks.
+
+packages/api-contract
+API contract. This package contains the OpenAPI file that defines the backend endpoints, request bodies, response bodies, and shared API schemas.
+
+packages/api-client
+Generated frontend client. This package is generated from the OpenAPI contract and gives the frontend typed functions and React Query hooks for calling the API.
+
+packages/api-validation
+Generated backend validation. This package is generated from the OpenAPI contract and gives the backend validation schemas and TypeScript types.
+
+docs
+Documentation for understanding the project, explaining the architecture, and creating diagrams.
+
+3. System Layers
+
+Layer 1: User Interface
+The user interacts with the system through the frontend in packages/front.
+
+Layer 2: API Communication
+The frontend uses packages/api-client to call API endpoints. In mock mode, the frontend uses local in-memory data. In real mode, it sends requests to the backend server.
+
+Layer 3: Backend Server
+The backend in packages/back receives API requests. It uses route modules for sales, purchases, inventory, planning, reports, dashboard, users, customers, suppliers, products, and warehouses.
+
+Layer 4: Validation
+The backend validates request parameters and bodies with packages/api-validation. This prevents invalid data from entering the business logic.
+
+Layer 5: Database
+The backend reads and writes business data through packages/database, which maps TypeScript code to PostgreSQL tables using Drizzle ORM.
+
+4. Logical Flowchart
+
+User
+  -> Frontend: packages/front
+    -> App layout
+    -> Sidebar navigation
+    -> Page modules
+      -> Dashboard
+      -> Sales
+      -> Purchases
+      -> Inventory
+      -> Planning
+      -> Reports
+      -> Settings
+    -> API Client: packages/api-client
+      -> Development mock API
+      OR
+      -> HTTP request to /api
+        -> Backend: packages/back
+          -> Express server
+          -> Route module
+          -> Validation: packages/api-validation
+          -> Business logic
+          -> Database package: packages/database
+            -> Drizzle ORM
+            -> PostgreSQL
+          -> JSON response
+        -> API Client receives response
+    -> Frontend updates the UI
+
+5. Business Flowchart
+
+Sales Flow
+
+Customer
+  -> Create quotation
+  -> Convert quotation to order
+  -> Create invoice
+  -> Decrease stock
+  -> Update sales report
+  -> Update dashboard totals
+
+Purchase Flow
+
+Supplier
+  -> Create purchase order
+  -> Create purchase invoice
+  -> Increase stock
+  -> Update purchase report
+  -> Update dashboard totals
+
+Inventory Flow
+
+Product
+  -> Assigned to warehouse
+  -> Stock level is tracked
+  -> Sales decrease stock
+  -> Purchases increase stock
+  -> Low stock items appear in inventory report and dashboard alerts
+
+Planning Flow
+
+Project
+  -> Contains tasks
+  -> Tasks are assigned and tracked
+  -> Project progress is visible from planning pages
+
+Reporting Flow
+
+Operational records
+  -> Sales records
+  -> Purchase records
+  -> Stock records
+  -> Aggregated by backend
+  -> Returned to frontend
+  -> Displayed in report pages and dashboard summaries
+
+6. Diagram Nodes To Draw
+
+External actor:
+User
+
+Frontend group:
+packages/front
+App layout
+Dashboard page
+Sales pages
+Purchases pages
+Inventory pages
+Planning pages
+Reports pages
+Settings pages
+
+API group:
+packages/api-client
+/api HTTP calls
+packages/api-contract
+packages/api-validation
+
+Backend group:
+packages/back
+Express server
+Route modules
+Business logic
+
+Database group:
+packages/database
+Drizzle ORM
+PostgreSQL
+
+7. Summary For A Diagram Caption
+
+The SME ERP System uses a monorepo structure where packages/front contains the user interface and packages/back contains the server and REST API. The frontend communicates through a generated API client. The backend validates requests using generated validation schemas and persists business data through the database package. The OpenAPI contract connects the frontend and backend by generating shared client and validation code. Business workflows connect sales, purchases, and inventory so that invoices reduce stock, purchase invoices increase stock, and reports summarize operational data for the dashboard.

@@ -16,7 +16,7 @@
   },
   "references": [
     {
-      "path": "../../packages/api-client"
+      "path": "../api-client"
     }
   ]
 }

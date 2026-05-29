@@ -1,5 +1,5 @@
 {
-  "name": "@sme-erp/api",
+  "name": "@sme-erp/back",
   "version": "0.0.0",
   "private": true,
   "type": "module",
