@@ -1,0 +1,31 @@
+{
+  "project": "SME ERP System",
+  "defaultRunCommand": "npm run dev",
+  "services": {
+    "front": {
+      "command": "npm run dev:front",
+      "url": "http://localhost:8081/"
+    },
+    "back": {
+      "command": "npm run dev:back",
+      "url": "http://localhost:5000/api/healthz"
+    },
+    "apiUi": {
+      "command": "npm run api:ui",
+      "url": "http://localhost:5000/api-docs/"
+    }
+  },
+  "database": {
+    "pushSchema": "npm run db:push",
+    "migrate": "npm run db:migrate",
+    "url": "postgres://postgres:postgres@localhost:5432/sme_erp"
+  },
+  "apiSchema": {
+    "generate": "npm run api:schema",
+    "openapi": "http://localhost:5000/api/openapi.yaml"
+  },
+  "quality": {
+    "typecheck": "npm run typecheck",
+    "build": "npm run build"
+  }
+}

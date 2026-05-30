@@ -1,0 +1,63 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "dev: all",
+      "type": "shell",
+      "command": "npm run dev",
+      "group": "build",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "dev: front",
+      "type": "shell",
+      "command": "npm run dev:front",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "dev: back",
+      "type": "shell",
+      "command": "npm run dev:back",
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "api: swagger ui",
+      "type": "shell",
+      "command": "npm run api:ui",
+      "problemMatcher": []
+    },
+    {
+      "label": "api: generate schema",
+      "type": "shell",
+      "command": "npm run api:schema",
+      "problemMatcher": []
+    },
+    {
+      "label": "database: push schema",
+      "type": "shell",
+      "command": "npm run db:push",
+      "problemMatcher": []
+    },
+    {
+      "label": "database: migrate",
+      "type": "shell",
+      "command": "npm run db:migrate",
+      "problemMatcher": []
+    },
+    {
+      "label": "typecheck",
+      "type": "shell",
+      "command": "npm run typecheck",
+      "problemMatcher": []
+    },
+    {
+      "label": "build",
+      "type": "shell",
+      "command": "npm run build",
+      "problemMatcher": []
+    }
+  ]
+}
