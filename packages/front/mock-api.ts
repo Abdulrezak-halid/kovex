@@ -117,6 +117,25 @@ function rowId(path: string, basePath: string) {
   return Number.isFinite(id) ? id : null;
 }
 
+function projectTasksPath(path: string) {
+  const match = path.match(/^\/api\/projects\/(\d+)\/tasks$/);
+  if (!match) return null;
+
+  const projectId = Number(match[1]);
+  return Number.isFinite(projectId) ? projectId : null;
+}
+
+function refreshProjectTaskCounts(projectId: number) {
+  const project = mockProjects.find((row) => row.id === projectId);
+  if (!project) return;
+
+  const projectTasks = mockTasks.filter((task) => task.projectId === projectId);
+  project.taskCount = projectTasks.length;
+  project.completedTaskCount = projectTasks.filter(
+    (task) => task.status === "done",
+  ).length;
+}
+
 function withDefaults(basePath: string, body: Record<string, unknown>, id: number): JsonObject {
   const created: JsonObject = {
     id,
@@ -158,6 +177,11 @@ function withDefaults(basePath: string, body: Record<string, unknown>, id: numbe
   if (basePath === "/api/tasks") {
     created.status ??= "todo";
     created.priority ??= "medium";
+    created.projectName ??=
+      mockProjects.find((project) => project.id === created.projectId)?.name ??
+      "Project";
+    created.assigneeName ??=
+      mockUsers.find((user) => user.id === created.assignedTo)?.name ?? null;
   }
 
   return created;
@@ -248,6 +272,13 @@ function mockGet(path: string): JsonValue | undefined {
   if (path === "/api/suppliers") return mockSuppliers;
   if (path === "/api/warehouses") return mockWarehouses;
   if (path === "/api/users") return mockUsers;
+  if (path === "/api/projects") return mockProjects;
+  if (path === "/api/tasks") return mockTasks;
+
+  const projectIdForTasks = projectTasksPath(path);
+  if (projectIdForTasks != null) {
+    return mockTasks.filter((task) => task.projectId === projectIdForTasks);
+  }
 
   const basePath = collectionPath(path);
   if (basePath) {
@@ -306,6 +337,19 @@ export function mockApiPlugin(): Plugin {
 
         if (req.method === "POST") {
           const body = await readBody(req);
+          const projectIdForTasks = projectTasksPath(url.pathname);
+          if (projectIdForTasks != null) {
+            const rows = collections["/api/tasks"];
+            const created = withDefaults(
+              "/api/tasks",
+              { ...body, projectId: projectIdForTasks },
+              nextId(rows),
+            );
+            rows.unshift(created);
+            refreshProjectTaskCounts(projectIdForTasks);
+            return sendJson(res, created, 201);
+          }
+
           const basePath = collectionPath(url.pathname);
           if (!basePath) return sendJson(res, { id: 1, createdAt: now(), ...body }, 201);
 
@@ -325,7 +369,18 @@ export function mockApiPlugin(): Plugin {
           const index = rows.findIndex((row) => row.id === id);
           if (index === -1) return sendJson(res, { error: "Mock record not found" }, 404);
 
+          const oldProjectId = Number(rows[index].projectId);
           rows[index] = { ...rows[index], ...(body as JsonObject) };
+          if (basePath === "/api/tasks") {
+            rows[index].projectName ??=
+              mockProjects.find((project) => project.id === rows[index].projectId)
+                ?.name ?? "Project";
+            rows[index].assigneeName =
+              mockUsers.find((user) => user.id === rows[index].assignedTo)
+                ?.name ?? null;
+            refreshProjectTaskCounts(oldProjectId);
+            refreshProjectTaskCounts(Number(rows[index].projectId));
+          }
           return sendJson(res, rows[index]);
         }
 
@@ -335,7 +390,11 @@ export function mockApiPlugin(): Plugin {
             const id = rowId(url.pathname, basePath);
             const rows = collections[basePath];
             const index = rows.findIndex((row) => row.id === id);
-            if (index !== -1) rows.splice(index, 1);
+            if (index !== -1) {
+              const projectId = Number(rows[index].projectId);
+              rows.splice(index, 1);
+              if (basePath === "/api/tasks") refreshProjectTaskCounts(projectId);
+            }
           }
 
           res.statusCode = 204;
