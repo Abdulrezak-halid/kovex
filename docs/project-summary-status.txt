@@ -1,0 +1,180 @@
+SME ERP System - Project Summary Status
+
+1. Project Name
+
+SME ERP System
+
+2. Project Goal
+
+The project is a simplified ERP system for small and medium businesses. It helps manage sales, purchases, inventory, customers, suppliers, reports, planning tasks, and users from one organized application.
+
+3. Current Project Status
+
+Status: Running and structured
+
+The project has been installed, typechecked, restructured, and tested locally. The frontend application runs successfully from the new folder structure.
+
+Current local frontend URL:
+http://localhost:8081/
+
+4. Current Folder Structure
+
+packages/front
+Frontend application. This contains the React, Vite, TypeScript, Tailwind UI, pages, components, layouts, and mock API.
+
+packages/back
+Backend application. This contains the Express server, REST API routes, backend logic, and server entry files.
+
+packages/database
+Database package. This contains the Drizzle ORM configuration, database connection, and schema files.
+
+packages/api-contract
+API contract package. This contains the OpenAPI specification used to describe backend endpoints and shared API models.
+
+packages/api-client
+Generated frontend API client. This package gives the frontend typed API functions and React Query hooks.
+
+packages/api-validation
+Generated backend validation package. This package gives the backend request and response validation types.
+
+docs
+Documentation folder. This contains project explanation, diagram flow, and status text files.
+
+5. Main Technology Stack
+
+Frontend:
+React
+Vite
+TypeScript
+Tailwind CSS
+React Query
+
+Backend:
+Node.js
+Express
+TypeScript
+REST API
+
+Database:
+PostgreSQL
+Drizzle ORM
+
+Package Management:
+pnpm workspace
+
+API Contract:
+OpenAPI
+Orval code generation
+
+6. Completed Work
+
+Dependencies installed.
+Frontend runs locally.
+TypeScript typecheck passes.
+Project structure changed from apps/web and apps/api to packages/front and packages/back.
+Workspace configuration updated.
+Root scripts updated.
+README updated.
+Flowchart documentation created.
+OpenAPI codegen output paths updated.
+
+7. Verified Commands
+
+pnpm install --ignore-scripts
+pnpm run typecheck
+pnpm run dev:front
+
+8. Application Modules
+
+Dashboard
+Shows business summary information such as sales, inventory alerts, and overview data.
+
+Sales
+Manages customers, quotations, orders, and invoices.
+
+Purchases
+Manages suppliers, purchase orders, and purchase invoices.
+
+Inventory
+Manages products, warehouses, and stock levels.
+
+Planning
+Manages projects and tasks.
+
+Reports
+Shows sales, purchase, and inventory reports.
+
+Settings
+Manages users.
+
+9. Main Business Logic
+
+Sales flow:
+Customer -> Quotation -> Order -> Invoice -> Stock decreases -> Sales report updates
+
+Purchase flow:
+Supplier -> Purchase Order -> Purchase Invoice -> Stock increases -> Purchase report updates
+
+Inventory flow:
+Products and warehouses -> Stock tracking -> Low stock alerts -> Inventory reports
+
+Planning flow:
+Projects -> Tasks -> Progress tracking
+
+10. Current Running Mode
+
+The frontend is running in mock API mode. This means the UI can be used without starting PostgreSQL or the real backend server.
+
+Mock API mode is useful for:
+Frontend development
+UI testing
+Fast demos
+Working without database setup
+
+11. Real Backend Mode
+
+To run the real backend, PostgreSQL must be running and DATABASE_URL must be configured.
+
+Required steps:
+Create PostgreSQL database.
+Set DATABASE_URL.
+Push database schema.
+Start backend server.
+Start frontend with MOCK_API=false.
+
+12. Important Commands
+
+Install dependencies:
+pnpm install
+
+Run frontend:
+pnpm run dev:front
+
+Run backend:
+pnpm run dev:back
+
+Typecheck:
+pnpm run typecheck
+
+Build:
+pnpm run build
+
+Push database schema:
+pnpm --filter @sme-erp/database run push
+
+Generate API client and validation files:
+pnpm --filter @sme-erp/api-contract run codegen
+
+13. Remaining Optional Work
+
+Set up PostgreSQL database for real backend mode.
+Test all backend endpoints with real data.
+Add authentication and permissions if required.
+Add more reports and charts.
+Add accounting module in the future.
+Add notifications in the future.
+Add mobile support in the future.
+
+14. Final Summary
+
+The SME ERP System is currently organized, documented, installed, and runnable. The new structure is clear: packages/front contains the frontend, packages/back contains the backend server and API, and the remaining packages support database access, API contracts, generated clients, and validation. The project is ready for continued development, UI work, backend integration, and diagram creation.

@@ -1,0 +1,81 @@
+SME ERP System - Database And API Access
+
+1. Database In DataGrip
+
+Database type:
+PostgreSQL
+
+Host:
+localhost
+
+Port:
+5432
+
+User:
+postgres
+
+Password:
+postgres
+
+Database:
+sme_erp
+
+Connection URL:
+postgres://postgres:postgres@localhost:5432/sme_erp
+
+DataGrip steps:
+Open DataGrip.
+Click +.
+Choose Data Source.
+Choose PostgreSQL.
+Enter Host, Port, User, Password, and Database from above.
+Click Test Connection.
+If DataGrip asks to download PostgreSQL drivers, accept it.
+Click OK or Apply.
+
+After connecting, open the sme_erp database and refresh the schema list. The tables are created from the Drizzle schema in packages/database/src/schema.
+
+2. Backend API
+
+Backend base URL:
+http://localhost:5000
+
+API base path:
+http://localhost:5000/api
+
+Health check:
+http://localhost:5000/api/healthz
+
+Swagger UI:
+http://localhost:5000/api-docs/
+
+OpenAPI YAML:
+http://localhost:5000/api/openapi.yaml
+
+3. Current Local Database Status
+
+The project is using an existing Docker PostgreSQL-compatible container named timescaledb.
+
+The sme_erp database has been created.
+The Drizzle schema has been pushed to the database.
+
+4. Commands Used
+
+Create database:
+docker exec timescaledb createdb -U postgres sme_erp
+
+Push schema:
+DATABASE_URL=postgres://postgres:postgres@localhost:5432/sme_erp pnpm --filter @sme-erp/database run push
+
+Start backend:
+DATABASE_URL=postgres://postgres:postgres@localhost:5432/sme_erp PORT=5000 pnpm --filter @sme-erp/back run dev
+
+5. Important Notes
+
+The backend requires DATABASE_URL.
+Swagger UI shows the endpoints from packages/api-contract/openapi.yaml.
+The backend serves the OpenAPI file at /api/openapi.yaml.
+The frontend can run with mock data or real API mode.
+
+To run the frontend with the real backend:
+MOCK_API=false PORT=8081 BASE_PATH=/ pnpm --filter @sme-erp/front run dev
