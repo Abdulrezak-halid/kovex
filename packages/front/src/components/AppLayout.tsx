@@ -17,7 +17,6 @@ import {
   TrendingUp,
   Boxes,
   Truck,
-  ClipboardList,
   CalendarDays,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -163,7 +162,7 @@ function NavSection({
               </Link>
             );
           })}
-      </div>
+        </div>
       )}
     </div>
   );
@@ -174,8 +173,12 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
     <div className="flex flex-col h-full bg-sidebar text-sidebar-foreground">
       <div className="px-4 py-5 border-b border-sidebar-border">
         <div className="flex items-center gap-2.5">
-          <div className="h-7 w-7 rounded-md bg-sidebar-primary flex items-center justify-center">
-            <ClipboardList className="h-4 w-4 text-sidebar-primary-foreground" />
+          <div className="h-7 w-7 rounded-md flex items-center justify-center overflow-hidden">
+            <img
+              src="/erp.png"
+              alt="SME ERP"
+              className="h-full w-full object-cover"
+            />
           </div>
           <div>
             <p className="text-sm font-semibold text-sidebar-foreground leading-tight">
