@@ -42,8 +42,3 @@ Thumbs.db
 .local/
 .agents/
 .codex/
-
-# Replit export metadata
-.replit
-.replitignore
-.replit-artifact/

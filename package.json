@@ -4,10 +4,15 @@
   "license": "MIT",
   "scripts": {
     "preinstall": "sh -c 'rm -f package-lock.json yarn.lock; case \"$npm_config_user_agent\" in pnpm/*) ;; *) echo \"Use pnpm instead\" >&2; exit 1 ;; esac'",
-    "dev:front": "PORT=8081 BASE_PATH=/ pnpm --filter @sme-erp/front run dev",
-    "dev:back": "PORT=5000 pnpm --filter @sme-erp/back run dev",
+    "dev": "node ./scripts/dev.mjs",
+    "dev:front": "PORT=${PORT:-8081} BASE_PATH=${BASE_PATH:-/} pnpm --filter @sme-erp/front run dev",
+    "dev:back": "DATABASE_URL=${DATABASE_URL:-postgres://postgres:postgres@localhost:5432/sme_erp} PORT=${PORT:-5000} pnpm --filter @sme-erp/back run dev",
     "dev:web": "pnpm run dev:front",
     "dev:api": "pnpm run dev:back",
+    "api:ui": "echo Swagger UI: http://localhost:5000/api-docs/",
+    "api:schema": "pnpm --filter @sme-erp/api-contract run codegen",
+    "db:push": "DATABASE_URL=${DATABASE_URL:-postgres://postgres:postgres@localhost:5432/sme_erp} pnpm --filter @sme-erp/database run push",
+    "db:migrate": "pnpm run db:push",
     "build": "pnpm run typecheck && pnpm -r --if-present run build",
     "typecheck:libs": "tsc --build",
     "typecheck": "pnpm run typecheck:libs && pnpm -r --filter @sme-erp/front --filter @sme-erp/back --if-present run typecheck"
