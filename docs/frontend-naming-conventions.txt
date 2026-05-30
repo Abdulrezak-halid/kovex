@@ -1,0 +1,56 @@
+SME ERP System - Frontend Naming Conventions
+
+1. Components And Pages
+
+All app-owned React components and page components must start with C.
+
+Examples:
+CApp
+CAppLayout
+CDashboard
+CCustomers
+COrders
+CInvoices
+CPageHeader
+CDataTable
+CStatusBadge
+
+Page filenames should also start with C.
+
+Examples:
+CDashboard.tsx
+CCustomers.tsx
+COrders.tsx
+CInvoices.tsx
+CProjects.tsx
+CNotFound.tsx
+
+2. Interfaces And Types
+
+All app-owned interfaces and type aliases must start with I.
+
+Examples:
+INavItem
+IPageHeaderProps
+IColumn
+IDataTableProps
+ICustomerRow
+IToast
+IState
+
+3. Hooks
+
+Hooks must start with use.
+
+Examples:
+useToast
+useIsMobile
+useGetDashboardSummary
+
+4. Generated Code
+
+Generated API client and validation types should not be manually renamed. They are generated from the OpenAPI contract and may be overwritten by code generation.
+
+5. UI Primitive Exception
+
+The shared shadcn/Radix-style primitives in packages/front/src/components/ui keep their original names, such as Button, Card, Dialog, Select, and Table. These are low-level UI primitives, not business components or pages.

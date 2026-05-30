@@ -10,8 +10,8 @@ import {
 import type { Task } from "@sme-erp/api-client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { PageHeader } from "@/components/PageHeader";
-import { DataTable } from "@/components/DataTable";
+import { CPageHeader } from "@/components/CPageHeader";
+import { CDataTable } from "@/components/CDataTable";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -57,7 +57,7 @@ const PRIORITY_BADGE: Record<string, string> = {
   high: "bg-red-100 text-red-700",
 };
 
-export default function Tasks() {
+export default function CTasks() {
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [filterProject, setFilterProject] = useState<string>("all");
   const [deleteId, setDeleteId] = useState<number | null>(null);
@@ -106,7 +106,11 @@ export default function Tasks() {
       qc.invalidateQueries({ queryKey: getListTasksQueryKey() });
       setEditingTask(null);
     } catch {
-      toast({ title: "Error", description: "Something went wrong", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Something went wrong",
+        variant: "destructive",
+      });
     }
   }
 
@@ -117,7 +121,11 @@ export default function Tasks() {
       toast({ title: "Task deleted" });
       qc.invalidateQueries({ queryKey: getListTasksQueryKey() });
     } catch {
-      toast({ title: "Error", description: "Something went wrong", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Something went wrong",
+        variant: "destructive",
+      });
     } finally {
       setDeleteId(null);
     }
@@ -129,7 +137,11 @@ export default function Tasks() {
       cell: (t: Task) => (
         <div>
           <p className="font-medium text-sm">{t.title}</p>
-          {t.description && <p className="text-xs text-muted-foreground truncate max-w-xs">{t.description}</p>}
+          {t.description && (
+            <p className="text-xs text-muted-foreground truncate max-w-xs">
+              {t.description}
+            </p>
+          )}
         </div>
       ),
     },
@@ -137,14 +149,18 @@ export default function Tasks() {
       header: "Project",
       cell: (t: Task) => (
         <Link href={`/planning/projects/${t.projectId}`}>
-          <span className="text-sm text-primary hover:underline cursor-pointer">{t.projectName}</span>
+          <span className="text-sm text-primary hover:underline cursor-pointer">
+            {t.projectName}
+          </span>
         </Link>
       ),
     },
     {
       header: "Status",
       cell: (t: Task) => (
-        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${STATUS_BADGE[t.status] ?? "bg-slate-100 text-slate-700"}`}>
+        <span
+          className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${STATUS_BADGE[t.status] ?? "bg-slate-100 text-slate-700"}`}
+        >
           {t.status}
         </span>
       ),
@@ -152,14 +168,19 @@ export default function Tasks() {
     {
       header: "Priority",
       cell: (t: Task) => (
-        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${PRIORITY_BADGE[t.priority] ?? "bg-slate-100 text-slate-600"}`}>
+        <span
+          className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${PRIORITY_BADGE[t.priority] ?? "bg-slate-100 text-slate-600"}`}
+        >
           {t.priority}
         </span>
       ),
     },
     {
       header: "Assignee",
-      cell: (t: Task) => t.assigneeName ?? <span className="text-muted-foreground text-sm">Unassigned</span>,
+      cell: (t: Task) =>
+        t.assigneeName ?? (
+          <span className="text-muted-foreground text-sm">Unassigned</span>
+        ),
     },
     {
       header: "Due Date",
@@ -174,7 +195,12 @@ export default function Tasks() {
       header: "Actions",
       cell: (t: Task) => (
         <div className="flex gap-1">
-          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(t)}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7"
+            onClick={() => openEdit(t)}
+          >
             <Pencil className="h-3.5 w-3.5" />
           </Button>
           <Button
@@ -193,7 +219,10 @@ export default function Tasks() {
 
   return (
     <div className="p-6">
-      <PageHeader title="All Tasks" description="View and manage tasks across all projects" />
+      <CPageHeader
+        title="All Tasks"
+        description="View and manage tasks across all projects"
+      />
 
       <div className="mb-4 flex gap-3 flex-wrap">
         <Select value={filterStatus} onValueChange={setFilterStatus}>
@@ -224,7 +253,7 @@ export default function Tasks() {
         </Select>
       </div>
 
-      <DataTable
+      <CDataTable
         columns={columns}
         data={tasks}
         isLoading={isLoading}
@@ -232,7 +261,10 @@ export default function Tasks() {
         emptyMessage="No tasks found. Create projects and add tasks to get started."
       />
 
-      <Dialog open={!!editingTask} onOpenChange={(o) => !o && setEditingTask(null)}>
+      <Dialog
+        open={!!editingTask}
+        onOpenChange={(o) => !o && setEditingTask(null)}
+      >
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Edit Task</DialogTitle>
@@ -243,7 +275,9 @@ export default function Tasks() {
               <Input
                 className="mt-1"
                 value={editForm.title ?? ""}
-                onChange={(e) => setEditForm((f) => ({ ...f, title: e.target.value }))}
+                onChange={(e) =>
+                  setEditForm((f) => ({ ...f, title: e.target.value }))
+                }
               />
             </div>
             <div>
@@ -252,13 +286,20 @@ export default function Tasks() {
                 className="mt-1 resize-none"
                 rows={2}
                 value={editForm.description ?? ""}
-                onChange={(e) => setEditForm((f) => ({ ...f, description: e.target.value }))}
+                onChange={(e) =>
+                  setEditForm((f) => ({ ...f, description: e.target.value }))
+                }
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label className="text-sm">Status</Label>
-                <Select value={editForm.status ?? "todo"} onValueChange={(v) => setEditForm((f) => ({ ...f, status: v }))}>
+                <Select
+                  value={editForm.status ?? "todo"}
+                  onValueChange={(v) =>
+                    setEditForm((f) => ({ ...f, status: v }))
+                  }
+                >
                   <SelectTrigger className="mt-1 h-9 text-sm">
                     <SelectValue />
                   </SelectTrigger>
@@ -272,7 +313,12 @@ export default function Tasks() {
               </div>
               <div>
                 <Label className="text-sm">Priority</Label>
-                <Select value={editForm.priority ?? "medium"} onValueChange={(v) => setEditForm((f) => ({ ...f, priority: v }))}>
+                <Select
+                  value={editForm.priority ?? "medium"}
+                  onValueChange={(v) =>
+                    setEditForm((f) => ({ ...f, priority: v }))
+                  }
+                >
                   <SelectTrigger className="mt-1 h-9 text-sm">
                     <SelectValue />
                   </SelectTrigger>
@@ -288,8 +334,15 @@ export default function Tasks() {
               <div>
                 <Label className="text-sm">Assignee</Label>
                 <Select
-                  value={editForm.assignedTo ? String(editForm.assignedTo) : "none"}
-                  onValueChange={(v) => setEditForm((f) => ({ ...f, assignedTo: v !== "none" ? Number(v) : undefined }))}
+                  value={
+                    editForm.assignedTo ? String(editForm.assignedTo) : "none"
+                  }
+                  onValueChange={(v) =>
+                    setEditForm((f) => ({
+                      ...f,
+                      assignedTo: v !== "none" ? Number(v) : undefined,
+                    }))
+                  }
                 >
                   <SelectTrigger className="mt-1 h-9 text-sm">
                     <SelectValue />
@@ -310,25 +363,37 @@ export default function Tasks() {
                   type="date"
                   className="mt-1 h-9 text-sm"
                   value={editForm.dueDate ?? ""}
-                  onChange={(e) => setEditForm((f) => ({ ...f, dueDate: e.target.value }))}
+                  onChange={(e) =>
+                    setEditForm((f) => ({ ...f, dueDate: e.target.value }))
+                  }
                 />
               </div>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setEditingTask(null)}>Cancel</Button>
-            <Button onClick={handleUpdate} disabled={!editForm.title || updateMutation.isPending}>
+            <Button variant="outline" onClick={() => setEditingTask(null)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleUpdate}
+              disabled={!editForm.title || updateMutation.isPending}
+            >
               Save Changes
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      <AlertDialog open={!!deleteId} onOpenChange={(o) => !o && setDeleteId(null)}>
+      <AlertDialog
+        open={!!deleteId}
+        onOpenChange={(o) => !o && setDeleteId(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete task?</AlertDialogTitle>
-            <AlertDialogDescription>This cannot be undone.</AlertDialogDescription>
+            <AlertDialogDescription>
+              This cannot be undone.
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>

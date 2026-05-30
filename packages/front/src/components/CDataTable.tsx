@@ -1,27 +1,27 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-interface Column<T> {
+interface IColumn<T> {
   header: string;
   accessor?: keyof T;
   cell?: (row: T) => React.ReactNode;
   className?: string;
 }
 
-interface DataTableProps<T> {
-  columns: Column<T>[];
+interface IDataTableProps<T> {
+  columns: IColumn<T>[];
   data: T[] | undefined;
   isLoading?: boolean;
   keyField: keyof T;
   emptyMessage?: string;
 }
 
-export function DataTable<T>({
+export function CDataTable<T>({
   columns,
   data,
   isLoading,
   keyField,
   emptyMessage = "No records found.",
-}: DataTableProps<T>) {
+}: IDataTableProps<T>) {
   return (
     <div className="w-full overflow-x-auto rounded-lg border border-border">
       <table className="w-full text-sm">
@@ -59,10 +59,18 @@ export function DataTable<T>({
             </tr>
           ) : (
             data.map((row) => (
-              <tr key={String(row[keyField])} className="hover:bg-muted/20 transition-colors">
+              <tr
+                key={String(row[keyField])}
+                className="hover:bg-muted/20 transition-colors"
+              >
                 {columns.map((col) => (
-                  <td key={col.header} className={`px-4 py-3 ${col.className ?? ""}`}>
-                    {col.cell ? col.cell(row) : String(row[col.accessor!] ?? "")}
+                  <td
+                    key={col.header}
+                    className={`px-4 py-3 ${col.className ?? ""}`}
+                  >
+                    {col.cell
+                      ? col.cell(row)
+                      : String(row[col.accessor!] ?? "")}
                   </td>
                 ))}
               </tr>

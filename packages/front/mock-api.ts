@@ -270,7 +270,21 @@ function mockGet(path: string): JsonValue | undefined {
     ];
   }
 
-  if (path === "/api/reports/sales") return { totalRevenue: 42800, totalOrders: 12, rows: [], topCustomers: [] };
+  if (path === "/api/reports/sales") {
+    return {
+      totalRevenue: 42800,
+      totalOrders: 12,
+      rows: [
+        { date: "2026-01", ordersCount: 5, revenue: 9200 },
+        { date: "2026-02", ordersCount: 7, revenue: 12800 },
+        { date: "2026-03", ordersCount: 6, revenue: 11400 },
+        { date: "2026-04", ordersCount: 9, revenue: 16800 },
+        { date: "2026-05", ordersCount: 12, revenue: 21400 },
+        { date: "2026-06", ordersCount: 10, revenue: 18800 },
+      ],
+      topCustomers: [],
+    };
+  }
   if (path === "/api/reports/inventory") return { totalProducts: 1, totalStockValue: 576, lowStockCount: 1, rows: [] };
   if (path === "/api/reports/purchases") return { totalPurchases: 18500, totalOrders: 6, rows: [], topSuppliers: [] };
 

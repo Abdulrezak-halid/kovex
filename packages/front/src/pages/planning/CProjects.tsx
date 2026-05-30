@@ -9,7 +9,7 @@ import {
 import type { Project, ProjectInput } from "@sme-erp/api-client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { PageHeader } from "@/components/PageHeader";
+import { CPageHeader } from "@/components/CPageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -39,7 +39,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Pencil, Trash2, CheckSquare, Calendar, DollarSign } from "lucide-react";
+import {
+  Plus,
+  Pencil,
+  Trash2,
+  CheckSquare,
+  Calendar,
+  DollarSign,
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const STATUS_COLORS: Record<string, string> = {
@@ -65,8 +72,19 @@ const emptyForm: Partial<ProjectInput> = {
   endDate: "",
 };
 
-function ProjectCard({ project, onEdit, onDelete }: { project: Project; onEdit: () => void; onDelete: () => void }) {
-  const progress = project.taskCount > 0 ? Math.round((project.completedTaskCount / project.taskCount) * 100) : 0;
+function CProjectCard({
+  project,
+  onEdit,
+  onDelete,
+}: {
+  project: Project;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
+  const progress =
+    project.taskCount > 0
+      ? Math.round((project.completedTaskCount / project.taskCount) * 100)
+      : 0;
 
   return (
     <div className="bg-card border border-border rounded-lg p-4 hover:border-primary/30 transition-colors group">
@@ -78,24 +96,40 @@ function ProjectCard({ project, onEdit, onDelete }: { project: Project; onEdit: 
             </h3>
           </Link>
           {project.description && (
-            <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{project.description}</p>
+            <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
+              {project.description}
+            </p>
           )}
         </div>
         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onEdit}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6"
+            onClick={onEdit}
+          >
             <Pencil className="h-3 w-3" />
           </Button>
-          <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive hover:text-destructive" onClick={onDelete}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6 text-destructive hover:text-destructive"
+            onClick={onDelete}
+          >
             <Trash2 className="h-3 w-3" />
           </Button>
         </div>
       </div>
 
       <div className="flex items-center gap-2 mb-3 flex-wrap">
-        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${STATUS_COLORS[project.status] ?? "bg-slate-100 text-slate-700"}`}>
+        <span
+          className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${STATUS_COLORS[project.status] ?? "bg-slate-100 text-slate-700"}`}
+        >
           {project.status}
         </span>
-        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${PRIORITY_COLORS[project.priority] ?? "bg-slate-100 text-slate-600"}`}>
+        <span
+          className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${PRIORITY_COLORS[project.priority] ?? "bg-slate-100 text-slate-600"}`}
+        >
           {project.priority}
         </span>
       </div>
@@ -139,7 +173,7 @@ function ProjectCard({ project, onEdit, onDelete }: { project: Project; onEdit: 
   );
 }
 
-export default function Projects() {
+export default function CProjects() {
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
@@ -197,7 +231,11 @@ export default function Projects() {
       qc.invalidateQueries({ queryKey: getListProjectsQueryKey() });
       setDialogOpen(false);
     } catch {
-      toast({ title: "Error", description: "Something went wrong", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Something went wrong",
+        variant: "destructive",
+      });
     }
   }
 
@@ -208,7 +246,11 @@ export default function Projects() {
       toast({ title: "Project deleted" });
       qc.invalidateQueries({ queryKey: getListProjectsQueryKey() });
     } catch {
-      toast({ title: "Error", description: "Something went wrong", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Something went wrong",
+        variant: "destructive",
+      });
     } finally {
       setDeleteId(null);
     }
@@ -218,7 +260,7 @@ export default function Projects() {
 
   return (
     <div className="p-6">
-      <PageHeader
+      <CPageHeader
         title="Projects"
         description="Track and manage your team's projects"
         action={
@@ -254,7 +296,7 @@ export default function Projects() {
       ) : projects && projects.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {projects.map((p) => (
-            <ProjectCard
+            <CProjectCard
               key={p.id}
               project={p}
               onEdit={() => openEdit(p)}
@@ -271,7 +313,9 @@ export default function Projects() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>{editing ? "Edit Project" : "New Project"}</DialogTitle>
+            <DialogTitle>
+              {editing ? "Edit Project" : "New Project"}
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-2">
             <div>
@@ -279,7 +323,9 @@ export default function Projects() {
               <Input
                 className="mt-1"
                 value={form.name ?? ""}
-                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, name: e.target.value }))
+                }
                 placeholder="Project name"
               />
             </div>
@@ -289,14 +335,19 @@ export default function Projects() {
                 className="mt-1 resize-none"
                 rows={2}
                 value={form.description ?? ""}
-                onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, description: e.target.value }))
+                }
                 placeholder="Optional description"
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label className="text-sm">Status</Label>
-                <Select value={form.status ?? "planning"} onValueChange={(v) => setForm((f) => ({ ...f, status: v }))}>
+                <Select
+                  value={form.status ?? "planning"}
+                  onValueChange={(v) => setForm((f) => ({ ...f, status: v }))}
+                >
                   <SelectTrigger className="mt-1 h-9 text-sm">
                     <SelectValue />
                   </SelectTrigger>
@@ -311,7 +362,10 @@ export default function Projects() {
               </div>
               <div>
                 <Label className="text-sm">Priority</Label>
-                <Select value={form.priority ?? "medium"} onValueChange={(v) => setForm((f) => ({ ...f, priority: v }))}>
+                <Select
+                  value={form.priority ?? "medium"}
+                  onValueChange={(v) => setForm((f) => ({ ...f, priority: v }))}
+                >
                   <SelectTrigger className="mt-1 h-9 text-sm">
                     <SelectValue />
                   </SelectTrigger>
@@ -330,7 +384,9 @@ export default function Projects() {
                   type="date"
                   className="mt-1 h-9 text-sm"
                   value={form.startDate ?? ""}
-                  onChange={(e) => setForm((f) => ({ ...f, startDate: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, startDate: e.target.value }))
+                  }
                 />
               </div>
               <div>
@@ -339,7 +395,9 @@ export default function Projects() {
                   type="date"
                   className="mt-1 h-9 text-sm"
                   value={form.endDate ?? ""}
-                  onChange={(e) => setForm((f) => ({ ...f, endDate: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, endDate: e.target.value }))
+                  }
                 />
               </div>
             </div>
@@ -349,16 +407,27 @@ export default function Projects() {
                 type="number"
                 className="mt-1"
                 value={form.budget ?? ""}
-                onChange={(e) => setForm((f) => ({ ...f, budget: e.target.value ? Number(e.target.value) : undefined }))}
+                onChange={(e) =>
+                  setForm((f) => ({
+                    ...f,
+                    budget: e.target.value ? Number(e.target.value) : undefined,
+                  }))
+                }
                 placeholder="Optional budget"
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setDialogOpen(false)}>
+              Cancel
+            </Button>
             <Button
               onClick={handleSave}
-              disabled={!form.name || createMutation.isPending || updateMutation.isPending}
+              disabled={
+                !form.name ||
+                createMutation.isPending ||
+                updateMutation.isPending
+              }
             >
               {editing ? "Save Changes" : "Create Project"}
             </Button>
@@ -366,12 +435,16 @@ export default function Projects() {
         </DialogContent>
       </Dialog>
 
-      <AlertDialog open={!!deleteId} onOpenChange={(o) => !o && setDeleteId(null)}>
+      <AlertDialog
+        open={!!deleteId}
+        onOpenChange={(o) => !o && setDeleteId(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete project?</AlertDialogTitle>
             <AlertDialogDescription>
-              "{deletingProject?.name}" and all its tasks will be permanently deleted. This cannot be undone.
+              "{deletingProject?.name}" and all its tasks will be permanently
+              deleted. This cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

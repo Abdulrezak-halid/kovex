@@ -17,12 +17,12 @@ const statusColors: Record<string, string> = {
   inactive: "bg-gray-100 text-gray-600",
 };
 
-export function StatusBadge({ status }: { status: string }) {
+export function CStatusBadge({ status }: { status: string }) {
   return (
     <span
       className={cn(
         "inline-flex items-center px-2 py-0.5 rounded text-xs font-medium capitalize",
-        statusColors[status] ?? "bg-gray-100 text-gray-600"
+        statusColors[status] ?? "bg-gray-100 text-gray-600",
       )}
     >
       {status}

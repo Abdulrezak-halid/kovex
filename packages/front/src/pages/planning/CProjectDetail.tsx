@@ -12,7 +12,7 @@ import {
 } from "@sme-erp/api-client";
 import type { Task, TaskInput } from "@sme-erp/api-client";
 import { useQueryClient } from "@tanstack/react-query";
-import { PageHeader } from "@/components/PageHeader";
+import { CPageHeader } from "@/components/CPageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -76,7 +76,7 @@ const emptyTask: Partial<TaskInput> = {
   dueDate: "",
 };
 
-function TaskCard({
+function CTaskCard({
   task,
   onEdit,
   onDelete,
@@ -93,16 +93,22 @@ function TaskCard({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             {PRIORITY_ICON[task.priority]}
-            <p className={`text-sm font-medium ${task.status === "done" ? "line-through text-muted-foreground" : ""}`}>
+            <p
+              className={`text-sm font-medium ${task.status === "done" ? "line-through text-muted-foreground" : ""}`}
+            >
               {task.title}
             </p>
           </div>
           {task.description && (
-            <p className="text-xs text-muted-foreground mb-2 line-clamp-2">{task.description}</p>
+            <p className="text-xs text-muted-foreground mb-2 line-clamp-2">
+              {task.description}
+            </p>
           )}
           <div className="flex items-center gap-2 flex-wrap">
             <Select value={task.status} onValueChange={onStatusChange}>
-              <SelectTrigger className={`h-5 text-xs border-0 px-2 py-0 w-auto ${STATUS_BADGE[task.status] ?? ""}`}>
+              <SelectTrigger
+                className={`h-5 text-xs border-0 px-2 py-0 w-auto ${STATUS_BADGE[task.status] ?? ""}`}
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -113,7 +119,9 @@ function TaskCard({
               </SelectContent>
             </Select>
             {task.assigneeName && (
-              <span className="text-xs text-muted-foreground">{task.assigneeName}</span>
+              <span className="text-xs text-muted-foreground">
+                {task.assigneeName}
+              </span>
             )}
             {task.dueDate && (
               <span className="text-xs text-muted-foreground flex items-center gap-0.5">
@@ -124,7 +132,12 @@ function TaskCard({
           </div>
         </div>
         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onEdit}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6"
+            onClick={onEdit}
+          >
             <Pencil className="h-3 w-3" />
           </Button>
           <Button
@@ -141,7 +154,7 @@ function TaskCard({
   );
 }
 
-export default function ProjectDetail() {
+export default function CProjectDetail() {
   const params = useParams<{ id: string }>();
   const projectId = Number(params.id);
 
@@ -154,7 +167,8 @@ export default function ProjectDetail() {
   const { toast } = useToast();
 
   const { data: project, isLoading: projectLoading } = useGetProject(projectId);
-  const { data: tasks, isLoading: tasksLoading } = useListProjectTasks(projectId);
+  const { data: tasks, isLoading: tasksLoading } =
+    useListProjectTasks(projectId);
   const { data: users } = useListUsers();
 
   const createMutation = useCreateTask();
@@ -205,21 +219,33 @@ export default function ProjectDetail() {
         await createMutation.mutateAsync({ id: projectId, data: payload });
         toast({ title: "Task created" });
       }
-      qc.invalidateQueries({ queryKey: getListProjectTasksQueryKey(projectId) });
+      qc.invalidateQueries({
+        queryKey: getListProjectTasksQueryKey(projectId),
+      });
       qc.invalidateQueries({ queryKey: getGetProjectQueryKey(projectId) });
       setDialogOpen(false);
     } catch {
-      toast({ title: "Error", description: "Something went wrong", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Something went wrong",
+        variant: "destructive",
+      });
     }
   }
 
   async function handleStatusChange(taskId: number, status: string) {
     try {
       await updateMutation.mutateAsync({ id: taskId, data: { status } as any });
-      qc.invalidateQueries({ queryKey: getListProjectTasksQueryKey(projectId) });
+      qc.invalidateQueries({
+        queryKey: getListProjectTasksQueryKey(projectId),
+      });
       qc.invalidateQueries({ queryKey: getGetProjectQueryKey(projectId) });
     } catch {
-      toast({ title: "Error", description: "Failed to update status", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Failed to update status",
+        variant: "destructive",
+      });
     }
   }
 
@@ -228,10 +254,16 @@ export default function ProjectDetail() {
     try {
       await deleteMutation.mutateAsync({ id: deleteId });
       toast({ title: "Task deleted" });
-      qc.invalidateQueries({ queryKey: getListProjectTasksQueryKey(projectId) });
+      qc.invalidateQueries({
+        queryKey: getListProjectTasksQueryKey(projectId),
+      });
       qc.invalidateQueries({ queryKey: getGetProjectQueryKey(projectId) });
     } catch {
-      toast({ title: "Error", description: "Something went wrong", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Something went wrong",
+        variant: "destructive",
+      });
     } finally {
       setDeleteId(null);
     }
@@ -251,7 +283,9 @@ export default function ProjectDetail() {
       <div className="p-6 text-center py-20 text-muted-foreground">
         Project not found.{" "}
         <Link href="/planning/projects">
-          <span className="text-primary hover:underline cursor-pointer">Back to projects</span>
+          <span className="text-primary hover:underline cursor-pointer">
+            Back to projects
+          </span>
         </Link>
       </div>
     );
@@ -266,12 +300,16 @@ export default function ProjectDetail() {
     <div className="p-6">
       <div className="mb-4">
         <Link href="/planning/projects">
-          <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground -ml-2 mb-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground hover:text-foreground -ml-2 mb-2"
+          >
             <ArrowLeft className="h-4 w-4 mr-1" />
             All Projects
           </Button>
         </Link>
-        <PageHeader
+        <CPageHeader
           title={project.name}
           description={project.description ?? ""}
           action={
@@ -297,7 +335,8 @@ export default function ProjectDetail() {
           <div className="flex items-center gap-2">
             <CheckSquare className="h-4 w-4 text-muted-foreground" />
             <span>
-              {project.completedTaskCount}/{project.taskCount} tasks ({progress}%)
+              {project.completedTaskCount}/{project.taskCount} tasks ({progress}
+              %)
             </span>
           </div>
         )}
@@ -305,7 +344,8 @@ export default function ProjectDetail() {
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4 text-muted-foreground" />
             <span>
-              {project.startDate?.slice(0, 10) ?? "—"} → {project.endDate?.slice(0, 10) ?? "—"}
+              {project.startDate?.slice(0, 10) ?? "—"} →{" "}
+              {project.endDate?.slice(0, 10) ?? "—"}
             </span>
           </div>
         )}
@@ -343,19 +383,23 @@ export default function ProjectDetail() {
                     {colTasks.length}
                   </span>
                 </div>
-                <div className="flex-1 space-y-2 min-h-[4rem]">
+                <div className="flex-1 space-y-2 min-h-16">
                   {colTasks.map((t) => (
-                    <TaskCard
+                    <CTaskCard
                       key={t.id}
                       task={t}
                       onEdit={() => openEdit(t)}
                       onDelete={() => setDeleteId(t.id)}
-                      onStatusChange={(status) => handleStatusChange(t.id, status)}
+                      onStatusChange={(status) =>
+                        handleStatusChange(t.id, status)
+                      }
                     />
                   ))}
                   {colTasks.length === 0 && (
                     <div className="border-2 border-dashed border-border rounded-lg h-16 flex items-center justify-center">
-                      <span className="text-xs text-muted-foreground">No tasks</span>
+                      <span className="text-xs text-muted-foreground">
+                        No tasks
+                      </span>
                     </div>
                   )}
                 </div>
@@ -377,7 +421,9 @@ export default function ProjectDetail() {
               <Input
                 className="mt-1"
                 value={form.title ?? ""}
-                onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, title: e.target.value }))
+                }
                 placeholder="Task title"
               />
             </div>
@@ -387,14 +433,19 @@ export default function ProjectDetail() {
                 className="mt-1 resize-none"
                 rows={2}
                 value={form.description ?? ""}
-                onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, description: e.target.value }))
+                }
                 placeholder="Optional description"
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label className="text-sm">Status</Label>
-                <Select value={form.status ?? "todo"} onValueChange={(v) => setForm((f) => ({ ...f, status: v }))}>
+                <Select
+                  value={form.status ?? "todo"}
+                  onValueChange={(v) => setForm((f) => ({ ...f, status: v }))}
+                >
                   <SelectTrigger className="mt-1 h-9 text-sm">
                     <SelectValue />
                   </SelectTrigger>
@@ -408,7 +459,10 @@ export default function ProjectDetail() {
               </div>
               <div>
                 <Label className="text-sm">Priority</Label>
-                <Select value={form.priority ?? "medium"} onValueChange={(v) => setForm((f) => ({ ...f, priority: v }))}>
+                <Select
+                  value={form.priority ?? "medium"}
+                  onValueChange={(v) => setForm((f) => ({ ...f, priority: v }))}
+                >
                   <SelectTrigger className="mt-1 h-9 text-sm">
                     <SelectValue />
                   </SelectTrigger>
@@ -425,7 +479,12 @@ export default function ProjectDetail() {
                 <Label className="text-sm">Assignee</Label>
                 <Select
                   value={form.assignedTo ? String(form.assignedTo) : "none"}
-                  onValueChange={(v) => setForm((f) => ({ ...f, assignedTo: v !== "none" ? Number(v) : undefined }))}
+                  onValueChange={(v) =>
+                    setForm((f) => ({
+                      ...f,
+                      assignedTo: v !== "none" ? Number(v) : undefined,
+                    }))
+                  }
                 >
                   <SelectTrigger className="mt-1 h-9 text-sm">
                     <SelectValue />
@@ -446,16 +505,24 @@ export default function ProjectDetail() {
                   type="date"
                   className="mt-1 h-9 text-sm"
                   value={form.dueDate ?? ""}
-                  onChange={(e) => setForm((f) => ({ ...f, dueDate: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, dueDate: e.target.value }))
+                  }
                 />
               </div>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setDialogOpen(false)}>
+              Cancel
+            </Button>
             <Button
               onClick={handleSave}
-              disabled={!form.title || createMutation.isPending || updateMutation.isPending}
+              disabled={
+                !form.title ||
+                createMutation.isPending ||
+                updateMutation.isPending
+              }
             >
               {editingTask ? "Save Changes" : "Add Task"}
             </Button>
@@ -463,11 +530,16 @@ export default function ProjectDetail() {
         </DialogContent>
       </Dialog>
 
-      <AlertDialog open={!!deleteId} onOpenChange={(o) => !o && setDeleteId(null)}>
+      <AlertDialog
+        open={!!deleteId}
+        onOpenChange={(o) => !o && setDeleteId(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete task?</AlertDialogTitle>
-            <AlertDialogDescription>This cannot be undone.</AlertDialogDescription>
+            <AlertDialogDescription>
+              This cannot be undone.
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>

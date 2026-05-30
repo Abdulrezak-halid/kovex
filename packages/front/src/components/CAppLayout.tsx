@@ -22,14 +22,14 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-interface NavItem {
+interface INavItem {
   label: string;
   href?: string;
   icon: React.ComponentType<{ className?: string }>;
   children?: { label: string; href: string }[];
 }
 
-const navItems: NavItem[] = [
+const navItems: INavItem[] = [
   { label: "Dashboard", href: "/", icon: LayoutDashboard },
   {
     label: "Sales",
@@ -83,11 +83,11 @@ const navItems: NavItem[] = [
   },
 ];
 
-function NavSection({
+function CNavSection({
   item,
   onNavigate,
 }: {
-  item: NavItem;
+  item: INavItem;
   onNavigate?: () => void;
 }) {
   const [location] = useLocation();
@@ -168,7 +168,7 @@ function NavSection({
   );
 }
 
-function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
+function CSidebar({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <div className="flex flex-col h-full bg-sidebar text-sidebar-foreground">
       <div className="px-4 py-5 border-b border-sidebar-border">
@@ -192,7 +192,7 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
       </div>
       <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-0.5">
         {navItems.map((item) => (
-          <NavSection key={item.label} item={item} onNavigate={onNavigate} />
+          <CNavSection key={item.label} item={item} onNavigate={onNavigate} />
         ))}
       </nav>
       <div className="px-4 py-3 border-t border-sidebar-border">
@@ -202,7 +202,7 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   );
 }
 
-export function AppLayout({ children }: { children: React.ReactNode }) {
+export function CAppLayout({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
@@ -210,7 +210,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Desktop sidebar */}
       <div className="hidden lg:flex lg:shrink-0 lg:w-56">
         <div className="w-56 border-r border-border">
-          <Sidebar />
+          <CSidebar />
         </div>
       </div>
 
@@ -222,7 +222,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             onClick={() => setMobileOpen(false)}
           />
           <div className="absolute left-0 top-0 h-full w-56 shadow-xl">
-            <Sidebar onNavigate={() => setMobileOpen(false)} />
+            <CSidebar onNavigate={() => setMobileOpen(false)} />
           </div>
         </div>
       )}

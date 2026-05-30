@@ -8,8 +8,8 @@ import {
 } from "@sme-erp/api-client";
 import type { User, UserInput } from "@sme-erp/api-client";
 import { useQueryClient } from "@tanstack/react-query";
-import { PageHeader } from "@/components/PageHeader";
-import { DataTable } from "@/components/DataTable";
+import { CPageHeader } from "@/components/CPageHeader";
+import { CDataTable } from "@/components/CDataTable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,7 +23,7 @@ import { Badge } from "@/components/ui/badge";
 const roles = ["admin", "sysadmin"];
 const emptyForm = { name: "", email: "", role: "admin", department: "", active: true };
 
-export default function Users() {
+export default function CUsers() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [editing, setEditing] = useState<User | null>(null);
@@ -96,7 +96,7 @@ export default function Users() {
 
   return (
     <div className="p-6">
-      <PageHeader
+      <CPageHeader
         title="Users"
         description="Manage system users and roles"
         action={
@@ -106,7 +106,7 @@ export default function Users() {
           </Button>
         }
       />
-      <DataTable columns={columns} data={data} isLoading={isLoading} keyField="id" emptyMessage="No users." />
+      <CDataTable columns={columns} data={data} isLoading={isLoading} keyField="id" emptyMessage="No users." />
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
