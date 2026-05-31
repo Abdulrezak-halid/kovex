@@ -1,0 +1,816 @@
+Final Graduation Project Requirements and Mandatory Topics
+
+The final graduation project must demonstrate the student's ability to analyze a real-world problem, design a suitable solution, implement a viable working model, document the work academically, and present the results clearly and convincingly.
+
+The project, report, presentation, and associated video must cover a significant portion of the following areas:
+
+1. Project Idea and Problem Addressed
+
+The project must have a clear and specific idea, not a general or repetitive one lacking development.
+
+The following must be clarified:
+
+What problem does the project attempt to solve?
+
+Why is this problem important?
+
+Who are the users or beneficiaries of the project?
+
+How does the proposed solution differ from existing solutions?
+
+What practical or academic value does the project offer?
+
+Example:
+
+Instead of simply being a "student management website," the project should clearly state the problem: the difficulty in tracking attendance, grades, notifications, and communication between students and instructors. The project should then explain how it solves this problem in a structured manner.
+
+2. Project Objectives and Scope
+
+The project objectives must be clearly defined and measurable.
+
+It should include:
+
+The main project objective.
+
+Sub-objectives.
+
+What will actually be implemented?
+
+What will not be implemented within the project scope?
+
+Project limitations in terms of time, resources, hardware, or data.
+
+Examples of good objectives:
+
+Building a system that allows users to register and log in.
+Providing an administration control panel.
+Storing data in a database.
+Providing a responsive user interface.
+Protecting critical data.
+Generating reports or statistics.
+
+3. Requirements Analysis and System Analysis
+
+The project must include a clear requirements analysis before implementation begins.
+
+Requirements should be divided into:
+
+A. Functional Requirements
+
+These are the things the system must do.
+
+Example:
+
+Users can create accounts.
+Administrators can add, edit, or delete data.
+Users can search and filter.
+The system can send notifications.
+The system can generate PDF or Excel reports.
+
+B. Non-Functional Requirements
+
+These are quality and performance specifications. Example:
+
+The system should be user-friendly.
+
+It should work on both phones and computers.
+
+It should be responsive.
+
+User data must be protected.
+
+The code should be scalable and maintainable.
+
+It should support a suitable number of users.
+
+4. Feasibility Study and Project Significance
+
+The report should ideally include a simple feasibility study demonstrating the project's viability.
+
+The following should be clarified:
+
+Technical feasibility: Are the necessary tools and technologies available?
+
+Economic feasibility: Is the project feasible at a reasonable cost?
+Time feasibility: Can it be completed within the graduation project timeframe?
+Practical feasibility: Are there individuals or organizations that could benefit from it?
+
+5. Research and Previous Studies
+
+The project should be compared with similar projects or systems.
+
+This should include:
+
+A presentation of some existing solutions.
+
+A comparison between the proposed project and these solutions.
+
+An explanation of the strengths and weaknesses.
+
+An explanation of the new value your project offers. Example:
+
+If your project is a clinic management application, you can compare it to existing appointment booking systems and then explain that you have added features such as alerts, patient profiles, statistics, or a doctor dashboard.
+
+6. System Architecture & Design
+
+The project must have a clear design before implementation.
+
+This should include:
+
+System Architecture.
+
+Data Flow Diagram.
+
+Use Case Diagram.
+
+ERD Database Diagram.
+
+UML Diagrams, where needed, such as:
+
+Class Diagram
+
+Sequence Diagram
+
+Activity Diagram
+
+In software projects, it is preferable to clearly define the layers, such as:
+
+Presentation Layer
+
+Business Logic Layer
+
+Data Access Layer
+
+Database Layer
+
+API Layer, if applicable
+
+7. Selection of Technologies and Tools
+
+You must explain the technologies used and the reason for their selection.
+
+Example:
+
+Programming Language
+
+Framework
+
+Database
+
+Design Tools
+
+Testing Tools
+
+Project Management Tools
+
+Version control tools.
+
+Deployment and hosting tools.
+
+Example of good syntax:
+
+ASP.NET Core was used because it provides a robust architecture for web application development and APIs. Entity Framework Core was used to facilitate database management, and SQL Server was used for organized data storage.
+
+8. Project Management and Work Plan
+
+The project should demonstrate that it was executed in a structured, not haphazard, manner.
+
+The following should be included:
+
+A project timeline.
+A breakdown of the project into phases.
+A distribution of tasks among team members if it is a collaborative project.
+A clear explanation of the work methodology, such as: Waterfall, Agile, Scrum, Kanban.
+
+A timeline is recommended, such as:
+
+Phase Description
+Requirements Analysis: Identifying the problem, users, and functions
+Design: Designing the database, interfaces, and schemas
+Implementation: Programming the interfaces, services, and database
+Testing: Testing functionality, security, and performance
+Documentation: Writing the report and preparing the presentation
+Deployment: Uploading and testing the project
+
+9. Git & GitHub Version Control
+
+Git should be used for professional code management.
+
+The project should include:
+
+A GitHub or GitLab repository.
+
+A clear and organized commit history.
+Understandable commit names.
+The use of branches when needed.
+A README file that explains the project.
+Avoid uploading sensitive files such as passwords or API keys.
+
+Examples of good commits:
+
+Add user authentication module
+Create database models
+Implement admin dashboard
+Fix login validation errors
+Add unit tests for user service
+
+10. Database and Relationship Design
+
+If the project contains data, a clear and organized database design is essential.
+
+The following should be clearly defined:
+
+Primary tables.
+Relationships between tables.
+Primary keys.
+Foreign keys.
+Normalization.
+Crude-based operations.
+
+Data protection against duplication or errors.
+
+The project should ideally include relationships such as:
+
+One-to-One
+One-to-Many
+Many-to-Many
+
+Example:
+
+In a university management system:
+
+A student belongs to one department.
+
+A department contains several students.
+
+A student can register for several courses.
+
+A course can contain several students.
+
+11. Implementing the System's Core Functions
+
+The project should include clear, practical functions, not just aesthetic interfaces.
+
+Important functions include:
+
+New user registration.
+
+Login and logout.
+
+Adding data.
+
+Editing data.
+
+Deleting data.
+
+Viewing data.
+
+Searching.
+
+Filtering.
+Sorting.
+
+Uploading files or images, if applicable.
+
+Generating reports.
+
+An administrative control panel.
+
+It is important that the project be demonstrable to the committee.
+
+12. User Interface and User Experience (UI/UX)
+
+The project's interface should be clear, organized, and user-friendly.
+
+Considerations should include:
+
+Simple and intuitive design.
+
+Consistent colors.
+
+Clear menus.
+Understandable error messages.
+Responsive design.
+
+Support for mobile, tablet, and computer.
+
+Easy page navigation.
+
+It is recommended to include screenshots of the interfaces within the report, along with an explanation of each page's function.
+
+13. Authentication & Authorization
+
+If the project has multiple users, a login and permissions system must be implemented.
+
+This should include:
+
+New account registration.
+
+Login.
+Password encryption.
+Logout.
+Session management or JWT.
+Different permissions based on user type.
+
+Example roles:
+
+Admin
+User
+Doctor
+Student
+Teacher
+Customer
+Employee
+
+The responsibilities of each role must be clearly defined.
+
+Example:
+
+Roles and Permissions
+Admin: Manage users and data
+User: View their data and edit their account
+Manager: View reports and statistics
+14. Security and Data Protection
+
+The project must have clear security fundamentals.
+
+Consider the following:
+
+Protect passwords with encryption.
+
+Prevent SQL Injection.
+
+Prevent XSS.
+
+Prevent CSRF attacks when necessary.
+Verify input data.
+Do not store sensitive information in plain sight.
+
+Use HTTPS for deployment.
+Do not upload confidential configuration files to GitHub.
+Protect important pages from unauthorized access.
+
+Example:
+
+It is not enough to hide the “Admin” button from the interface; access to the control panel link from the server must also be prevented.
+
+15. Error Handling and Logging
+
+The system must be able to handle errors professionally.
+
+Include the following:
+
+Clear error messages for the user.
+
+Do not display sensitive technical details to the user.
+
+Use try-catch when necessary.
+Log errors.
+Track important system processes.
+
+Include the following:
+
+Clear error messages for the user.
+
+Do not display sensitive technical details to the user.
+
+Use try-catch when necessary.
+Log errors.
+Track important system processes.
+
+A page or mechanism for handling general errors.
+
+Example:
+
+Instead of a lengthy technical error, the message "An unexpected error occurred, please try again later" appears.
+
+In the background, the error details are logged for the developer.
+
+16. Testing
+
+The project should be tested, not just implemented.
+
+It is recommended to include:
+
+Unit Testing
+
+Integration Testing
+
+Manual Testing
+
+API Testing
+
+UI Testing (when needed)
+
+Testing for correct and incorrect states
+
+Testing user permissions
+
+Testing for incorrect data entry
+
+A test table should be included in the report, such as:
+
+Test Input Expected Result Actual Result Status
+
+Login Correct Email and Password Successful Login Successful Successful
+
+Login Incorrect Password Refused Login Refused Successful
+
+Adding a product Full data Save Saved Successful
+17. Performance and System Optimization
+
+The project should demonstrate a focus on performance.
+
+It is recommended to include:
+
+Using async/await in software projects.
+
+Improving database queries. Use pagination when displaying large amounts of data.
+
+Use caching when needed.
+Compress images or files.
+Reduce the loading of unnecessary data.
+Improve page loading speed.
+
+Example:
+
+Instead of displaying 10,000 records at once, use pagination to display 10 or 20 records per page.
+
+18. Internal and External Documentation
+
+The project must be well-documented.
+
+Internal Documentation
+
+Within the code:
+
+Clear variable names.
+Comments when needed.
+File organization.
+Code segmentation into classes and services.
+Avoid excessive code duplication.
+External Documentation
+
+In the report or README:
+
+Explain the project concept.
+How the project will run.
+Requirements for operation.
+Explain the database.
+Explain the interfaces.
+Explain how to use the system.
+Explain the API, if available.
+
+19. Deployment
+
+It is highly recommended that the project be deployed and testable.
+
+Can be deployed on:
+
+Azure
+AWS
+Render
+Railway
+Vercel
+Netlify
+GitHub Pages
+VPS
+Docker Container
+
+Please clarify:
+
+Where is the project deployed?
+
+How can it be accessed?
+
+What are the deployment steps?
+
+Was Docker used?
+
+Is there a cloud database?
+
+Is there CI/CD?
+
+Providing a direct link to the project makes a very strong impression on the committee.
+
+20. Graduation Project Report
+
+The report should be academically organized.
+
+It should ideally include the following sections:
+
+Title Page
+
+Acknowledgements and Dedication (if requested)
+Abstract
+Introduction
+Project Problem
+Project Objectives
+Project Significance
+Literature Review
+Requirements Analysis
+System Design
+Tools and Technologies Used
+Project Implementation
+Database
+Tests and Results
+Challenges Faced by the Team
+Conclusion
+Future Work
+References
+Appendix
+
+21. Presentation
+
+A concise and clear presentation should be prepared for discussion.
+
+It should ideally include:
+
+Project Title and Student Names
+Problem
+
+Objective
+
+Solution Proposal
+
+Technologies Used
+System Design
+
+Screenshots of Interfaces
+
+Database Explanation
+
+Explanation of Key Functions
+Test Results
+
+Challenges
+
+Conclusion and Future Development
+
+Don't make the presentation too text-heavy. It's best to include images, diagrams, and key points.
+
+22. Project Demonstration Video
+
+If a video is required, it should be clear and well-organized.
+
+It should include:
+
+An introduction to the problem.
+
+An explanation of the project concept.
+
+A brief overview of the technologies.
+
+A practical demonstration of the project.
+
+A login demonstration.
+
+A demonstration of the core functions.
+
+An explanation of the control panel.
+
+A demonstration of the database or API, if applicable.
+
+A clear explanation of each team member's role.
+
+A brief conclusion.
+
+The video should not simply be a reading from the report, but a practical demonstration of the project.
+
+23. Code Quality and Maintainability
+
+The code should be clean and well-organized.
+
+Consider the following:
+
+Divide the project into clear files and folders.
+
+Avoid placing all the code in a single file.
+
+Use clear names.
+Minimize redundancy.
+Apply Clean Code principles.
+
+Use Design Patterns when necessary.
+Separate the interface, logic, and database.
+
+Ease of adding new features in the future.
+
+Example:
+
+Instead of writing the registration logic directly within the interface page, it can be placed in a Service or Controller, depending on the project type.
+
+24. Innovation and Project-Specific Additions
+
+Even if the idea is familiar, the project should have a unique addition that sets it apart.
+
+Examples of powerful additions:
+
+Dashboard statistics.
+
+Notification system.
+
+Simple AI.
+
+Recommendation system.
+
+Interactive map.
+
+PDF reports.
+
+QR code.
+
+Internal chat.
+
+Multilingual support.
+
+Mobile app linked to the system.
+
+External API.
+
+Email or SMS integration.
+
+Advanced permissions system.
+
+The addition doesn't have to be overly complex, but it makes the project appear more robust.
+
+25. Ethics and Privacy
+
+Data usage ethics must be considered.
+
+The following should be clarified:
+
+How is the data collected?
+
+Is the data real or experimental?
+
+How is user data protected?
+
+Is there any sensitive information?
+
+Was user consent obtained if real data was used?
+
+Is privacy respected?
+
+This is especially important in healthcare, education, artificial intelligence, or user systems projects.
+
+26. Results and Evaluation
+
+The report should not only describe what was built but also evaluate the outcome.
+
+It should clarify:
+
+Did the project achieve its objectives?
+
+Which functions are working successfully?
+
+What were the test results?
+
+What are the strengths?
+
+What are the weaknesses?
+
+What can be improved in the future?
+
+Example:
+
+The test showed that the system is capable of managing users, requests, and reports correctly. Access controls were also tested, and it was confirmed that a regular user cannot access the admin panel.
+
+27. Challenges and Problems Faced by the Team
+
+Including a challenges section gives the impression that the project was undertaken seriously.
+
+Possible examples include:
+
+Database design difficulties.
+
+Environmental and backend integration problems.
+
+Deployment issues.
+
+Security issues.
+
+Task breakdown difficulties.
+
+Performance problems.
+
+Difficulty in obtaining real data.
+
+Then explain how these problems were solved.
+
+28. Future Work
+
+Include ideas that can be added later.
+
+Example:
+
+Develop a mobile application.
+
+Add an electronic payment system.
+
+Add artificial intelligence.
+Improve the statistics dashboard.
+Support for multiple languages.
+Improve security.
+Integrate the system with external services.
+Develop a larger cloud version.
+
+This section is important because it demonstrates the project's scalability.
+
+Additional Requirements if the Project is Web/Software
+
+If the graduation project is a website, web application, API, or management system, it is highly recommended to include the following:
+
+Clear and responsive frontend.
+Organized backend.
+RESTful API (if available).
+A real database.
+Authentication & Authorization.
+Complete CRUD.
+Input validation.
+Error handling.
+Logging.
+Testing.
+Deployment.
+GitHub repository.
+
+Professional README.
+
+API Documentation (e.g., Swagger).
+
+Security basics.
+
+Additional requirements if the project is Hardware/Electronics:
+
+If the project is Engineering or Electronics, it is recommended to include:
+
+A description of the circuit or system.
+
+Block Diagram.
+Schematic Diagram.
+Simulation using software such as Proteus, Multisim, MATLAB, or Simulink.
+Selection of electronic components and their rationale.
+Design calculations.
+Microcontroller code (if available) (Arduino/ESP32/STM32).
+Photos of the practical implementation.
+Measurement results.
+Comparison between theoretical and practical results.
+Error analysis.
+Project cost.
+Safety considerations.
+Future scalability.
+
+Minimum Requirements for a Good Graduation Project
+
+For a project to be considered acceptable and strong, it should at least include:
+
+A clear problem.
+Specific objectives.
+Requirements analysis.
+System design.
+Database or data model.
+A workable, testable implementation.
+A well-organized user interface.
+Basic functionalities.
+Basic security measures.
+Documented testing.
+A structured report.
+A clear presentation.
+GitHub or code documentation.
+A video tutorial or working demo.
+
+Requirements for an Excellent Graduation Project
+
+To earn a high mark, the project should ideally include:
+
+A valuable idea that isn't superficially repetitive.
+A robust problem analysis.
+A professional system design.
+A database with clear relationships.
+Organized and scalable code.
+A permissions system.
+Testing.
+A real-world project deployment.
+Excellent documentation.
+Beautiful and responsive interfaces.
+A unique feature such as a dashboard, AI, or notifications.
+A strong presentation to the committee.
+The student's ability to explain every aspect of the project. Important Note
+
+A graduation project doesn't necessarily have to cover all the points mentioned above, but a strong project should clearly address a significant portion of them. Most importantly, the project should be understandable, organized, testable, well-documented, and have practical or scientific value.
+
+The best project for the committee isn't simply one with a lot of code, but one where the student can explain:
+
+Why did they choose the idea?
+
+How did they solve the problem?
+
+How did they design the system?
+
+How did they implement the project?
+
+How did they test it?
+
+What makes it unique?
+
+And how can it be improved in the future?
