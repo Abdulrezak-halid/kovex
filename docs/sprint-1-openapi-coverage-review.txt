@@ -1,0 +1,58 @@
+SME ERP System - Sprint 1 OpenAPI Coverage Review
+
+Date: 2026-05-31
+OpenAPI file: packages/api-contract/openapi.yaml
+Backend routes: packages/back/src/routes
+
+Summary
+
+The OpenAPI contract was reviewed against the implemented Express route files. All current backend route paths have matching OpenAPI paths.
+
+Result: PASS
+
+Coverage Table
+
+| Backend Area | Backend Routes | OpenAPI Coverage |
+| --- | --- | --- |
+| Health | /healthz | Covered |
+| Planning projects | /projects, /projects/{id}, /projects/{id}/tasks | Covered |
+| Planning tasks | /tasks, /tasks/{id} | Covered |
+| Dashboard | /dashboard/summary, /dashboard/top-products, /dashboard/recent-orders, /dashboard/low-stock | Covered |
+| Customers | /customers, /customers/{id} | Covered |
+| Suppliers | /suppliers, /suppliers/{id} | Covered |
+| Products | /products, /products/{id} | Covered |
+| Warehouses | /warehouses, /warehouses/{id} | Covered |
+| Stock | /stock | Covered |
+| Quotations | /quotations, /quotations/{id}, /quotations/{id}/convert | Covered |
+| Orders | /orders, /orders/{id}, /orders/{id}/invoice | Covered |
+| Invoices | /invoices, /invoices/{id} | Covered |
+| Purchase Orders | /purchase-orders, /purchase-orders/{id}, /purchase-orders/{id}/receive | Covered |
+| Purchase Invoices | /purchase-invoices, /purchase-invoices/{id} | Covered |
+| Users | /users, /users/{id} | Covered |
+| Reports | /reports/sales, /reports/inventory, /reports/purchases | Covered |
+
+Reviewed Route Files
+
+- packages/back/src/routes/health.ts
+- packages/back/src/routes/dashboard.ts
+- packages/back/src/routes/customers.ts
+- packages/back/src/routes/suppliers.ts
+- packages/back/src/routes/products.ts
+- packages/back/src/routes/warehouses.ts
+- packages/back/src/routes/sales.ts
+- packages/back/src/routes/purchases.ts
+- packages/back/src/routes/planning.ts
+- packages/back/src/routes/users.ts
+- packages/back/src/routes/reports.ts
+
+Contract Quality Notes
+
+- Request bodies are documented for create/update operations.
+- Response schemas are documented for list, detail, create, update, report, and dashboard responses.
+- Important error responses such as 400 and 404 are documented where relevant.
+- Generated API client and validation files were regenerated with npm run api:schema.
+- TypeScript validation passed with npm run typecheck.
+
+Conclusion
+
+TASK-018 is complete. The OpenAPI contract matches the implemented backend route surface for the current Sprint 1 system.

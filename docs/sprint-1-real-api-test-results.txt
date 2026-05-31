@@ -1,0 +1,72 @@
+SME ERP System - Sprint 1 Real API Test Results
+
+Date: 2026-05-31
+Mode: Real backend + real PostgreSQL database
+Backend URL: http://localhost:5000/api
+Frontend URL: http://localhost:8081/
+Database URL: postgres://postgres:postgres@localhost:5432/sme_erp
+
+Summary
+
+Sprint 1 real-system verification passed. The backend started with PostgreSQL, the frontend was started with MOCK_API=false, and the API test sweep completed successfully against real database tables.
+
+Result: PASS
+Endpoint checks passed: 70/70
+Schema/code generation: PASS
+Typecheck: PASS
+
+Run Commands Used
+
+Backend:
+DATABASE_URL=postgres://postgres:postgres@localhost:5432/sme_erp PORT=5000 pnpm --filter @sme-erp/back run dev
+
+Frontend real API mode:
+MOCK_API=false PORT=8081 BASE_PATH=/ pnpm --filter @sme-erp/front run dev
+
+API schema regeneration:
+npm run api:schema
+
+Typecheck:
+npm run typecheck
+
+Testing Table
+
+| Area | Endpoints/Actions Tested | Result |
+| --- | --- | --- |
+| Health | GET /api/healthz | PASS |
+| Customers | create, list, get, update, delete | PASS |
+| Suppliers | create, list, get, update, delete | PASS |
+| Products | create, list, get, update, delete | PASS |
+| Warehouses | create, list, get, update, delete | PASS |
+| Users | create, list, get, update, delete | PASS |
+| Purchase Orders | create, list, get, update, receive | PASS |
+| Stock | list stock after purchase receiving | PASS |
+| Purchase Invoices | create, list, get, update | PASS |
+| Quotations | create, list, get, update, convert to order | PASS |
+| Orders | create, list, get, update, create invoice from order | PASS |
+| Invoices | create, list, get, update | PASS |
+| Projects | create, list, get, update | PASS |
+| Tasks | create project task, list all tasks, list project tasks, get, update | PASS |
+| Dashboard | summary, top products, recent orders, low stock | PASS |
+| Reports | sales, inventory, purchases | PASS |
+
+Important Notes
+
+- The first product test failed because the test payload sent price/cost as strings and missed the required unit field. This was a test-data problem, not a backend outage.
+- The corrected test used numeric price/cost values and unit: "pcs"; the full test sweep then passed.
+- The stock API currently exposes list/query behavior. Stock changes are created through purchase order receiving.
+- The endpoint sweep created real Sprint 1 test records in PostgreSQL so reports and dashboard pages have real data to read.
+
+Detailed Endpoint Count
+
+70 successful checks:
+- 1 health check.
+- 29 master-data checks for customers, suppliers, products, warehouses, and users.
+- 10 purchasing and stock checks.
+- 14 sales checks for quotations, orders, and invoices.
+- 9 planning checks for projects and tasks.
+- 7 dashboard/report checks.
+
+Conclusion
+
+TASK-014, TASK-015, and TASK-016 are complete. The application is no longer only a mock demo for Sprint 1 verification; it can run against PostgreSQL and the backend API returns real data.

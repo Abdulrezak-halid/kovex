@@ -208,37 +208,39 @@ Acceptance Criteria:
 Sprint 1 - Convert From Mock Demo To Real System
 
 TASK-014 - Verify real backend startup with PostgreSQL
-Status: Ready
+Status: Completed
 Priority: P0 Critical
 Sprint: Sprint 1
 Labels: backend, database
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Confirm the backend works with the real PostgreSQL database.
 Acceptance Criteria:
 - DATABASE_URL is configured.
 - npm run dev:back starts without errors.
 - /api/healthz returns status ok.
 - Backend logs do not show database connection failures.
+Completion Note: Verified with DATABASE_URL=postgres://postgres:postgres@localhost:5432/sme_erp, backend on port 5000, and /api/healthz returning {"status":"ok"}.
 
 TASK-015 - Run frontend in real API mode
-Status: Ready
+Status: Completed
 Priority: P0 Critical
 Sprint: Sprint 1
 Labels: frontend, backend, api
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Connect frontend to the real backend instead of mock API.
 Acceptance Criteria:
 - Frontend starts with MOCK_API=false.
 - Frontend calls backend on port 5000.
 - Main pages load without mock endpoint errors.
 - API network errors are resolved.
+Completion Note: Verified frontend real API mode with MOCK_API=false on http://localhost:8081/ and backend proxy calls reaching http://localhost:5000/api.
 
 TASK-016 - Test all API endpoints with real data
-Status: Ready
+Status: Completed
 Priority: P0 Critical
 Sprint: Sprint 1
 Labels: api, backend, testing
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Verify every OpenAPI endpoint against PostgreSQL.
 Acceptance Criteria:
 - Health endpoint tested.
@@ -255,32 +257,35 @@ Acceptance Criteria:
 - Projects/tasks endpoints tested.
 - Reports endpoints tested.
 - Results are documented in a testing table.
+Completion Note: 70/70 real API endpoint checks passed. Results are documented in docs/sprint-1-real-api-test-results.txt.
 
 TASK-017 - Regenerate API client and validation files
-Status: Ready
+Status: Completed
 Priority: P1 High
 Sprint: Sprint 1
 Labels: api
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Ensure OpenAPI, frontend client, and backend validation are synchronized.
 Acceptance Criteria:
 - npm run api:schema completes successfully.
 - packages/api-client generated code is updated.
 - packages/api-validation generated code is updated.
 - npm run typecheck passes after regeneration.
+Completion Note: npm run api:schema completed successfully and npm run typecheck passed after regeneration.
 
 TASK-018 - Review OpenAPI coverage
-Status: Ready
+Status: Completed
 Priority: P1 High
 Sprint: Sprint 1
 Labels: api, documentation
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Confirm the OpenAPI contract covers all implemented endpoints.
 Acceptance Criteria:
 - Every backend route has an OpenAPI path.
 - Request bodies are documented.
 - Response schemas are documented.
 - Error responses are documented where important.
+Completion Note: OpenAPI coverage was reviewed against backend routes and documented in docs/sprint-1-openapi-coverage-review.txt.
 
 Sprint 2 - Core ERP CRUD And Business Flows
 
