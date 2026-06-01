@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "wouter";
 import {
   LayoutDashboard,
@@ -24,63 +25,63 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 interface INavItem {
-  label: string;
+  labelKey: string;
   href?: string;
   icon: React.ComponentType<{ className?: string }>;
-  children?: { label: string; href: string }[];
+  children?: { labelKey: string; href: string }[];
 }
 
 const navItems: INavItem[] = [
-  { label: "Dashboard", href: "/", icon: LayoutDashboard },
+  { labelKey: "dashboard", href: "/", icon: LayoutDashboard },
   {
-    label: "Sales",
+    labelKey: "sales",
     icon: TrendingUp,
     children: [
-      { label: "Customers", href: "/sales/customers" },
-      { label: "Quotations", href: "/sales/quotations" },
-      { label: "Orders", href: "/sales/orders" },
-      { label: "Invoices", href: "/sales/invoices" },
+      { labelKey: "customers", href: "/sales/customers" },
+      { labelKey: "quotations", href: "/sales/quotations" },
+      { labelKey: "orders", href: "/sales/orders" },
+      { labelKey: "invoices", href: "/sales/invoices" },
     ],
   },
   {
-    label: "Inventory",
+    labelKey: "inventory",
     icon: Boxes,
     children: [
-      { label: "Products", href: "/inventory/products" },
-      { label: "Stock", href: "/inventory/stock" },
-      { label: "Warehouses", href: "/inventory/warehouses" },
+      { labelKey: "products", href: "/inventory/products" },
+      { labelKey: "stock", href: "/inventory/stock" },
+      { labelKey: "warehouses", href: "/inventory/warehouses" },
     ],
   },
   {
-    label: "Purchases",
+    labelKey: "purchases",
     icon: Truck,
     children: [
-      { label: "Suppliers", href: "/purchases/suppliers" },
-      { label: "Purchase Orders", href: "/purchases/orders" },
-      { label: "Purchase Invoices", href: "/purchases/invoices" },
+      { labelKey: "suppliers", href: "/purchases/suppliers" },
+      { labelKey: "purchaseOrders", href: "/purchases/orders" },
+      { labelKey: "purchaseInvoices", href: "/purchases/invoices" },
     ],
   },
   {
-    label: "Reports",
+    labelKey: "reports",
     icon: BarChart3,
     children: [
-      { label: "Sales Report", href: "/reports/sales" },
-      { label: "Inventory Report", href: "/reports/inventory" },
-      { label: "Purchases Report", href: "/reports/purchases" },
+      { labelKey: "salesReport", href: "/reports/sales" },
+      { labelKey: "inventoryReport", href: "/reports/inventory" },
+      { labelKey: "purchasesReport", href: "/reports/purchases" },
     ],
   },
   {
-    label: "Planning",
+    labelKey: "planning",
     icon: CalendarDays,
     children: [
-      { label: "Projects", href: "/planning/projects" },
-      { label: "Tasks", href: "/planning/tasks" },
+      { labelKey: "projects", href: "/planning/projects" },
+      { labelKey: "tasks", href: "/planning/tasks" },
     ],
   },
   {
-    label: "Settings",
+    labelKey: "settings",
     icon: Settings,
-    children: [{ label: "Users", href: "/settings/users" }],
+    children: [{ labelKey: "users", href: "/settings/users" }],
   },
 ];
 
@@ -91,6 +92,7 @@ function CNavSection({
   item: INavItem;
   onNavigate?: () => void;
 }) {
+  const { t } = useTranslation();
   const [location] = useLocation();
   const [open, setOpen] = useState(() => {
     if (!item.children) return false;
@@ -113,7 +115,7 @@ function CNavSection({
         )}
       >
         <item.icon className="h-4 w-4 shrink-0" />
-        {item.label}
+        {t(item.labelKey)}
       </Link>
     );
   }
@@ -135,7 +137,7 @@ function CNavSection({
       >
         <span className="flex items-center gap-3">
           <item.icon className="h-4 w-4 shrink-0" />
-          {item.label}
+          {t(item.labelKey)}
         </span>
         {open ? (
           <ChevronDown className="h-3.5 w-3.5" />
@@ -159,7 +161,7 @@ function CNavSection({
                     : "text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                 )}
               >
-                {child.label}
+                {t(child.labelKey)}
               </Link>
             );
           })}
@@ -169,7 +171,42 @@ function CNavSection({
   );
 }
 
+function CLanguageSwitch() {
+  const { i18n, t } = useTranslation();
+
+  const changeLanguage = (language: "en" | "tr") => {
+    void i18n.changeLanguage(language);
+  };
+
+  return (
+    <div aria-label={t("language")} className="grid grid-cols-2 gap-1">
+      <Button
+        aria-pressed={i18n.language === "en"}
+        className="h-8 text-xs"
+        onClick={() => changeLanguage("en")}
+        size="sm"
+        type="button"
+        variant={i18n.language === "en" ? "default" : "outline"}
+      >
+        EN
+      </Button>
+      <Button
+        aria-pressed={i18n.language === "tr"}
+        className="h-8 text-xs"
+        onClick={() => changeLanguage("tr")}
+        size="sm"
+        type="button"
+        variant={i18n.language === "tr" ? "default" : "outline"}
+      >
+        TR
+      </Button>
+    </div>
+  );
+}
+
 function CSidebar({ onNavigate }: { onNavigate?: () => void }) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex flex-col h-full bg-sidebar text-sidebar-foreground">
       <div className="px-4 py-5 border-b border-sidebar-border">
@@ -187,7 +224,7 @@ function CSidebar({ onNavigate }: { onNavigate?: () => void }) {
                 SME ERP
               </p>
               <p className="text-xs text-sidebar-foreground/50">
-                Business Operations
+                {t("businessOperations")}
               </p>
             </div>
           </div>
@@ -204,14 +241,19 @@ function CSidebar({ onNavigate }: { onNavigate?: () => void }) {
               onClick={onNavigate}
             >
               <ExternalLink className="h-3.5 w-3.5" />
-              API Docs
+              {t("apiDocs")}
             </a>
           </Button>
+          <CLanguageSwitch />
         </div>
       </div>
       <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-0.5">
         {navItems.map((item) => (
-          <CNavSection key={item.label} item={item} onNavigate={onNavigate} />
+          <CNavSection
+            key={item.labelKey}
+            item={item}
+            onNavigate={onNavigate}
+          />
         ))}
       </nav>
       <div className="px-4 py-3 border-t border-sidebar-border">
@@ -259,6 +301,9 @@ export function CAppLayout({ children }: { children: React.ReactNode }) {
             <Menu className="h-4 w-4" />
           </Button>
           <span className="ml-3 text-sm font-semibold">SME ERP</span>
+          <div className="ml-auto w-24">
+            <CLanguageSwitch />
+          </div>
         </div>
         <main className="flex-1 overflow-y-auto">{children}</main>
       </div>

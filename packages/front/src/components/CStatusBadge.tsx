@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 const statusColors: Record<string, string> = {
   draft: "bg-gray-100 text-gray-600",
@@ -18,6 +19,8 @@ const statusColors: Record<string, string> = {
 };
 
 export function CStatusBadge({ status }: { status: string }) {
+  const { t } = useTranslation();
+
   return (
     <span
       className={cn(
@@ -25,7 +28,7 @@ export function CStatusBadge({ status }: { status: string }) {
         statusColors[status] ?? "bg-gray-100 text-gray-600",
       )}
     >
-      {status}
+      {t(`status${status.charAt(0).toUpperCase()}${status.slice(1)}`, status)}
     </span>
   );
 }

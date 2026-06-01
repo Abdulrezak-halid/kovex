@@ -5,6 +5,7 @@ import {
   useGetLowStockAlerts,
   useGetSalesReport,
 } from "@sme-erp/api-client";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CStatusBadge } from "@/components/CStatusBadge";
@@ -72,6 +73,7 @@ function CMetricCard({
 }
 
 export default function CDashboard() {
+  const { t } = useTranslation();
   const { data: summary, isLoading: loadingSummary } = useGetDashboardSummary();
   const { data: topProducts, isLoading: loadingProducts } = useGetTopProducts();
   const { data: recentOrders, isLoading: loadingOrders } = useGetRecentOrders();
@@ -102,58 +104,58 @@ export default function CDashboard() {
   return (
     <div className="p-6">
       <div className="mb-6">
-        <h1 className="text-xl font-semibold">Dashboard</h1>
+        <h1 className="text-xl font-semibold">{t("dashboard")}</h1>
         <p className="text-sm text-muted-foreground mt-0.5">
-          Business overview
+          {t("businessOverview")}
         </p>
       </div>
 
       {/* Metrics */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <CMetricCard
-          title="Sales This Month"
+          title={t("salesThisMonth")}
           value={summary ? fmt(summary.totalSalesThisMonth) : "—"}
           icon={DollarSign}
           loading={loadingSummary}
         />
         <CMetricCard
-          title="Orders This Month"
+          title={t("ordersThisMonth")}
           value={summary?.totalOrdersThisMonth ?? "—"}
           icon={ShoppingCart}
           loading={loadingSummary}
         />
         <CMetricCard
-          title="Total Customers"
+          title={t("totalCustomers")}
           value={summary?.totalCustomers ?? "—"}
           icon={Users}
           loading={loadingSummary}
         />
         <CMetricCard
-          title="Total Products"
+          title={t("totalProducts")}
           value={summary?.totalProducts ?? "—"}
           icon={Package}
           loading={loadingSummary}
         />
         <CMetricCard
-          title="Pending Orders"
+          title={t("pendingOrders")}
           value={summary?.pendingOrders ?? "—"}
           icon={Clock}
           loading={loadingSummary}
         />
         <CMetricCard
-          title="Low Stock Alerts"
+          title={t("lowStockAlerts")}
           value={summary?.lowStockCount ?? "—"}
           icon={AlertTriangle}
           loading={loadingSummary}
         />
         <CMetricCard
-          title="Revenue This Year"
+          title={t("revenueThisYear")}
           value={summary ? fmt(summary.totalRevenueThisYear) : "—"}
           icon={TrendingUp}
           loading={loadingSummary}
         />
         <CMetricCard
-          title="Pending Invoices"
+          title={t("pendingInvoices")}
           value={summary?.pendingInvoicesCount ?? "—"}
           icon={FileText}
           loading={loadingSummary}
@@ -163,7 +165,7 @@ export default function CDashboard() {
       <Card className="mb-6">
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-semibold">
-            Sales Revenue Trend
+            {t("salesRevenueTrend")}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -172,7 +174,7 @@ export default function CDashboard() {
           ) : !salesTrendRows.length ? (
             <div className="flex h-65 items-center justify-center">
               <p className="text-sm text-muted-foreground">
-                No sales trend data yet.
+                {t("noSalesTrendDataYet")}
               </p>
             </div>
           ) : (
@@ -201,8 +203,8 @@ export default function CDashboard() {
                 <Tooltip
                   formatter={(value, name) =>
                     name === "revenue"
-                      ? [fmt(Number(value)), "Revenue"]
-                      : [value, "Orders"]
+                      ? [fmt(Number(value)), t("revenue")]
+                      : [value, t("orders")]
                   }
                   labelClassName="font-medium"
                   contentStyle={{
@@ -237,7 +239,7 @@ export default function CDashboard() {
       <Card className="mb-6">
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-semibold">
-            Top Product Revenue
+            {t("topProductRevenue")}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -246,7 +248,7 @@ export default function CDashboard() {
           ) : !topProductChartRows.length ? (
             <div className="flex h-65 items-center justify-center">
               <p className="text-sm text-muted-foreground">
-                No product revenue data yet.
+                {t("noProductRevenueDataYet")}
               </p>
             </div>
           ) : (
@@ -276,8 +278,8 @@ export default function CDashboard() {
                 <Tooltip
                   formatter={(value, name) =>
                     name === "revenue"
-                      ? [fmt(Number(value)), "Revenue"]
-                      : [value, "Qty Sold"]
+                      ? [fmt(Number(value)), t("revenue")]
+                      : [value, t("qtySold")]
                   }
                   labelClassName="font-medium"
                   contentStyle={{
@@ -302,7 +304,7 @@ export default function CDashboard() {
         <Card className="lg:col-span-2">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-semibold">
-              Recent Orders
+              {t("recentOrders")}
             </CardTitle>
           </CardHeader>
           <CardContent className="px-0">
@@ -314,7 +316,7 @@ export default function CDashboard() {
               </div>
             ) : !recentOrderRows.length ? (
               <p className="text-sm text-muted-foreground px-6 py-4">
-                No recent orders.
+                {t("noRecentOrders")}
               </p>
             ) : (
               <div className="divide-y divide-border">
@@ -347,7 +349,7 @@ export default function CDashboard() {
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-orange-500" />
-              Low Stock Alerts
+              {t("lowStockAlerts")}
             </CardTitle>
           </CardHeader>
           <CardContent className="px-0">
@@ -359,7 +361,7 @@ export default function CDashboard() {
               </div>
             ) : !lowStockRows.length ? (
               <p className="text-sm text-muted-foreground px-6 py-4">
-                All stock levels OK.
+                {t("allStockLevelsOk")}
               </p>
             ) : (
               <div className="divide-y divide-border">
@@ -368,11 +370,14 @@ export default function CDashboard() {
                     <div className="flex justify-between">
                       <p className="text-sm font-medium">{item.productName}</p>
                       <span className="text-xs font-semibold text-red-600">
-                        {item.currentStock} left
+                        {t("leftCount", { count: item.currentStock })}
                       </span>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      Min: {item.minimumStock} · {item.warehouseName}
+                      {t("minStockInline", {
+                        count: item.minimumStock,
+                        warehouseName: item.warehouseName,
+                      })}
                     </p>
                   </div>
                 ))}
@@ -385,7 +390,7 @@ export default function CDashboard() {
         <Card className="lg:col-span-3">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-semibold">
-              Top Selling Products
+              {t("topSellingProducts")}
             </CardTitle>
           </CardHeader>
           <CardContent className="px-0">
@@ -397,7 +402,7 @@ export default function CDashboard() {
               </div>
             ) : !topProductRows.length ? (
               <p className="text-sm text-muted-foreground px-6 py-4">
-                No data yet.
+                {t("noDataYet")}
               </p>
             ) : (
               <div className="overflow-x-auto">
@@ -405,16 +410,16 @@ export default function CDashboard() {
                   <thead>
                     <tr className="border-b border-border">
                       <th className="px-6 py-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                        Product
+                        {t("product")}
                       </th>
                       <th className="px-6 py-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                        SKU
+                        {t("sku")}
                       </th>
                       <th className="px-6 py-2 text-right text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                        Qty Sold
+                        {t("qtySold")}
                       </th>
                       <th className="px-6 py-2 text-right text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                        Revenue
+                        {t("revenue")}
                       </th>
                     </tr>
                   </thead>

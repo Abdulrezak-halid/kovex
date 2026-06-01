@@ -1,9 +1,17 @@
 import * as React from "react"
+import { useTranslation } from "react-i18next"
 
 import { cn } from "@/lib/utils"
+import { translateText } from "@/lib/i18n"
 
 const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
   ({ className, type, ...props }, ref) => {
+    const { t } = useTranslation()
+    const placeholder =
+      typeof props.placeholder === "string"
+        ? translateText(t, props.placeholder)
+        : props.placeholder
+
     return (
       <input
         type={type}
@@ -13,6 +21,7 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
         )}
         ref={ref}
         {...props}
+        placeholder={placeholder}
       />
     )
   }

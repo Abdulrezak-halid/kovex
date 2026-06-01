@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useGetSalesReport } from "@sme-erp/api-client";
+import { useTranslation } from "react-i18next";
 import { CPageHeader } from "@/components/CPageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -24,6 +25,7 @@ const fmt = (n: number) =>
   }).format(n);
 
 export default function CSalesReport() {
+  const { t } = useTranslation();
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [params, setParams] = useState<{ from?: string; to?: string }>({});
@@ -33,15 +35,15 @@ export default function CSalesReport() {
   return (
     <div className="p-6">
       <CPageHeader
-        title="Sales Report"
-        description="Revenue and order analytics"
+        title={t("salesReport")}
+        description={t("revenueAndOrderAnalytics")}
       />
 
       <Card className="mb-6">
         <CardContent className="pt-4">
           <div className="flex items-end gap-4">
             <div>
-              <Label className="text-xs">From</Label>
+              <Label className="text-xs">{t("from")}</Label>
               <Input
                 type="date"
                 className="mt-1 h-8 text-sm"
@@ -50,7 +52,7 @@ export default function CSalesReport() {
               />
             </div>
             <div>
-              <Label className="text-xs">To</Label>
+              <Label className="text-xs">{t("to")}</Label>
               <Input
                 type="date"
                 className="mt-1 h-8 text-sm"
@@ -64,7 +66,7 @@ export default function CSalesReport() {
                 setParams({ from: from || undefined, to: to || undefined })
               }
             >
-              Apply
+              {t("apply")}
             </Button>
             <Button
               size="sm"
@@ -75,7 +77,7 @@ export default function CSalesReport() {
                 setParams({});
               }}
             >
-              Clear
+              {t("clear")}
             </Button>
           </div>
         </CardContent>
@@ -85,7 +87,7 @@ export default function CSalesReport() {
         <Card>
           <CardContent className="p-5">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-              Total Revenue
+              {t("totalRevenue")}
             </p>
             {isLoading ? (
               <Skeleton className="h-7 w-32 mt-1.5" />
@@ -99,7 +101,7 @@ export default function CSalesReport() {
         <Card>
           <CardContent className="p-5">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-              Total Orders
+              {t("totalOrders")}
             </p>
             {isLoading ? (
               <Skeleton className="h-7 w-20 mt-1.5" />
@@ -116,7 +118,7 @@ export default function CSalesReport() {
         <Card className="mb-6">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold">
-              Revenue Over Time
+              {t("revenueOverTime")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -144,7 +146,7 @@ export default function CSalesReport() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold">
-              Top Customers
+              {t("topCustomers")}
             </CardTitle>
           </CardHeader>
           <CardContent className="px-0">
@@ -152,13 +154,13 @@ export default function CSalesReport() {
               <thead>
                 <tr className="border-b border-border">
                   <th className="px-6 py-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    Customer
+                    {t("customer")}
                   </th>
                   <th className="px-6 py-2 text-right text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    Orders
+                    {t("orders")}
                   </th>
                   <th className="px-6 py-2 text-right text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    Total Spent
+                    {t("totalSpent")}
                   </th>
                 </tr>
               </thead>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   useListProducts,
   useCreateProduct,
@@ -49,6 +50,7 @@ const emptyForm = {
 };
 
 export default function CProducts() {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
@@ -102,11 +104,11 @@ export default function CProducts() {
       } else {
         await createMutation.mutateAsync({ data: payload });
       }
-      toast({ title: editing ? "Product updated" : "Product created" });
+      toast({ title: editing ? t("productUpdated") : t("productCreated") });
       qc.invalidateQueries({ queryKey: getListProductsQueryKey() });
       setDialogOpen(false);
     } catch {
-      toast({ title: "Error", variant: "destructive" });
+      toast({ title: t("error"), variant: "destructive" });
     }
   }
 
@@ -114,10 +116,10 @@ export default function CProducts() {
     if (!deleteId) return;
     try {
       await deleteMutation.mutateAsync({ id: deleteId });
-      toast({ title: "Product deleted" });
+      toast({ title: t("productDeleted") });
       qc.invalidateQueries({ queryKey: getListProductsQueryKey() });
     } catch {
-      toast({ title: "Error", variant: "destructive" });
+      toast({ title: t("error"), variant: "destructive" });
     } finally {
       setDeleteId(null);
     }
@@ -125,25 +127,25 @@ export default function CProducts() {
 
   const columns = [
     {
-      header: "Name",
+      header: t("name"),
       cell: (r: Product) => <span className="font-medium">{r.name}</span>,
     },
     {
-      header: "SKU",
+      header: t("sku"),
       cell: (r: Product) => (
         <span className="font-mono text-sm text-muted-foreground">{r.sku}</span>
       ),
     },
-    { header: "Price", cell: (r: Product) => fmt(r.price) },
+    { header: t("price"), cell: (r: Product) => fmt(r.price) },
     {
-      header: "Cost",
+      header: t("cost"),
       cell: (r: Product) =>
         r.cost ? fmt(r.cost) : <span className="text-muted-foreground">—</span>,
     },
-    { header: "Unit", cell: (r: Product) => r.unit },
-    { header: "Min Stock", cell: (r: Product) => r.minimumStock },
+    { header: t("unit"), cell: (r: Product) => r.unit },
+    { header: t("minStock"), cell: (r: Product) => r.minimumStock },
     {
-      header: "Actions",
+      header: t("actions"),
       cell: (r: Product) => (
         <div className="flex gap-1">
           <Button
@@ -171,19 +173,19 @@ export default function CProducts() {
   return (
     <div className="p-6">
       <CPageHeader
-        title="Products"
-        description="Manage product catalog"
+        title={t("products")}
+        description={t("manageProductCatalog")}
         action={
           <Button size="sm" onClick={openCreate}>
             <Plus className="h-4 w-4 mr-1.5" />
-            New Product
+            {t("newProduct")}
           </Button>
         }
       />
       <div className="mb-4 relative w-64">
         <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
         <Input
-          placeholder="Search products..."
+          placeholder={t("searchProducts")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="pl-8 h-8 text-sm"
@@ -194,25 +196,25 @@ export default function CProducts() {
         data={data}
         isLoading={isLoading}
         keyField="id"
-        emptyMessage="No products."
+        emptyMessage={t("noProducts")}
       />
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {editing ? "Edit Product" : "New Product"}
+              {editing ? t("editProduct") : t("newProduct")}
             </DialogTitle>
           </DialogHeader>
           <div className="grid grid-cols-2 gap-3 py-2">
             {[
-              { key: "name", label: "Name", full: true },
-              { key: "sku", label: "SKU" },
-              { key: "unit", label: "Unit" },
-              { key: "price", label: "Price", type: "number" },
-              { key: "cost", label: "Cost", type: "number" },
-              { key: "minimumStock", label: "Min Stock", type: "number" },
-              { key: "description", label: "Description", full: true },
+              { key: "name", label: t("name"), full: true },
+              { key: "sku", label: t("sku") },
+              { key: "unit", label: t("unit") },
+              { key: "price", label: t("price"), type: "number" },
+              { key: "cost", label: t("cost"), type: "number" },
+              { key: "minimumStock", label: t("minStock"), type: "number" },
+              { key: "description", label: t("description"), full: true },
             ].map(({ key, label, type, full }) => (
               <div key={key} className={full ? "col-span-2" : ""}>
                 <Label className="text-sm">{label}</Label>
@@ -230,7 +232,7 @@ export default function CProducts() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogOpen(false)}>
-              Cancel
+              {t("cancel")}
             </Button>
             <Button
               onClick={handleSave}
@@ -242,7 +244,7 @@ export default function CProducts() {
                 updateMutation.isPending
               }
             >
-              {editing ? "Save Changes" : "Create"}
+              {editing ? t("saveChanges") : t("create")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -254,18 +256,18 @@ export default function CProducts() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete product?</AlertDialogTitle>
+            <AlertDialogTitle>{t("deleteProductQuestion")}</AlertDialogTitle>
             <AlertDialogDescription>
-              This cannot be undone.
+              {t("thisCannotBeUndone")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Delete
+              {t("delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

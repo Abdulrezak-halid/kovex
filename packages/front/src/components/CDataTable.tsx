@@ -1,4 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTranslation } from "react-i18next";
+import { translateText } from "@/lib/i18n";
 
 interface IColumn<T> {
   header: string;
@@ -20,8 +22,10 @@ export function CDataTable<T>({
   data,
   isLoading,
   keyField,
-  emptyMessage = "No records found.",
+  emptyMessage,
 }: IDataTableProps<T>) {
+  const { t } = useTranslation();
+
   return (
     <div className="w-full overflow-x-auto rounded-lg border border-border">
       <table className="w-full text-sm">
@@ -32,7 +36,7 @@ export function CDataTable<T>({
                 key={col.header}
                 className={`px-4 py-2.5 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider ${col.className ?? ""}`}
               >
-                {col.header}
+                {translateText(t, col.header)}
               </th>
             ))}
           </tr>
@@ -54,7 +58,9 @@ export function CDataTable<T>({
                 colSpan={columns.length}
                 className="px-4 py-8 text-center text-sm text-muted-foreground"
               >
-                {emptyMessage}
+                {emptyMessage
+                  ? translateText(t, emptyMessage)
+                  : t("noRecordsFound")}
               </td>
             </tr>
           ) : (

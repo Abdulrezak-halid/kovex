@@ -1,6 +1,7 @@
 import { useListStock, useListWarehouses } from "@sme-erp/api-client";
 import type { StockLevel } from "@sme-erp/api-client";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { CPageHeader } from "@/components/CPageHeader";
 import { CDataTable } from "@/components/CDataTable";
 import {
@@ -13,6 +14,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 
 export default function CStock() {
+  const { t } = useTranslation();
   const [warehouseId, setWarehouseId] = useState<string>("all");
   const { data: warehouses } = useListWarehouses();
   const { data, isLoading } = useListStock({
@@ -22,20 +24,20 @@ export default function CStock() {
 
   const columns = [
     {
-      header: "Product",
+      header: t("product"),
       cell: (r: StockLevel) => (
         <span className="font-medium">{r.productName}</span>
       ),
     },
     {
-      header: "SKU",
+      header: t("sku"),
       cell: (r: StockLevel) => (
         <span className="font-mono text-sm text-muted-foreground">{r.sku}</span>
       ),
     },
-    { header: "Warehouse", cell: (r: StockLevel) => r.warehouseName },
+    { header: t("warehouse"), cell: (r: StockLevel) => r.warehouseName },
     {
-      header: "Quantity",
+      header: t("quantity"),
       cell: (r: StockLevel) => (
         <span
           className={
@@ -48,17 +50,17 @@ export default function CStock() {
         </span>
       ),
     },
-    { header: "Min Stock", cell: (r: StockLevel) => r.minimumStock },
+    { header: t("minStock"), cell: (r: StockLevel) => r.minimumStock },
     {
-      header: "Status",
+      header: t("status"),
       cell: (r: StockLevel) =>
         r.quantity <= r.minimumStock ? (
           <Badge variant="destructive" className="text-xs">
-            Low Stock
+            {t("lowStock")}
           </Badge>
         ) : (
           <Badge variant="secondary" className="text-xs">
-            OK
+            {t("ok")}
           </Badge>
         ),
     },
@@ -67,16 +69,16 @@ export default function CStock() {
   return (
     <div className="p-6">
       <CPageHeader
-        title="Stock Levels"
-        description="Current inventory levels across all warehouses"
+        title={t("stockLevels")}
+        description={t("currentInventoryLevelsAcrossAllWarehouses")}
       />
       <div className="mb-4 w-56">
         <Select value={warehouseId} onValueChange={setWarehouseId}>
           <SelectTrigger className="h-8 text-sm">
-            <SelectValue placeholder="All warehouses" />
+            <SelectValue placeholder={t("allWarehouses")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All warehouses</SelectItem>
+            <SelectItem value="all">{t("allWarehouses")}</SelectItem>
             {warehouses?.map((w) => (
               <SelectItem key={w.id} value={String(w.id)}>
                 {w.name}
@@ -90,7 +92,7 @@ export default function CStock() {
         data={data}
         isLoading={isLoading}
         keyField="productId"
-        emptyMessage="No stock data. Add products and warehouses first."
+        emptyMessage={t("noStockDataAddProductsAndWarehousesFirst")}
       />
     </div>
   );

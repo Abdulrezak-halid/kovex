@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   useListCustomers,
   useCreateCustomer,
@@ -44,6 +45,7 @@ const emptyForm: Partial<CustomerInput> = {
 };
 
 export default function CCustomers() {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
@@ -80,17 +82,17 @@ export default function CCustomers() {
     try {
       if (editing) {
         await updateMutation.mutateAsync({ id: editing.id, data: form as any });
-        toast({ title: "Customer updated" });
+        toast({ title: t("customerUpdated") });
       } else {
         await createMutation.mutateAsync({ data: form as CustomerInput });
-        toast({ title: "Customer created" });
+        toast({ title: t("customerCreated") });
       }
       qc.invalidateQueries({ queryKey: getListCustomersQueryKey() });
       setDialogOpen(false);
     } catch {
       toast({
-        title: "Error",
-        description: "Something went wrong",
+        title: t("error"),
+        description: t("somethingWentWrong"),
         variant: "destructive",
       });
     }
@@ -100,12 +102,12 @@ export default function CCustomers() {
     if (!deleteId) return;
     try {
       await deleteMutation.mutateAsync({ id: deleteId });
-      toast({ title: "Customer deleted" });
+      toast({ title: t("customerDeleted") });
       qc.invalidateQueries({ queryKey: getListCustomersQueryKey() });
     } catch {
       toast({
-        title: "Error",
-        description: "Something went wrong",
+        title: t("error"),
+        description: t("somethingWentWrong"),
         variant: "destructive",
       });
     } finally {
@@ -115,30 +117,30 @@ export default function CCustomers() {
 
   const columns = [
     {
-      header: "Name",
+      header: t("name"),
       accessor: "name" as const,
       cell: (r: ICustomerRow) => <span className="font-medium">{r.name}</span>,
     },
     {
-      header: "Company",
+      header: t("company"),
       accessor: "company" as const,
       cell: (r: ICustomerRow) =>
         r.company || <span className="text-muted-foreground">—</span>,
     },
     {
-      header: "Email",
+      header: t("email"),
       accessor: "email" as const,
       cell: (r: ICustomerRow) =>
         r.email || <span className="text-muted-foreground">—</span>,
     },
     {
-      header: "Phone",
+      header: t("phone"),
       accessor: "phone" as const,
       cell: (r: ICustomerRow) =>
         r.phone || <span className="text-muted-foreground">—</span>,
     },
     {
-      header: "Actions",
+      header: t("actions"),
       cell: (r: ICustomerRow) => (
         <div className="flex gap-1">
           <Button
@@ -166,12 +168,12 @@ export default function CCustomers() {
   return (
     <div className="p-6">
       <CPageHeader
-        title="Customers"
-        description="Manage your customer records"
+        title={t("customers")}
+        description={t("manageYourCustomerRecords")}
         action={
           <Button size="sm" onClick={openCreate}>
             <Plus className="h-4 w-4 mr-1.5" />
-            New Customer
+            {t("newCustomer")}
           </Button>
         }
       />
@@ -179,7 +181,7 @@ export default function CCustomers() {
       <div className="mb-4 relative w-64">
         <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
         <Input
-          placeholder="Search customers..."
+          placeholder={t("searchCustomers")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="pl-8 h-8 text-sm"
@@ -191,21 +193,21 @@ export default function CCustomers() {
         data={data}
         isLoading={isLoading}
         keyField="id"
-        emptyMessage="No customers found."
+        emptyMessage={t("noCustomersFound")}
       />
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {editing ? "Edit Customer" : "New Customer"}
+              {editing ? t("editCustomer") : t("newCustomer")}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-2">
             {(["name", "company", "email", "phone", "address"] as const).map(
               (field) => (
                 <div key={field}>
-                  <Label className="capitalize text-sm">{field}</Label>
+                  <Label className="capitalize text-sm">{t(field)}</Label>
                   <Input
                     className="mt-1"
                     value={(form as any)[field] ?? ""}
@@ -220,7 +222,7 @@ export default function CCustomers() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogOpen(false)}>
-              Cancel
+              {t("cancel")}
             </Button>
             <Button
               onClick={handleSave}
@@ -230,7 +232,7 @@ export default function CCustomers() {
                 updateMutation.isPending
               }
             >
-              {editing ? "Save Changes" : "Create"}
+              {editing ? t("saveChanges") : t("create")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -242,18 +244,18 @@ export default function CCustomers() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete customer?</AlertDialogTitle>
+            <AlertDialogTitle>{t("deleteCustomerQuestion")}</AlertDialogTitle>
             <AlertDialogDescription>
-              This cannot be undone.
+              {t("thisCannotBeUndone")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Delete
+              {t("delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -1,6 +1,8 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 import type { ToastActionElement, ToastProps } from "@/components/ui/toast";
+import { translateText } from "@/lib/i18n";
 
 const TOAST_LIMIT = 1;
 const TOAST_REMOVE_DELAY = 1000000;
@@ -166,7 +168,23 @@ function toast({ ...props }: IToast) {
 }
 
 function useToast() {
+  const { t } = useTranslation();
   const [state, setState] = React.useState<IState>(memoryState);
+  const localizedToast = React.useCallback(
+    (props: IToast) =>
+      toast({
+        ...props,
+        description:
+          typeof props.description === "string"
+            ? translateText(t, props.description)
+            : props.description,
+        title:
+          typeof props.title === "string"
+            ? translateText(t, props.title)
+            : props.title,
+      }),
+    [t],
+  );
 
   React.useEffect(() => {
     listeners.push(setState);
@@ -180,7 +198,7 @@ function useToast() {
 
   return {
     ...state,
-    toast,
+    toast: localizedToast,
     dismiss: (toastId?: string) => dispatch({ type: "DISMISS_TOAST", toastId }),
   };
 }

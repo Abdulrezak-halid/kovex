@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useGetPurchasesReport } from "@sme-erp/api-client";
+import { useTranslation } from "react-i18next";
 import { CPageHeader } from "@/components/CPageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,6 +16,7 @@ const fmt = (n: number) =>
   }).format(n);
 
 export default function CPurchasesReport() {
+  const { t } = useTranslation();
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [params, setParams] = useState<{ from?: string; to?: string }>({});
@@ -24,15 +26,15 @@ export default function CPurchasesReport() {
   return (
     <div className="p-6">
       <CPageHeader
-        title="Purchases Report"
-        description="Supplier spending analytics"
+        title={t("purchasesReport")}
+        description={t("supplierSpendingAnalytics")}
       />
 
       <Card className="mb-6">
         <CardContent className="pt-4">
           <div className="flex items-end gap-4">
             <div>
-              <Label className="text-xs">From</Label>
+              <Label className="text-xs">{t("from")}</Label>
               <Input
                 type="date"
                 className="mt-1 h-8 text-sm"
@@ -41,7 +43,7 @@ export default function CPurchasesReport() {
               />
             </div>
             <div>
-              <Label className="text-xs">To</Label>
+              <Label className="text-xs">{t("to")}</Label>
               <Input
                 type="date"
                 className="mt-1 h-8 text-sm"
@@ -55,7 +57,7 @@ export default function CPurchasesReport() {
                 setParams({ from: from || undefined, to: to || undefined })
               }
             >
-              Apply
+              {t("apply")}
             </Button>
             <Button
               size="sm"
@@ -66,7 +68,7 @@ export default function CPurchasesReport() {
                 setParams({});
               }}
             >
-              Clear
+              {t("clear")}
             </Button>
           </div>
         </CardContent>
@@ -76,7 +78,7 @@ export default function CPurchasesReport() {
         <Card>
           <CardContent className="p-5">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-              Total Spent
+              {t("totalSpent")}
             </p>
             {isLoading ? (
               <Skeleton className="h-7 w-32 mt-1.5" />
@@ -90,7 +92,7 @@ export default function CPurchasesReport() {
         <Card>
           <CardContent className="p-5">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-              Purchase Orders
+              {t("purchaseOrders")}
             </p>
             {isLoading ? (
               <Skeleton className="h-7 w-20 mt-1.5" />
@@ -107,7 +109,7 @@ export default function CPurchasesReport() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold">
-              Top Suppliers
+              {t("topSuppliers")}
             </CardTitle>
           </CardHeader>
           <CardContent className="px-0">
@@ -115,13 +117,13 @@ export default function CPurchasesReport() {
               <thead>
                 <tr className="border-b border-border">
                   <th className="px-6 py-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    Supplier
+                    {t("supplier")}
                   </th>
                   <th className="px-6 py-2 text-right text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    Orders
+                    {t("orders")}
                   </th>
                   <th className="px-6 py-2 text-right text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    Total Purchased
+                    {t("totalPurchased")}
                   </th>
                 </tr>
               </thead>

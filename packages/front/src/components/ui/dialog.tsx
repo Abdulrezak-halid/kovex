@@ -3,6 +3,7 @@ import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { X } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { useLocalizedChildren } from "@/components/CLocalizedText"
 
 const Dialog = DialogPrimitive.Root
 
@@ -82,28 +83,40 @@ DialogFooter.displayName = "DialogFooter"
 const DialogTitle = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Title>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>
->(({ className, ...props }, ref) => (
-  <DialogPrimitive.Title
-    ref={ref}
-    className={cn(
-      "text-lg font-semibold leading-none tracking-tight",
-      className
-    )}
-    {...props}
-  />
-))
+>(({ className, children, ...props }, ref) => {
+  const localizeChildren = useLocalizedChildren()
+
+  return (
+    <DialogPrimitive.Title
+      ref={ref}
+      className={cn(
+        "text-lg font-semibold leading-none tracking-tight",
+        className
+      )}
+      {...props}
+    >
+      {localizeChildren(children)}
+    </DialogPrimitive.Title>
+  )
+})
 DialogTitle.displayName = DialogPrimitive.Title.displayName
 
 const DialogDescription = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Description>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>
->(({ className, ...props }, ref) => (
-  <DialogPrimitive.Description
-    ref={ref}
-    className={cn("text-sm text-muted-foreground", className)}
-    {...props}
-  />
-))
+>(({ className, children, ...props }, ref) => {
+  const localizeChildren = useLocalizedChildren()
+
+  return (
+    <DialogPrimitive.Description
+      ref={ref}
+      className={cn("text-sm text-muted-foreground", className)}
+      {...props}
+    >
+      {localizeChildren(children)}
+    </DialogPrimitive.Description>
+  )
+})
 DialogDescription.displayName = DialogPrimitive.Description.displayName
 
 export {

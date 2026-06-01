@@ -1,11 +1,19 @@
 import * as React from "react"
+import { useTranslation } from "react-i18next"
 
 import { cn } from "@/lib/utils"
+import { translateText } from "@/lib/i18n"
 
 const Textarea = React.forwardRef<
   HTMLTextAreaElement,
   React.ComponentProps<"textarea">
 >(({ className, ...props }, ref) => {
+  const { t } = useTranslation()
+  const placeholder =
+    typeof props.placeholder === "string"
+      ? translateText(t, props.placeholder)
+      : props.placeholder
+
   return (
     <textarea
       className={cn(
@@ -14,6 +22,7 @@ const Textarea = React.forwardRef<
       )}
       ref={ref}
       {...props}
+      placeholder={placeholder}
     />
   )
 })

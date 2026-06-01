@@ -1,4 +1,5 @@
 import { useGetInventoryReport } from "@sme-erp/api-client";
+import { useTranslation } from "react-i18next";
 import { CPageHeader } from "@/components/CPageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -12,21 +13,22 @@ const fmt = (n: number) =>
   }).format(n);
 
 export default function CInventoryReport() {
+  const { t } = useTranslation();
   const { data, isLoading } = useGetInventoryReport();
 
   return (
     <div className="p-6">
       <CPageHeader
-        title="Inventory Report"
-        description="Stock levels and valuation"
+        title={t("inventoryReport")}
+        description={t("stockLevelsAndValuation")}
       />
 
       <div className="grid grid-cols-3 gap-4 mb-6">
         {[
-          { label: "Total Products", value: data?.totalProducts },
-          { label: "Low Stock Items", value: data?.lowStockCount },
+          { label: t("totalProducts"), value: data?.totalProducts },
+          { label: t("lowStockItems"), value: data?.lowStockCount },
           {
-            label: "Total Stock Value",
+            label: t("totalStockValue"),
             value: data ? fmt(data.totalStockValue) : undefined,
           },
         ].map(({ label, value }) => (
@@ -47,19 +49,19 @@ export default function CInventoryReport() {
 
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-semibold">Products</CardTitle>
+          <CardTitle className="text-sm font-semibold">{t("products")}</CardTitle>
         </CardHeader>
         <CardContent className="px-0">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border">
                 {[
-                  "Product",
-                  "SKU",
-                  "Stock",
-                  "Min Stock",
-                  "Stock Value",
-                  "Status",
+                  t("product"),
+                  t("sku"),
+                  t("stock"),
+                  t("minStock"),
+                  t("stockValue"),
+                  t("status"),
                 ].map((h) => (
                   <th
                     key={h}
@@ -95,11 +97,11 @@ export default function CInventoryReport() {
                       <td className="px-6 py-2.5">
                         {r.totalStock <= r.minimumStock ? (
                           <Badge variant="destructive" className="text-xs">
-                            Low Stock
+                            {t("lowStock")}
                           </Badge>
                         ) : (
                           <Badge variant="secondary" className="text-xs">
-                            OK
+                            {t("ok")}
                           </Badge>
                         )}
                       </td>
