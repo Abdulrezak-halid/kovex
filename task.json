@@ -1,5 +1,5 @@
 {
-  "project": "SME ERP System",
+  "project": "Kovex ERP",
   "defaultRunCommand": "npm run dev",
   "services": {
     "front": {

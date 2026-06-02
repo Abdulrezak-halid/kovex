@@ -1,4 +1,4 @@
-SME ERP System - Sprint 1 OpenAPI Coverage Review
+Kovex ERP - Sprint 1 OpenAPI Coverage Review
 
 Date: 2026-05-31
 OpenAPI file: packages/api-contract/openapi.yaml

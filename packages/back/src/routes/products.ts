@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db, productsTable } from "@sme-erp/database";
-import { eq, ilike } from "drizzle-orm";
+import { eq, ilike, or } from "drizzle-orm";
 import { ListProductsQueryParams, CreateProductBody, UpdateProductBody, GetProductParams, DeleteProductParams, UpdateProductParams } from "@sme-erp/api-validation";
 
 const router = Router();
@@ -9,7 +9,12 @@ router.get("/products", async (req, res) => {
   try {
     const query = ListProductsQueryParams.parse(req.query);
     const rows = query.search
-      ? await db.select().from(productsTable).where(ilike(productsTable.name, `%${query.search}%`))
+      ? await db.select().from(productsTable).where(or(
+          ilike(productsTable.name, `%${query.search}%`),
+          ilike(productsTable.sku, `%${query.search}%`),
+          ilike(productsTable.description, `%${query.search}%`),
+          ilike(productsTable.unit, `%${query.search}%`),
+        ))
       : await db.select().from(productsTable);
     res.json(rows.map((r) => ({ ...r, price: Number(r.price), cost: r.cost ? Number(r.cost) : null })));
   } catch (err) {

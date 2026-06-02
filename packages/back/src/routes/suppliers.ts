@@ -1,7 +1,14 @@
 import { Router } from "express";
 import { db, suppliersTable } from "@sme-erp/database";
-import { eq, ilike } from "drizzle-orm";
-import { ListSuppliersQueryParams, CreateSupplierBody, UpdateSupplierBody, GetSupplierParams, DeleteSupplierParams, UpdateSupplierParams } from "@sme-erp/api-validation";
+import { eq, ilike, or } from "drizzle-orm";
+import {
+  ListSuppliersQueryParams,
+  CreateSupplierBody,
+  UpdateSupplierBody,
+  GetSupplierParams,
+  DeleteSupplierParams,
+  UpdateSupplierParams,
+} from "@sme-erp/api-validation";
 
 const router = Router();
 
@@ -9,7 +16,17 @@ router.get("/suppliers", async (req, res) => {
   try {
     const query = ListSuppliersQueryParams.parse(req.query);
     const rows = query.search
-      ? await db.select().from(suppliersTable).where(ilike(suppliersTable.name, `%${query.search}%`))
+      ? await db
+          .select()
+          .from(suppliersTable)
+          .where(
+            or(
+              ilike(suppliersTable.name, `%${query.search}%`),
+              ilike(suppliersTable.company, `%${query.search}%`),
+              ilike(suppliersTable.email, `%${query.search}%`),
+              ilike(suppliersTable.phone, `%${query.search}%`),
+            ),
+          )
       : await db.select().from(suppliersTable);
     res.json(rows);
   } catch (err) {
@@ -32,7 +49,10 @@ router.post("/suppliers", async (req, res) => {
 router.get("/suppliers/:id", async (req, res) => {
   try {
     const { id } = GetSupplierParams.parse({ id: Number(req.params.id) });
-    const [row] = await db.select().from(suppliersTable).where(eq(suppliersTable.id, id));
+    const [row] = await db
+      .select()
+      .from(suppliersTable)
+      .where(eq(suppliersTable.id, id));
     if (!row) return res.status(404).json({ error: "Not found" });
     res.json(row);
   } catch (err) {
@@ -45,7 +65,11 @@ router.patch("/suppliers/:id", async (req, res) => {
   try {
     const { id } = UpdateSupplierParams.parse({ id: Number(req.params.id) });
     const body = UpdateSupplierBody.parse(req.body);
-    const [row] = await db.update(suppliersTable).set(body).where(eq(suppliersTable.id, id)).returning();
+    const [row] = await db
+      .update(suppliersTable)
+      .set(body)
+      .where(eq(suppliersTable.id, id))
+      .returning();
     if (!row) return res.status(404).json({ error: "Not found" });
     res.json(row);
   } catch (err) {

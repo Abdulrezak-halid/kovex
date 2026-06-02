@@ -1,4 +1,4 @@
-SME ERP System - Sprint 1 Real API Test Results
+Kovex ERP - Sprint 1 Real API Test Results
 
 Date: 2026-05-31
 Mode: Real backend + real PostgreSQL database

@@ -1,4 +1,4 @@
-SME ERP System - GitHub Project Sprint Tasks
+Kovex ERP - GitHub Project Sprint Tasks
 
 Purpose
 
@@ -37,7 +37,7 @@ Priority: P0 Critical
 Sprint: Completed
 Labels: documentation, graduation
 Checkbox: [x]
-Goal: Define the project as SME ERP System, a simplified ERP for small and medium businesses.
+Goal: Define the project as Kovex ERP, a simplified ERP for small and medium businesses.
 Acceptance Criteria:
 - Project name is clear.
 - Project idea is documented.
@@ -883,7 +883,7 @@ Priority: P1 High
 Sprint: Sprint 6
 Labels: documentation, graduation
 Checkbox: [ ]
-Goal: Compare SME ERP System to similar ERP or business management systems.
+Goal: Compare Kovex ERP to similar ERP or business management systems.
 Acceptance Criteria:
 - At least two existing solutions are described.
 - Strengths/weaknesses are compared.

@@ -1,8 +1,17 @@
-SME ERP System - Project Summary Status
+Kovex ERP - Project Summary Status
 
 1. Project Name
 
-SME ERP System
+Kovex ERP
+
+Full Name:
+Kovex ERP
+
+Subtitle:
+Smart Business Management for SMEs
+
+Name Meaning:
+Kovex ERP is derived from KO, referring to KOBI, small and medium-sized businesses, and VEX, which gives the name a modern, technical, and scalable product identity.
 
 2. Project Goal
 
@@ -177,4 +186,4 @@ Add mobile support in the future.
 
 14. Final Summary
 
-The SME ERP System is currently organized, documented, installed, and runnable. The new structure is clear: packages/front contains the frontend, packages/back contains the backend server and API, and the remaining packages support database access, API contracts, generated clients, and validation. The project is ready for continued development, UI work, backend integration, and diagram creation.
+Kovex ERP is currently organized, documented, installed, and runnable. The new structure is clear: packages/front contains the frontend, packages/back contains the backend server and API, and the remaining packages support database access, API contracts, generated clients, and validation. The project is ready for continued development, UI work, backend integration, and diagram creation.

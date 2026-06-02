@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db, customersTable } from "@sme-erp/database";
-import { eq, ilike } from "drizzle-orm";
+import { eq, ilike, or } from "drizzle-orm";
 import { ListCustomersQueryParams, CreateCustomerBody, UpdateCustomerBody, GetCustomerParams, DeleteCustomerParams, UpdateCustomerParams } from "@sme-erp/api-validation";
 
 const router = Router();
@@ -9,7 +9,12 @@ router.get("/customers", async (req, res) => {
   try {
     const query = ListCustomersQueryParams.parse(req.query);
     const rows = query.search
-      ? await db.select().from(customersTable).where(ilike(customersTable.name, `%${query.search}%`))
+      ? await db.select().from(customersTable).where(or(
+          ilike(customersTable.name, `%${query.search}%`),
+          ilike(customersTable.company, `%${query.search}%`),
+          ilike(customersTable.email, `%${query.search}%`),
+          ilike(customersTable.phone, `%${query.search}%`),
+        ))
       : await db.select().from(customersTable);
     res.json(rows);
   } catch (err) {

@@ -1,4 +1,4 @@
-SME ERP System — Project Completion Checklist
+Kovex ERP — Project Completion Checklist
 Meaning of Marks
 Symbol Meaning
 ✅ Complete as per the summary
@@ -8,7 +8,9 @@ Symbol Meaning
 
 1. Basic Project Information
 Status Part Observation
-✅ Project Name: SME ERP System
+✅ Project Name: Kovex ERP
+✅ Project Subtitle: Smart Business Management for SMEs
+✅ Project Name Meaning: KO refers to KOBI, small and medium-sized businesses, while VEX gives the product a modern, technical, and scalable identity.
 ✅ Project Idea: Simplified ERP system for small and medium-sized enterprises (SMEs)
 ✅ Project Objective: Managing sales, purchasing, inventory, customers, suppliers, reports, planning, and users
 ✅ General Project Description: Exists and is clear
@@ -459,7 +461,7 @@ Presentation.
 Demo Video.
 
 The shortened version that you place in the Status
-SME ERP System - Checklist Status
+Kovex ERP - Checklist Status
 
 ✅ Completed:
 - Project name and goal defined

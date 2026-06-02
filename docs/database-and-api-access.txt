@@ -1,4 +1,4 @@
-SME ERP System - Database And API Access
+Kovex ERP - Database And API Access
 
 1. Database In DataGrip
 

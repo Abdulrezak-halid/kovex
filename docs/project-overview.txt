@@ -1,8 +1,8 @@
-📄 SME ERP System – Project Documentation
+📄 Kovex ERP – Project Documentation
 1. 🧠 Project Overview
 📌 System Name
 
-SME ERP System (Small Business ERP)
+Kovex ERP (Small Business ERP)
 
 📌 Description
 

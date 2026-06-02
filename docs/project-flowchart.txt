@@ -1,8 +1,17 @@
-SME ERP System - Project Explanation And Logical Flowchart
+Kovex ERP - Project Explanation And Logical Flowchart
 
 1. Project Purpose
 
-SME ERP System is a business management system for small and medium businesses. Its purpose is to collect the daily operational work of a company into one application: sales, purchases, inventory, planning, reports, and users.
+Kovex ERP is a business management system for small and medium businesses. Its purpose is to collect the daily operational work of a company into one application: sales, purchases, inventory, planning, reports, and users.
+
+Full Name:
+Kovex ERP
+
+Subtitle:
+Smart Business Management for SMEs
+
+Name Meaning:
+Kovex ERP is derived from KO, referring to KOBI, small and medium-sized businesses, and VEX, which gives the name a modern, technical, and scalable product identity.
 
 The system helps a business avoid scattered records in spreadsheets, paper, and messages. Instead, customers, suppliers, products, orders, invoices, stock, and reports are managed from one shared database.
 
@@ -158,4 +167,4 @@ PostgreSQL
 
 7. Summary For A Diagram Caption
 
-The SME ERP System uses a monorepo structure where packages/front contains the user interface and packages/back contains the server and REST API. The frontend communicates through a generated API client. The backend validates requests using generated validation schemas and persists business data through the database package. The OpenAPI contract connects the frontend and backend by generating shared client and validation code. Business workflows connect sales, purchases, and inventory so that invoices reduce stock, purchase invoices increase stock, and reports summarize operational data for the dashboard.
+Kovex ERP uses a monorepo structure where packages/front contains the user interface and packages/back contains the server and REST API. The frontend communicates through a generated API client. The backend validates requests using generated validation schemas and persists business data through the database package. The OpenAPI contract connects the frontend and backend by generating shared client and validation code. Business workflows connect sales, purchases, and inventory so that invoices reduce stock, purchase invoices increase stock, and reports summarize operational data for the dashboard.

@@ -1,6 +1,12 @@
-# SME ERP System
+# Kovex ERP
 
-SME ERP System is a TypeScript monorepo for small and medium businesses. It combines a React frontend, an Express REST API, generated API client/validation packages, and a PostgreSQL database layer built with Drizzle.
+Kovex ERP is a TypeScript monorepo for small and medium businesses. It combines a React frontend, an Express REST API, generated API client/validation packages, and a PostgreSQL database layer built with Drizzle.
+
+Full name: Kovex ERP
+
+Subtitle: Smart Business Management for SMEs
+
+The name Kovex ERP is derived from `KO`, referring to KOBI, small and medium-sized businesses, and `VEX`, which gives the product a modern, technical, and scalable identity.
 
 The project is organized so the main application code is easy to understand:
 

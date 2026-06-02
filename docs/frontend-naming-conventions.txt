@@ -1,4 +1,4 @@
-SME ERP System - Frontend Naming Conventions
+Kovex ERP - Frontend Naming Conventions
 
 1. Components And Pages
 
