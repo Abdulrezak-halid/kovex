@@ -215,16 +215,16 @@ function CSidebar({ onNavigate }: { onNavigate?: () => void }) {
             <div className="h-7 w-7 rounded-md flex items-center justify-center overflow-hidden">
               <img
                 src="/erp.png"
-                alt="SME ERP"
+                alt={t("appName")}
                 className="h-full w-full object-cover"
               />
             </div>
             <div>
               <p className="text-sm font-semibold text-sidebar-foreground leading-tight">
-                SME ERP
+                {t("appName")}
               </p>
               <p className="text-xs text-sidebar-foreground/50">
-                {t("businessOperations")}
+                {t("appSubtitle")}
               </p>
             </div>
           </div>
@@ -257,7 +257,12 @@ function CSidebar({ onNavigate }: { onNavigate?: () => void }) {
         ))}
       </nav>
       <div className="px-4 py-3 border-t border-sidebar-border">
-        <p className="text-xs text-sidebar-foreground/40">v1.0.0</p>
+        {/* <p className="text-xs text-sidebar-foreground/40">v1.0.0</p> */}
+        <img
+          src="/kovex-removebg.png"
+          alt={t("appName")}
+          className="w-auto items-baseline"
+        />
       </div>
     </div>
   );
@@ -265,6 +270,7 @@ function CSidebar({ onNavigate }: { onNavigate?: () => void }) {
 
 export function CAppLayout({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { t } = useTranslation();
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
@@ -300,7 +306,7 @@ export function CAppLayout({ children }: { children: React.ReactNode }) {
           >
             <Menu className="h-4 w-4" />
           </Button>
-          <span className="ml-3 text-sm font-semibold">SME ERP</span>
+          <span className="ml-3 text-sm font-semibold">{t("appName")}</span>
           <div className="ml-auto w-24">
             <CLanguageSwitch />
           </div>
