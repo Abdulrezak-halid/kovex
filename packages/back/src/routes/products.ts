@@ -2,6 +2,7 @@ import { Router } from "express";
 import { db, productsTable } from "@sme-erp/database";
 import { eq, ilike, or } from "drizzle-orm";
 import { ListProductsQueryParams, CreateProductBody, UpdateProductBody, GetProductParams, DeleteProductParams, UpdateProductParams } from "@sme-erp/api-validation";
+import { validationErrorMessage } from "./validation";
 
 const router = Router();
 
@@ -34,7 +35,7 @@ router.post("/products", async (req, res) => {
     res.status(201).json({ ...row, price: Number(row.price), cost: row.cost ? Number(row.cost) : null });
   } catch (err) {
     req.log.error({ err });
-    res.status(400).json({ error: "Invalid input" });
+    res.status(400).json({ error: validationErrorMessage(err) });
   }
 });
 
@@ -62,7 +63,7 @@ router.patch("/products/:id", async (req, res) => {
     res.json({ ...row, price: Number(row.price), cost: row.cost ? Number(row.cost) : null });
   } catch (err) {
     req.log.error({ err });
-    res.status(400).json({ error: "Invalid input" });
+    res.status(400).json({ error: validationErrorMessage(err) });
   }
 });
 

@@ -9,6 +9,7 @@ import {
   DeleteSupplierParams,
   UpdateSupplierParams,
 } from "@sme-erp/api-validation";
+import { validationErrorMessage } from "./validation";
 
 const router = Router();
 
@@ -42,7 +43,7 @@ router.post("/suppliers", async (req, res) => {
     res.status(201).json(row);
   } catch (err) {
     req.log.error({ err });
-    res.status(400).json({ error: "Invalid input" });
+    res.status(400).json({ error: validationErrorMessage(err) });
   }
 });
 
@@ -74,7 +75,7 @@ router.patch("/suppliers/:id", async (req, res) => {
     res.json(row);
   } catch (err) {
     req.log.error({ err });
-    res.status(400).json({ error: "Invalid input" });
+    res.status(400).json({ error: validationErrorMessage(err) });
   }
 });
 

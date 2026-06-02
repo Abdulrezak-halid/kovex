@@ -2,6 +2,7 @@ import { Router } from "express";
 import { db, customersTable } from "@sme-erp/database";
 import { eq, ilike, or } from "drizzle-orm";
 import { ListCustomersQueryParams, CreateCustomerBody, UpdateCustomerBody, GetCustomerParams, DeleteCustomerParams, UpdateCustomerParams } from "@sme-erp/api-validation";
+import { validationErrorMessage } from "./validation";
 
 const router = Router();
 
@@ -30,7 +31,7 @@ router.post("/customers", async (req, res) => {
     res.status(201).json(row);
   } catch (err) {
     req.log.error({ err });
-    res.status(400).json({ error: "Invalid input" });
+    res.status(400).json({ error: validationErrorMessage(err) });
   }
 });
 
@@ -55,7 +56,7 @@ router.patch("/customers/:id", async (req, res) => {
     res.json(row);
   } catch (err) {
     req.log.error({ err });
-    res.status(400).json({ error: "Invalid input" });
+    res.status(400).json({ error: validationErrorMessage(err) });
   }
 });
 

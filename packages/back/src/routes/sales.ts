@@ -12,6 +12,36 @@ function genRef(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 }
 
+async function decreaseStockForSale(
+  items: { productId: number; quantity: number; productName?: string }[],
+) {
+  for (const item of items) {
+    const stockRows = await db
+      .select()
+      .from(stockTable)
+      .where(eq(stockTable.productId, item.productId));
+    const available = stockRows.reduce((sum, row) => sum + row.quantity, 0);
+
+    if (available < item.quantity) {
+      const productLabel = item.productName || `product ${item.productId}`;
+      throw new Error(
+        `Insufficient stock for ${productLabel}. Available: ${available}, required: ${item.quantity}.`,
+      );
+    }
+
+    let remaining = item.quantity;
+    for (const row of stockRows) {
+      if (remaining <= 0) break;
+      const deducted = Math.min(row.quantity, remaining);
+      await db
+        .update(stockTable)
+        .set({ quantity: row.quantity - deducted })
+        .where(eq(stockTable.id, row.id));
+      remaining -= deducted;
+    }
+  }
+}
+
 // ── QUOTATIONS ────────────────────────────────────────────────────────────
 router.get("/quotations", async (req, res) => {
   try {
@@ -191,14 +221,6 @@ router.post("/orders", async (req, res) => {
     });
     const savedItems = await db.insert(orderItemsTable).values(itemRows).returning();
 
-    // Decrease stock for each item
-    for (const item of savedItems) {
-      const existing = await db.select().from(stockTable).where(eq(stockTable.productId, item.productId)).limit(1);
-      if (existing.length > 0) {
-        await db.update(stockTable).set({ quantity: Math.max(0, existing[0].quantity - item.quantity) }).where(eq(stockTable.id, existing[0].id));
-      }
-    }
-
     const customer = await db.select().from(customersTable).where(eq(customersTable.id, order.customerId));
     res.status(201).json({ ...order, totalAmount: Number(order.totalAmount), customerName: customer[0]?.name ?? "", items: savedItems.map((i) => ({ ...i, unitPrice: Number(i.unitPrice), total: Number(i.total) })) });
   } catch (err) {
@@ -257,6 +279,7 @@ router.post("/orders/:id/invoice", async (req, res) => {
     const [inv] = await db.insert(invoicesTable).values({ reference: genRef("INV"), customerId: o.customerId, orderId: o.id, totalAmount: o.totalAmount, notes: o.notes }).returning();
     const invItems = items.map((i) => ({ invoiceId: inv.id, productId: i.productId, productName: i.productName, quantity: i.quantity, unitPrice: i.unitPrice, total: i.total }));
     const savedItems = await db.insert(invoiceItemsTable).values(invItems).returning();
+    await db.update(ordersTable).set({ status: "delivered" }).where(eq(ordersTable.id, id));
     const customer = await db.select().from(customersTable).where(eq(customersTable.id, inv.customerId));
     res.status(201).json({ ...inv, totalAmount: Number(inv.totalAmount), customerName: customer[0]?.name ?? "", items: savedItems.map((i) => ({ ...i, unitPrice: Number(i.unitPrice), total: Number(i.total) })) });
   } catch (err) {
@@ -328,6 +351,14 @@ router.patch("/invoices/:id", async (req, res) => {
   try {
     const id = Number(req.params.id);
     const { status, dueDate, notes } = req.body;
+    const [current] = await db.select().from(invoicesTable).where(eq(invoicesTable.id, id));
+    if (!current) return res.status(404).json({ error: "Not found" });
+
+    if (status === "paid" && current.status !== "paid") {
+      const items = await db.select().from(invoiceItemsTable).where(eq(invoiceItemsTable.invoiceId, id));
+      await decreaseStockForSale(items);
+    }
+
     const updateData: Record<string, unknown> = {};
     if (status) updateData.status = status;
     if (dueDate !== undefined) updateData.dueDate = dueDate ? new Date(dueDate) : null;
@@ -339,7 +370,9 @@ router.patch("/invoices/:id", async (req, res) => {
     res.json({ ...inv, totalAmount: Number(inv.totalAmount), customerName: customer[0]?.name ?? "", items: items.map((i) => ({ ...i, unitPrice: Number(i.unitPrice), total: Number(i.total) })) });
   } catch (err) {
     req.log.error({ err });
-    res.status(400).json({ error: "Invalid input" });
+    res.status(400).json({
+      error: err instanceof Error ? err.message : "Invalid input",
+    });
   }
 });
 

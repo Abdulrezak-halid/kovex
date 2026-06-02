@@ -214,7 +214,7 @@ function CSidebar({ onNavigate }: { onNavigate?: () => void }) {
           <div className="flex items-center gap-2.5">
             <div className="h-7 w-7 rounded-md flex items-center justify-center overflow-hidden">
               <img
-                src="/erp.png"
+                src="/kovex-icon.png"
                 alt={t("appName")}
                 className="h-full w-full object-cover"
               />

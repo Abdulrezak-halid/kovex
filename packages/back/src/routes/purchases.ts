@@ -4,7 +4,7 @@ import {
   purchaseOrdersTable, purchaseOrderItemsTable, purchaseInvoicesTable,
   suppliersTable, productsTable, stockTable, warehousesTable,
 } from "@sme-erp/database";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, sql } from "drizzle-orm";
 
 const router = Router();
 
@@ -107,17 +107,24 @@ router.post("/purchase-orders/:id/receive", async (req, res) => {
     if (!po) return res.status(404).json({ error: "Not found" });
     const items = await db.select().from(purchaseOrderItemsTable).where(eq(purchaseOrderItemsTable.purchaseOrderId, id));
 
-    // Get or create default warehouse
-    let warehouses = await db.select().from(warehousesTable).limit(1);
+    let warehouses = req.body?.warehouseId
+      ? await db.select().from(warehousesTable).where(eq(warehousesTable.id, Number(req.body.warehouseId))).limit(1)
+      : await db.select().from(warehousesTable).limit(1);
     if (!warehouses.length) {
-      const [wh] = await db.insert(warehousesTable).values({ name: "Main Warehouse" }).returning();
-      warehouses = [wh];
+      if (req.body?.warehouseId) {
+        return res.status(400).json({ error: "Warehouse not found" });
+      }
+      const [warehouse] = await db.insert(warehousesTable).values({ name: "Main Warehouse" }).returning();
+      warehouses = [warehouse];
     }
     const whId = warehouses[0].id;
 
-    // Update stock for each item
     for (const item of items) {
-      const existing = await db.select().from(stockTable).where(eq(stockTable.productId, item.productId)).limit(1);
+      const existing = await db
+        .select()
+        .from(stockTable)
+        .where(sql`${stockTable.productId} = ${item.productId} and ${stockTable.warehouseId} = ${whId}`)
+        .limit(1);
       if (existing.length > 0) {
         await db.update(stockTable).set({ quantity: existing[0].quantity + item.quantity }).where(eq(stockTable.id, existing[0].id));
       } else {

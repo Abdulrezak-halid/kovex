@@ -288,11 +288,11 @@ Completion Note: OpenAPI coverage was reviewed against backend routes and docume
 Sprint 2 - Core ERP CRUD And Business Flows
 
 TASK-019 - Complete and test Customers CRUD with real backend
-Status: Ready
+Status: Completed
 Priority: P0 Critical
 Sprint: Sprint 2
 Labels: frontend, backend, database
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Make customers fully usable with PostgreSQL.
 Acceptance Criteria:
 - Create customer works.
@@ -300,13 +300,14 @@ Acceptance Criteria:
 - Update customer works.
 - Delete customer works.
 - Validation errors show clear messages.
+Completion Note: Verified in Sprint 2 real API sweep. See docs/sprint-2-real-api-test-results.txt.
 
 TASK-020 - Complete and test Suppliers CRUD with real backend
-Status: Ready
+Status: Completed
 Priority: P0 Critical
 Sprint: Sprint 2
 Labels: frontend, backend, database
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Make suppliers fully usable with PostgreSQL.
 Acceptance Criteria:
 - Create supplier works.
@@ -314,13 +315,14 @@ Acceptance Criteria:
 - Update supplier works.
 - Delete supplier works.
 - Validation errors show clear messages.
+Completion Note: Verified in Sprint 2 real API sweep. See docs/sprint-2-real-api-test-results.txt.
 
 TASK-021 - Complete and test Products CRUD with real backend
-Status: Ready
+Status: Completed
 Priority: P0 Critical
 Sprint: Sprint 2
 Labels: frontend, backend, database
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Make products fully usable with PostgreSQL.
 Acceptance Criteria:
 - Create product works.
@@ -328,26 +330,28 @@ Acceptance Criteria:
 - Update product works.
 - Delete product works.
 - Price/cost/minimum stock fields persist correctly.
+Completion Note: Verified in Sprint 2 real API sweep. See docs/sprint-2-real-api-test-results.txt.
 
 TASK-022 - Complete and test Warehouses CRUD with real backend
-Status: Ready
+Status: Completed
 Priority: P1 High
 Sprint: Sprint 2
 Labels: frontend, backend, database
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Make warehouses fully usable with PostgreSQL.
 Acceptance Criteria:
 - Create warehouse works.
 - List warehouses works.
 - Update warehouse works.
 - Delete warehouse works.
+Completion Note: Verified in Sprint 2 real API sweep. See docs/sprint-2-real-api-test-results.txt.
 
 TASK-023 - Complete and test Quotations CRUD
-Status: Ready
+Status: Completed
 Priority: P0 Critical
 Sprint: Sprint 2
 Labels: sales, frontend, backend
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Make quotations fully usable.
 Acceptance Criteria:
 - Create quotation with items works.
@@ -355,26 +359,28 @@ Acceptance Criteria:
 - Update quotation works.
 - Delete quotation works.
 - Quotation totals calculate correctly.
+Completion Note: Verified in Sprint 2 real API sweep. See docs/sprint-2-real-api-test-results.txt.
 
 TASK-024 - Implement Convert Quotation to Order
-Status: Ready
+Status: Completed
 Priority: P0 Critical
 Sprint: Sprint 2
 Labels: sales, backend, frontend
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Convert accepted quotations into sales orders.
 Acceptance Criteria:
 - Convert button exists.
 - Backend creates an order from quotation data.
 - Quotation status updates correctly.
 - New order appears in Orders page.
+Completion Note: Verified quotation conversion creates an order and marks quotation accepted.
 
 TASK-025 - Complete and test Orders CRUD
-Status: Ready
+Status: Completed
 Priority: P0 Critical
 Sprint: Sprint 2
 Labels: sales, frontend, backend
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Make sales orders fully usable.
 Acceptance Criteria:
 - Create order works.
@@ -382,26 +388,28 @@ Acceptance Criteria:
 - Update order status works.
 - Delete order works where allowed.
 - Order totals persist correctly.
+Completion Note: Verified in Sprint 2 real API sweep. See docs/sprint-2-real-api-test-results.txt.
 
 TASK-026 - Implement Convert Order to Invoice
-Status: Ready
+Status: Completed
 Priority: P0 Critical
 Sprint: Sprint 2
 Labels: sales, backend, frontend
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Convert sales orders into invoices.
 Acceptance Criteria:
 - Convert button exists.
 - Backend creates invoice from order data.
 - Invoice appears in Invoices page.
 - Order/invoice status updates correctly.
+Completion Note: Verified order conversion creates an invoice and updates order status to delivered.
 
 TASK-027 - Complete and test Invoices CRUD
-Status: Ready
+Status: Completed
 Priority: P0 Critical
 Sprint: Sprint 2
 Labels: sales, frontend, backend
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Make invoices fully usable.
 Acceptance Criteria:
 - Create invoice works.
@@ -409,13 +417,14 @@ Acceptance Criteria:
 - Update invoice status works.
 - Delete invoice works where allowed.
 - Invoice totals persist correctly.
+Completion Note: Verified create/list/update flows and invoice totals. Delete is not exposed for invoices.
 
 TASK-028 - Complete Purchase Orders CRUD
-Status: Ready
+Status: Completed
 Priority: P0 Critical
 Sprint: Sprint 2
 Labels: purchases, frontend, backend
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Make purchase orders fully usable.
 Acceptance Criteria:
 - Create purchase order works.
@@ -423,52 +432,56 @@ Acceptance Criteria:
 - Update purchase order works.
 - Delete purchase order works where allowed.
 - Purchase order totals calculate correctly.
+Completion Note: Verified purchase order CRUD and totals in Sprint 2 real API sweep.
 
 TASK-029 - Complete Purchase Invoices CRUD
-Status: Ready
+Status: Completed
 Priority: P0 Critical
 Sprint: Sprint 2
 Labels: purchases, frontend, backend
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Make purchase invoices fully usable.
 Acceptance Criteria:
 - Create purchase invoice works.
 - List purchase invoices works.
 - Update purchase invoice status works.
 - Delete purchase invoice works where allowed.
+Completion Note: Verified create/list/update flow. Delete is not exposed for purchase invoices.
 
 TASK-030 - Implement stock decrease after sale
-Status: Ready
+Status: Completed
 Priority: P0 Critical
 Sprint: Sprint 2
 Labels: inventory, sales, backend, database
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Reduce stock when a sale/invoice is completed.
 Acceptance Criteria:
 - Sales transaction reduces correct product stock.
 - Stock cannot become invalid without clear rule.
 - Stock page reflects updated quantity.
 - Inventory report updates.
+Completion Note: Stock now decreases when an invoice is marked paid and does not decrease twice for already paid invoices.
 
 TASK-031 - Implement stock increase after purchase
-Status: Ready
+Status: Completed
 Priority: P0 Critical
 Sprint: Sprint 2
 Labels: inventory, purchases, backend, database
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Increase stock when purchased goods are received.
 Acceptance Criteria:
 - Purchase transaction increases correct product stock.
 - Stock page reflects updated quantity.
 - Low stock alerts update.
 - Inventory report updates.
+Completion Note: Purchase receiving increases product stock in the selected warehouse.
 
 TASK-032 - Complete Planning projects/tasks with real backend
-Status: Ready
+Status: Completed
 Priority: P1 High
 Sprint: Sprint 2
 Labels: planning, frontend, backend
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Make projects, tasks, and progress tracking work with PostgreSQL.
 Acceptance Criteria:
 - Projects CRUD works.
@@ -476,18 +489,20 @@ Acceptance Criteria:
 - Tasks link to projects.
 - Project task count and completed count update.
 - Task filters work.
+Completion Note: Verified projects, tasks, counts, completed counts, and filters against PostgreSQL.
 
 TASK-033 - Link tasks to real users
-Status: Ready
+Status: Completed
 Priority: P2 Medium
 Sprint: Sprint 2
 Labels: planning, users
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Assign tasks to users stored in the database.
 Acceptance Criteria:
 - Assignee selector uses real users.
 - Task stores assigned user.
 - Task list shows assignee name.
+Completion Note: Verified task assignment stores real user id and returns assigneeName.
 
 Sprint 3 - Authentication, Authorization, And Security
 
