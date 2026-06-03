@@ -7,12 +7,14 @@ import { db } from "@sme-erp/database";
 import {
   ordersTable,
   customersTable,
+  invoicesTable,
   productsTable,
   stockTable,
   purchaseOrdersTable,
+  purchaseInvoicesTable,
   suppliersTable,
 } from "@sme-erp/database";
-import { eq, gte, lte } from "drizzle-orm";
+import { and, eq, gte, lte } from "drizzle-orm";
 
 const router = Router();
 
@@ -31,6 +33,16 @@ type PngImage = {
   height: number;
   rgb: Buffer;
   alpha: Buffer;
+};
+type SalesDocument = {
+  customerId: number;
+  createdAt: Date;
+  totalAmount: number;
+};
+type PurchaseDocument = {
+  supplierId: number;
+  createdAt: Date;
+  totalAmount: number;
 };
 
 const reportTypes = new Set<ReportType>(["sales", "inventory", "purchases"]);
@@ -65,9 +77,25 @@ function publicAssetPath(relativePath: string) {
 
 const iconPath = publicAssetPath("assets/images/icons/project-icon.png");
 
+function parseDateBoundary(value: string, boundary: "start" | "end") {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    if (boundary === "start") date.setHours(0, 0, 0, 0);
+    else date.setHours(23, 59, 59, 999);
+  }
+
+  return date;
+}
+
 function queryDateRange(query: Record<string, unknown>) {
-  const from = typeof query.from === "string" ? query.from : undefined;
-  const to = typeof query.to === "string" ? query.to : undefined;
+  const from =
+    typeof query.from === "string"
+      ? parseDateBoundary(query.from, "start")
+      : null;
+  const to =
+    typeof query.to === "string" ? parseDateBoundary(query.to, "end") : null;
   return { from, to };
 }
 
@@ -75,13 +103,47 @@ async function getSalesReport(query: Record<string, unknown>) {
   const { from, to } = queryDateRange(query);
 
   let ordersQuery = db.select().from(ordersTable).$dynamic();
-  if (from)
-    ordersQuery = ordersQuery.where(gte(ordersTable.createdAt, new Date(from)));
-  if (to)
-    ordersQuery = ordersQuery.where(lte(ordersTable.createdAt, new Date(to)));
+  const orderFilters = [
+    from ? gte(ordersTable.createdAt, from) : undefined,
+    to ? lte(ordersTable.createdAt, to) : undefined,
+  ].filter(Boolean);
+  if (orderFilters.length)
+    ordersQuery = ordersQuery.where(and(...orderFilters));
 
   const orders = await ordersQuery;
-  const totalRevenue = orders.reduce((s, o) => s + Number(o.totalAmount), 0);
+  let invoicesQuery = db.select().from(invoicesTable).$dynamic();
+  const invoiceFilters = [
+    from ? gte(invoicesTable.createdAt, from) : undefined,
+    to ? lte(invoicesTable.createdAt, to) : undefined,
+  ].filter(Boolean);
+  if (invoiceFilters.length)
+    invoicesQuery = invoicesQuery.where(and(...invoiceFilters));
+
+  const invoices = await invoicesQuery;
+  const invoicedOrderIds = new Set(
+    invoices
+      .map((invoice) => invoice.orderId)
+      .filter((orderId): orderId is number => orderId != null),
+  );
+  const salesDocuments: SalesDocument[] = [
+    ...invoices.map((invoice) => ({
+      customerId: invoice.customerId,
+      createdAt: invoice.createdAt,
+      totalAmount: Number(invoice.totalAmount),
+    })),
+    ...orders
+      .filter((order) => !invoicedOrderIds.has(order.id))
+      .map((order) => ({
+        customerId: order.customerId,
+        createdAt: order.createdAt,
+        totalAmount: Number(order.totalAmount),
+      })),
+  ];
+
+  const totalRevenue = salesDocuments.reduce(
+    (sum, document) => sum + document.totalAmount,
+    0,
+  );
   const totalOrders = orders.length;
 
   const byDate: Record<string, { ordersCount: number; revenue: number }> = {};
@@ -89,7 +151,11 @@ async function getSalesReport(query: Record<string, unknown>) {
     const d = new Date(o.createdAt).toISOString().split("T")[0];
     if (!byDate[d]) byDate[d] = { ordersCount: 0, revenue: 0 };
     byDate[d].ordersCount++;
-    byDate[d].revenue += Number(o.totalAmount);
+  }
+  for (const document of salesDocuments) {
+    const d = new Date(document.createdAt).toISOString().split("T")[0];
+    if (!byDate[d]) byDate[d] = { ordersCount: 0, revenue: 0 };
+    byDate[d].revenue += document.totalAmount;
   }
   const rows = Object.entries(byDate)
     .sort(([a], [b]) => a.localeCompare(b))
@@ -104,21 +170,24 @@ async function getSalesReport(query: Record<string, unknown>) {
       ordersCount: number;
     }
   > = {};
-  for (const o of orders) {
-    if (!customerSpend[o.customerId]) {
+  for (const document of salesDocuments) {
+    if (!customerSpend[document.customerId]) {
       const [c] = await db
         .select()
         .from(customersTable)
-        .where(eq(customersTable.id, o.customerId));
-      customerSpend[o.customerId] = {
-        customerId: o.customerId,
+        .where(eq(customersTable.id, document.customerId));
+      customerSpend[document.customerId] = {
+        customerId: document.customerId,
         customerName: c?.name ?? "",
         totalSpent: 0,
         ordersCount: 0,
       };
     }
-    customerSpend[o.customerId].totalSpent += Number(o.totalAmount);
-    customerSpend[o.customerId].ordersCount++;
+    customerSpend[document.customerId].totalSpent += document.totalAmount;
+  }
+  for (const order of orders) {
+    if (customerSpend[order.customerId])
+      customerSpend[order.customerId].ordersCount++;
   }
   const topCustomers = Object.values(customerSpend)
     .sort((a, b) => b.totalSpent - a.totalSpent)
@@ -135,7 +204,8 @@ async function getInventoryReport() {
     const totalStock = stockRows
       .filter((s) => s.productId === p.id)
       .reduce((sum, s) => sum + s.quantity, 0);
-    const stockValue = totalStock * Number(p.price);
+    const unitValue = Number(p.cost ?? p.price);
+    const stockValue = totalStock * unitValue;
     return {
       productId: p.id,
       productName: p.name,
@@ -163,15 +233,54 @@ async function getPurchasesReport(query: Record<string, unknown>) {
   const { from, to } = queryDateRange(query);
 
   let posQuery = db.select().from(purchaseOrdersTable).$dynamic();
-  if (from)
-    posQuery = posQuery.where(
-      gte(purchaseOrdersTable.createdAt, new Date(from)),
-    );
-  if (to)
-    posQuery = posQuery.where(lte(purchaseOrdersTable.createdAt, new Date(to)));
+  const purchaseOrderFilters = [
+    from ? gte(purchaseOrdersTable.createdAt, from) : undefined,
+    to ? lte(purchaseOrdersTable.createdAt, to) : undefined,
+  ].filter(Boolean);
+  if (purchaseOrderFilters.length)
+    posQuery = posQuery.where(and(...purchaseOrderFilters));
 
   const pos = await posQuery;
-  const totalSpent = pos.reduce((s, o) => s + Number(o.totalAmount), 0);
+  let purchaseInvoicesQuery = db
+    .select()
+    .from(purchaseInvoicesTable)
+    .$dynamic();
+  const purchaseInvoiceFilters = [
+    from ? gte(purchaseInvoicesTable.createdAt, from) : undefined,
+    to ? lte(purchaseInvoicesTable.createdAt, to) : undefined,
+  ].filter(Boolean);
+  if (purchaseInvoiceFilters.length)
+    purchaseInvoicesQuery = purchaseInvoicesQuery.where(
+      and(...purchaseInvoiceFilters),
+    );
+
+  const purchaseInvoices = await purchaseInvoicesQuery;
+  const invoicedPurchaseOrderIds = new Set(
+    purchaseInvoices
+      .map((invoice) => invoice.purchaseOrderId)
+      .filter(
+        (purchaseOrderId): purchaseOrderId is number => purchaseOrderId != null,
+      ),
+  );
+  const purchaseDocuments: PurchaseDocument[] = [
+    ...purchaseInvoices.map((invoice) => ({
+      supplierId: invoice.supplierId,
+      createdAt: invoice.createdAt,
+      totalAmount: Number(invoice.totalAmount),
+    })),
+    ...pos
+      .filter((po) => !invoicedPurchaseOrderIds.has(po.id))
+      .map((po) => ({
+        supplierId: po.supplierId,
+        createdAt: po.createdAt,
+        totalAmount: Number(po.totalAmount),
+      })),
+  ];
+
+  const totalSpent = purchaseDocuments.reduce(
+    (sum, document) => sum + document.totalAmount,
+    0,
+  );
   const totalPurchaseOrders = pos.length;
 
   const byDate: Record<
@@ -182,7 +291,11 @@ async function getPurchasesReport(query: Record<string, unknown>) {
     const d = new Date(po.createdAt).toISOString().split("T")[0];
     if (!byDate[d]) byDate[d] = { purchaseOrdersCount: 0, totalSpent: 0 };
     byDate[d].purchaseOrdersCount++;
-    byDate[d].totalSpent += Number(po.totalAmount);
+  }
+  for (const document of purchaseDocuments) {
+    const d = new Date(document.createdAt).toISOString().split("T")[0];
+    if (!byDate[d]) byDate[d] = { purchaseOrdersCount: 0, totalSpent: 0 };
+    byDate[d].totalSpent += document.totalAmount;
   }
   const rows = Object.entries(byDate)
     .sort(([a], [b]) => a.localeCompare(b))
@@ -197,21 +310,24 @@ async function getPurchasesReport(query: Record<string, unknown>) {
       ordersCount: number;
     }
   > = {};
-  for (const po of pos) {
-    if (!supplierSpend[po.supplierId]) {
+  for (const document of purchaseDocuments) {
+    if (!supplierSpend[document.supplierId]) {
       const [s] = await db
         .select()
         .from(suppliersTable)
-        .where(eq(suppliersTable.id, po.supplierId));
-      supplierSpend[po.supplierId] = {
-        supplierId: po.supplierId,
+        .where(eq(suppliersTable.id, document.supplierId));
+      supplierSpend[document.supplierId] = {
+        supplierId: document.supplierId,
         supplierName: s?.name ?? "",
         totalPurchased: 0,
         ordersCount: 0,
       };
     }
-    supplierSpend[po.supplierId].totalPurchased += Number(po.totalAmount);
-    supplierSpend[po.supplierId].ordersCount++;
+    supplierSpend[document.supplierId].totalPurchased += document.totalAmount;
+  }
+  for (const po of pos) {
+    if (supplierSpend[po.supplierId])
+      supplierSpend[po.supplierId].ordersCount++;
   }
   const topSuppliers = Object.values(supplierSpend)
     .sort((a, b) => b.totalPurchased - a.totalPurchased)

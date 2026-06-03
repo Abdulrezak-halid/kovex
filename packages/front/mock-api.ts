@@ -1793,37 +1793,111 @@ function productSales() {
     .slice(0, 6);
 }
 
-function salesReport() {
+function parseMockDateBoundary(
+  value: string | null,
+  boundary: "start" | "end",
+) {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    if (boundary === "start") date.setHours(0, 0, 0, 0);
+    else date.setHours(23, 59, 59, 999);
+  }
+
+  return date;
+}
+
+function inMockDateRange(
+  value: JsonValue | undefined,
+  from: Date | null,
+  to: Date | null,
+) {
+  const time = new Date(String(value)).getTime();
+  if (Number.isNaN(time)) return false;
+  if (from && time < from.getTime()) return false;
+  if (to && time > to.getTime()) return false;
+  return true;
+}
+
+function salesReport(searchParams?: URLSearchParams) {
+  const from = parseMockDateBoundary(
+    searchParams?.get("from") ?? null,
+    "start",
+  );
+  const to = parseMockDateBoundary(searchParams?.get("to") ?? null, "end");
+  const orders = mockOrders.filter((order) =>
+    inMockDateRange(order.createdAt, from, to),
+  );
+  const invoices = mockInvoices.filter((invoice) =>
+    inMockDateRange(invoice.createdAt, from, to),
+  );
+  const invoicedOrderIds = new Set(
+    invoices
+      .map((invoice) => Number(invoice.orderId))
+      .filter((orderId) => Number.isFinite(orderId) && orderId > 0),
+  );
+  const salesDocuments = [
+    ...invoices.map((invoice) => ({
+      customerId: Number(invoice.customerId),
+      createdAt: invoice.createdAt,
+      totalAmount: Number(invoice.totalAmount ?? 0),
+    })),
+    ...orders
+      .filter((order) => !invoicedOrderIds.has(Number(order.id)))
+      .map((order) => ({
+        customerId: Number(order.customerId),
+        createdAt: order.createdAt,
+        totalAmount: Number(order.totalAmount ?? 0),
+      })),
+  ];
   const byMonth = new Map<
     string,
     { date: string; ordersCount: number; revenue: number }
   >();
   const byCustomer = new Map<number, JsonObject>();
 
-  for (const order of mockOrders) {
+  for (const order of orders) {
     const date = String(order.createdAt).slice(0, 7);
     const month = byMonth.get(date) ?? { date, ordersCount: 0, revenue: 0 };
     month.ordersCount += 1;
-    month.revenue += Number(order.totalAmount ?? 0);
+    byMonth.set(date, month);
+  }
+
+  for (const document of salesDocuments) {
+    const date = String(document.createdAt).slice(0, 7);
+    const month = byMonth.get(date) ?? { date, ordersCount: 0, revenue: 0 };
+    month.revenue += document.totalAmount;
     byMonth.set(date, month);
 
-    const customerId = Number(order.customerId);
+    const customerId = Number(document.customerId);
     const customer = byCustomer.get(customerId) ?? {
       customerId,
-      customerName: order.customerName,
+      customerName:
+        mockCustomers.find((row) => row.id === customerId)?.name ?? "Customer",
       totalSpent: 0,
       ordersCount: 0,
     };
     customer.totalSpent = money(
-      Number(customer.totalSpent) + Number(order.totalAmount ?? 0),
+      Number(customer.totalSpent) + document.totalAmount,
     );
+    byCustomer.set(customerId, customer);
+  }
+
+  for (const order of orders) {
+    const customerId = Number(order.customerId);
+    const customer = byCustomer.get(customerId);
+    if (!customer) continue;
     customer.ordersCount = Number(customer.ordersCount) + 1;
     byCustomer.set(customerId, customer);
   }
 
   return {
-    totalRevenue: money(total(mockOrders, "totalAmount")),
-    totalOrders: mockOrders.length,
+    totalRevenue: money(
+      salesDocuments.reduce((sum, document) => sum + document.totalAmount, 0),
+    ),
+    totalOrders: orders.length,
     rows: [...byMonth.values()].map((row) => ({
       ...row,
       revenue: money(row.revenue),
@@ -1866,14 +1940,47 @@ function inventoryReport() {
   };
 }
 
-function purchasesReport() {
+function purchasesReport(searchParams?: URLSearchParams) {
+  const from = parseMockDateBoundary(
+    searchParams?.get("from") ?? null,
+    "start",
+  );
+  const to = parseMockDateBoundary(searchParams?.get("to") ?? null, "end");
+  const purchaseOrders = mockPurchaseOrders.filter((order) =>
+    inMockDateRange(order.createdAt, from, to),
+  );
+  const purchaseInvoices = mockPurchaseInvoices.filter((invoice) =>
+    inMockDateRange(invoice.createdAt, from, to),
+  );
+  const invoicedPurchaseOrderIds = new Set(
+    purchaseInvoices
+      .map((invoice) => Number(invoice.purchaseOrderId))
+      .filter(
+        (purchaseOrderId) =>
+          Number.isFinite(purchaseOrderId) && purchaseOrderId > 0,
+      ),
+  );
+  const purchaseDocuments = [
+    ...purchaseInvoices.map((invoice) => ({
+      supplierId: Number(invoice.supplierId),
+      createdAt: invoice.createdAt,
+      totalAmount: Number(invoice.totalAmount ?? 0),
+    })),
+    ...purchaseOrders
+      .filter((order) => !invoicedPurchaseOrderIds.has(Number(order.id)))
+      .map((order) => ({
+        supplierId: Number(order.supplierId),
+        createdAt: order.createdAt,
+        totalAmount: Number(order.totalAmount ?? 0),
+      })),
+  ];
   const byMonth = new Map<
     string,
     { date: string; purchaseOrdersCount: number; totalSpent: number }
   >();
   const bySupplier = new Map<number, JsonObject>();
 
-  for (const order of mockPurchaseOrders) {
+  for (const order of purchaseOrders) {
     const date = String(order.createdAt).slice(0, 7);
     const month = byMonth.get(date) ?? {
       date,
@@ -1881,26 +1988,49 @@ function purchasesReport() {
       totalSpent: 0,
     };
     month.purchaseOrdersCount += 1;
-    month.totalSpent += Number(order.totalAmount ?? 0);
+    byMonth.set(date, month);
+  }
+
+  for (const document of purchaseDocuments) {
+    const date = String(document.createdAt).slice(0, 7);
+    const month = byMonth.get(date) ?? {
+      date,
+      purchaseOrdersCount: 0,
+      totalSpent: 0,
+    };
+    month.totalSpent += document.totalAmount;
     byMonth.set(date, month);
 
-    const supplierId = Number(order.supplierId);
+    const supplierId = Number(document.supplierId);
     const supplier = bySupplier.get(supplierId) ?? {
       supplierId,
-      supplierName: order.supplierName,
+      supplierName:
+        mockSuppliers.find((row) => row.id === supplierId)?.name ?? "Supplier",
       totalPurchased: 0,
       ordersCount: 0,
     };
     supplier.totalPurchased = money(
-      Number(supplier.totalPurchased) + Number(order.totalAmount ?? 0),
+      Number(supplier.totalPurchased) + document.totalAmount,
     );
+    bySupplier.set(supplierId, supplier);
+  }
+
+  for (const order of purchaseOrders) {
+    const supplierId = Number(order.supplierId);
+    const supplier = bySupplier.get(supplierId);
+    if (!supplier) continue;
     supplier.ordersCount = Number(supplier.ordersCount) + 1;
     bySupplier.set(supplierId, supplier);
   }
 
   return {
-    totalSpent: money(total(mockPurchaseOrders, "totalAmount")),
-    totalPurchaseOrders: mockPurchaseOrders.length,
+    totalSpent: money(
+      purchaseDocuments.reduce(
+        (sum, document) => sum + document.totalAmount,
+        0,
+      ),
+    ),
+    totalPurchaseOrders: purchaseOrders.length,
     rows: [...byMonth.values()].map((row) => ({
       ...row,
       totalSpent: money(row.totalSpent),
@@ -1931,9 +2061,9 @@ function lowStockProducts() {
     .sort((a, b) => a.currentStock - b.currentStock);
 }
 
-function reportExportSections(path: string) {
+function reportExportSections(path: string, searchParams?: URLSearchParams) {
   if (path === "/api/reports/sales/export") {
-    const report = salesReport();
+    const report = salesReport(searchParams);
     return {
       reportType: "sales" as const,
       title: "Sales Report",
@@ -1999,7 +2129,7 @@ function reportExportSections(path: string) {
   }
 
   if (path === "/api/reports/purchases/export") {
-    const report = purchasesReport();
+    const report = purchasesReport(searchParams);
     return {
       reportType: "purchases" as const,
       title: "Purchases Report",
@@ -2037,7 +2167,10 @@ function reportExportSections(path: string) {
   return null;
 }
 
-function mockGet(path: string): JsonValue | undefined {
+function mockGet(
+  path: string,
+  searchParams = new URLSearchParams(),
+): JsonValue | undefined {
   if (path === "/api/healthz") return { status: "ok" };
 
   if (path === "/api/dashboard/summary") {
@@ -2121,10 +2254,10 @@ function mockGet(path: string): JsonValue | undefined {
   }
 
   if (path === "/api/reports/sales") {
-    return salesReport();
+    return salesReport(searchParams);
   }
   if (path === "/api/reports/inventory") return inventoryReport();
-  if (path === "/api/reports/purchases") return purchasesReport();
+  if (path === "/api/reports/purchases") return purchasesReport(searchParams);
 
   return undefined;
 }
@@ -2153,7 +2286,10 @@ export function mockApiPlugin(): Plugin {
         }
 
         if (req.method === "GET") {
-          const reportExport = reportExportSections(url.pathname);
+          const reportExport = reportExportSections(
+            url.pathname,
+            url.searchParams,
+          );
           const format = url.searchParams.get("format");
           if (reportExport) {
             if (format !== "pdf" && format !== "excel") {
@@ -2173,7 +2309,7 @@ export function mockApiPlugin(): Plugin {
             );
           }
 
-          const data = mockGet(url.pathname);
+          const data = mockGet(url.pathname, url.searchParams);
           if (data !== undefined) return sendJson(res, data);
           if (url.pathname === "/api/auth/me")
             return sendJson(res, { error: "Unauthenticated" }, 401);

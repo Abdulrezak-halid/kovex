@@ -657,11 +657,11 @@ Acceptance Criteria:
 Completion Note: Dashboard summary now calculates sales, orders, counters, pending items, and product-level low-stock alerts from live database tables.
 
 TASK-045 - Implement real sales report
-Status: In Progress
+Status: Completed
 Priority: P0 Critical
 Sprint: Sprint 4
 Labels: reports, sales, backend
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Sales report should be calculated from real orders/invoices.
 Acceptance Criteria:
 - Total revenue is correct.
@@ -669,32 +669,35 @@ Acceptance Criteria:
 - Date range filter works.
 - Top customers are calculated correctly.
 - Chart displays real rows.
+Completion Note: Sales report now calculates invoice-aware revenue, order counts, date-filtered trend rows, and top customers from database sales records.
 
 TASK-046 - Implement real purchase report
-Status: In Progress
+Status: Completed
 Priority: P0 Critical
 Sprint: Sprint 4
 Labels: reports, purchases, backend
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Purchase report should be calculated from real purchase orders/invoices.
 Acceptance Criteria:
 - Total purchases is correct.
 - Supplier totals are correct.
 - Date range filter works.
 - Chart displays real rows.
+Completion Note: Purchase report now calculates invoice-aware spend, purchase order counts, supplier totals, and date-filtered chart rows from database purchase records.
 
 TASK-047 - Implement real inventory report
-Status: In Progress
+Status: Completed
 Priority: P0 Critical
 Sprint: Sprint 4
 Labels: reports, inventory, backend
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Inventory report should use real stock/product data.
 Acceptance Criteria:
 - Total product count is correct.
 - Total stock value is correct.
 - Low stock count is correct.
 - Rows show product, stock, minimum stock, and value.
+Completion Note: Inventory report now uses database products and stock totals, cost-based valuation, low-stock counts, and product-level stock rows.
 
 TASK-048 - Add advanced report filters
 Status: In Progress
