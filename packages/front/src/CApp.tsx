@@ -1,4 +1,5 @@
-import { Switch, Route, Router as WouterRouter } from "wouter";
+import { useEffect } from "react";
+import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -23,6 +24,7 @@ import CUsers from "@/pages/settings/CUsers";
 import CProjects from "@/pages/planning/CProjects";
 import CProjectDetail from "@/pages/planning/CProjectDetail";
 import CTasks from "@/pages/planning/CTasks";
+import CForbidden from "@/pages/CForbidden";
 import CNotFound from "@/pages/CNotFound";
 
 const queryClient = new QueryClient({
@@ -36,6 +38,19 @@ const queryClient = new QueryClient({
 
 function CRouter() {
   const { loading, user, canManageUsers } = useCAuth();
+  const [location, setLocation] = useLocation();
+
+  useEffect(() => {
+    if (loading) return;
+
+    if (!user && location !== "/login") {
+      setLocation("/login");
+    }
+
+    if (user && location === "/login") {
+      setLocation("/");
+    }
+  }, [loading, location, setLocation, user]);
 
   if (loading) {
     return (
@@ -57,6 +72,7 @@ function CRouter() {
   return (
     <CAppLayout>
       <Switch>
+        <Route path="/login" component={CDashboard} />
         <Route path="/" component={CDashboard} />
         <Route path="/sales/customers" component={CCustomers} />
         <Route path="/sales/quotations" component={CQuotations} />
@@ -71,7 +87,10 @@ function CRouter() {
         <Route path="/reports/sales" component={CSalesReport} />
         <Route path="/reports/inventory" component={CInventoryReport} />
         <Route path="/reports/purchases" component={CPurchasesReport} />
-        {canManageUsers && <Route path="/settings/users" component={CUsers} />}
+        <Route
+          path="/settings/users"
+          component={canManageUsers ? CUsers : CForbidden}
+        />
         <Route path="/planning/projects" component={CProjects} />
         <Route path="/planning/projects/:id" component={CProjectDetail} />
         <Route path="/planning/tasks" component={CTasks} />
