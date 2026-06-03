@@ -8,6 +8,7 @@ import type { Invoice } from "@sme-erp/api-client";
 import { useQueryClient } from "@tanstack/react-query";
 import { CPageHeader } from "@/components/CPageHeader";
 import { CDataTable } from "@/components/CDataTable";
+import { CListQueryControls } from "@/components/CListQueryControls";
 import { CStatusBadge } from "@/components/CStatusBadge";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -38,11 +39,21 @@ export default function CInvoices() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Invoice | null>(null);
   const [status, setStatus] = useState("draft");
+  const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState("createdAt");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [limit, setLimit] = useState(100);
 
   const qc = useQueryClient();
   const { toast } = useToast();
 
-  const { data, isLoading } = useListInvoices();
+  const listParams = {
+    search: search || undefined,
+    sortBy,
+    sortOrder,
+    limit,
+  };
+  const { data, isLoading } = useListInvoices(listParams);
   const updateMutation = useUpdateInvoice();
 
   function openEdit(row: Invoice) {
@@ -118,6 +129,23 @@ export default function CInvoices() {
       <CPageHeader
         title="Invoices"
         description="View and manage sales invoices"
+      />
+      <CListQueryControls
+        search={search}
+        onSearchChange={setSearch}
+        sortBy={sortBy}
+        onSortByChange={setSortBy}
+        sortOrder={sortOrder}
+        onSortOrderChange={setSortOrder}
+        limit={limit}
+        onLimitChange={setLimit}
+        sortOptions={[
+          { value: "createdAt", label: "Date" },
+          { value: "dueDate", label: "Due Date" },
+          { value: "totalAmount", label: "Total" },
+          { value: "customerName", label: "Customer" },
+          { value: "status", label: "Status" },
+        ]}
       />
       <CDataTable
         columns={columns}

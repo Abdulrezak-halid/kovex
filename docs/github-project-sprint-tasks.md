@@ -741,17 +741,18 @@ Acceptance Criteria:
 - No raw technical errors are shown to users.
 
 TASK-051 - Add pagination/search/sorting where needed
-Status: In Progress
+Status: Completed
 Priority: P2 Medium
 Sprint: Sprint 4
 Labels: frontend, backend, performance
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Improve data-table usability and performance.
 Acceptance Criteria:
 - Large lists support pagination or reasonable limits.
 - Search exists on important list pages.
 - Sorting exists where useful.
 - Backend supports query parameters as needed.
+Completion Note: Important list pages now use backend query params for search, sort direction, sort field, and capped result limits, with shared frontend controls across master data and sales/purchase document lists.
 
 TASK-052 - Optimize performance
 Status: In Progress

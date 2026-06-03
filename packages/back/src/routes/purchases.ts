@@ -10,6 +10,7 @@ import {
   warehousesTable,
 } from "@sme-erp/database";
 import { and, eq, desc } from "drizzle-orm";
+import { applyListQuery, parseListQuery } from "./list-query";
 
 const router = Router();
 
@@ -40,10 +41,24 @@ router.get("/purchase-orders", async (req, res) => {
       )
       .orderBy(desc(purchaseOrdersTable.createdAt));
 
+    const options = parseListQuery(req.query);
     let filtered = rows;
     if (status) filtered = filtered.filter((r) => r.status === status);
     if (supplierId)
       filtered = filtered.filter((r) => r.supplierId === Number(supplierId));
+    filtered = applyListQuery(
+      filtered,
+      options,
+      ["reference", "supplierName", "status"],
+      {
+        reference: (row) => row.reference,
+        supplierName: (row) => row.supplierName,
+        status: (row) => row.status,
+        totalAmount: (row) => Number(row.totalAmount),
+        expectedDate: (row) => row.expectedDate,
+        createdAt: (row) => row.createdAt,
+      },
+    );
 
     const withItems = await Promise.all(
       filtered.map(async (po) => {
@@ -106,18 +121,16 @@ router.post("/purchase-orders", async (req, res) => {
       .select()
       .from(suppliersTable)
       .where(eq(suppliersTable.id, po.supplierId));
-    res
-      .status(201)
-      .json({
-        ...po,
-        totalAmount: Number(po.totalAmount),
-        supplierName: supplier[0]?.name ?? "",
-        items: savedItems.map((i) => ({
-          ...i,
-          unitCost: Number(i.unitCost),
-          total: Number(i.total),
-        })),
-      });
+    res.status(201).json({
+      ...po,
+      totalAmount: Number(po.totalAmount),
+      supplierName: supplier[0]?.name ?? "",
+      items: savedItems.map((i) => ({
+        ...i,
+        unitCost: Number(i.unitCost),
+        total: Number(i.total),
+      })),
+    });
   } catch (err) {
     req.log.error({ err });
     res.status(500).json({ error: "Internal server error" });
@@ -265,13 +278,11 @@ router.post("/purchase-orders/:id/receive", async (req, res) => {
           .set({ quantity: existing[0].quantity + item.quantity })
           .where(eq(stockTable.id, existing[0].id));
       } else {
-        await db
-          .insert(stockTable)
-          .values({
-            productId: item.productId,
-            warehouseId: whId,
-            quantity: item.quantity,
-          });
+        await db.insert(stockTable).values({
+          productId: item.productId,
+          warehouseId: whId,
+          quantity: item.quantity,
+        });
       }
     }
 
@@ -303,7 +314,7 @@ router.post("/purchase-orders/:id/receive", async (req, res) => {
 // ── PURCHASE INVOICES ─────────────────────────────────────────────────────
 router.get("/purchase-invoices", async (req, res) => {
   try {
-    const { status } = req.query as Record<string, string>;
+    const { status, supplierId } = req.query as Record<string, string>;
     const rows = await db
       .select({
         id: purchaseInvoicesTable.id,
@@ -324,8 +335,24 @@ router.get("/purchase-invoices", async (req, res) => {
       )
       .orderBy(desc(purchaseInvoicesTable.createdAt));
 
+    const options = parseListQuery(req.query);
     let filtered = rows;
     if (status) filtered = filtered.filter((r) => r.status === status);
+    if (supplierId)
+      filtered = filtered.filter((r) => r.supplierId === Number(supplierId));
+    filtered = applyListQuery(
+      filtered,
+      options,
+      ["reference", "supplierName", "status"],
+      {
+        reference: (row) => row.reference,
+        supplierName: (row) => row.supplierName,
+        status: (row) => row.status,
+        totalAmount: (row) => Number(row.totalAmount),
+        dueDate: (row) => row.dueDate,
+        createdAt: (row) => row.createdAt,
+      },
+    );
     res.json(
       filtered.map((r) => ({ ...r, totalAmount: Number(r.totalAmount) })),
     );
@@ -354,13 +381,11 @@ router.post("/purchase-invoices", async (req, res) => {
       .select()
       .from(suppliersTable)
       .where(eq(suppliersTable.id, inv.supplierId));
-    res
-      .status(201)
-      .json({
-        ...inv,
-        totalAmount: Number(inv.totalAmount),
-        supplierName: supplier[0]?.name ?? "",
-      });
+    res.status(201).json({
+      ...inv,
+      totalAmount: Number(inv.totalAmount),
+      supplierName: supplier[0]?.name ?? "",
+    });
   } catch (err) {
     req.log.error({ err });
     res.status(500).json({ error: "Internal server error" });

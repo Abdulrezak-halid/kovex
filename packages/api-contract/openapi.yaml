@@ -327,6 +327,21 @@ paths:
           in: query
           schema:
             type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+        - name: sortOrder
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
       responses:
         "200":
           description: List of customers
@@ -419,6 +434,21 @@ paths:
           in: query
           schema:
             type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+        - name: sortOrder
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
       responses:
         "200":
           description: List of suppliers
@@ -515,6 +545,21 @@ paths:
           in: query
           schema:
             type: ["integer", "null"]
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+        - name: sortOrder
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
       responses:
         "200":
           description: List of products
@@ -721,6 +766,25 @@ paths:
           in: query
           schema:
             type: ["integer", "null"]
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+        - name: sortOrder
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
       responses:
         "200":
           description: List of quotations
@@ -836,6 +900,25 @@ paths:
           in: query
           schema:
             type: ["integer", "null"]
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+        - name: sortOrder
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
       responses:
         "200":
           description: List of orders
@@ -951,6 +1034,25 @@ paths:
           in: query
           schema:
             type: ["integer", "null"]
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+        - name: sortOrder
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
       responses:
         "200":
           description: List of invoices
@@ -1035,6 +1137,25 @@ paths:
           in: query
           schema:
             type: ["integer", "null"]
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+        - name: sortOrder
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
       responses:
         "200":
           description: List of purchase orders
@@ -1146,6 +1267,29 @@ paths:
           in: query
           schema:
             type: ["string", "null"]
+        - name: supplierId
+          in: query
+          schema:
+            type: ["integer", "null"]
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+        - name: sortOrder
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
       responses:
         "200":
           description: List of purchase invoices

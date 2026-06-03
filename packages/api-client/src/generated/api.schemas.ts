@@ -481,11 +481,41 @@ export type ListTasksParams = {
 
 export type ListCustomersParams = {
   search?: string;
+  /**
+   * @minimum 1
+   * @maximum 500
+   */
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: ListCustomersSortOrder;
 };
+
+export type ListCustomersSortOrder =
+  (typeof ListCustomersSortOrder)[keyof typeof ListCustomersSortOrder];
+
+export const ListCustomersSortOrder = {
+  asc: "asc",
+  desc: "desc",
+} as const;
 
 export type ListSuppliersParams = {
   search?: string;
+  /**
+   * @minimum 1
+   * @maximum 500
+   */
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: ListSuppliersSortOrder;
 };
+
+export type ListSuppliersSortOrder =
+  (typeof ListSuppliersSortOrder)[keyof typeof ListSuppliersSortOrder];
+
+export const ListSuppliersSortOrder = {
+  asc: "asc",
+  desc: "desc",
+} as const;
 
 export type ListProductsParams = {
   search?: string;
@@ -493,7 +523,22 @@ export type ListProductsParams = {
    * @nullable
    */
   categoryId?: number | null;
+  /**
+   * @minimum 1
+   * @maximum 500
+   */
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: ListProductsSortOrder;
 };
+
+export type ListProductsSortOrder =
+  (typeof ListProductsSortOrder)[keyof typeof ListProductsSortOrder];
+
+export const ListProductsSortOrder = {
+  asc: "asc",
+  desc: "desc",
+} as const;
 
 export type ListStockParams = {
   /**
@@ -515,7 +560,23 @@ export type ListQuotationsParams = {
    * @nullable
    */
   customerId?: number | null;
+  search?: string;
+  /**
+   * @minimum 1
+   * @maximum 500
+   */
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: ListQuotationsSortOrder;
 };
+
+export type ListQuotationsSortOrder =
+  (typeof ListQuotationsSortOrder)[keyof typeof ListQuotationsSortOrder];
+
+export const ListQuotationsSortOrder = {
+  asc: "asc",
+  desc: "desc",
+} as const;
 
 export type ListOrdersParams = {
   /**
@@ -526,7 +587,23 @@ export type ListOrdersParams = {
    * @nullable
    */
   customerId?: number | null;
+  search?: string;
+  /**
+   * @minimum 1
+   * @maximum 500
+   */
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: ListOrdersSortOrder;
 };
+
+export type ListOrdersSortOrder =
+  (typeof ListOrdersSortOrder)[keyof typeof ListOrdersSortOrder];
+
+export const ListOrdersSortOrder = {
+  asc: "asc",
+  desc: "desc",
+} as const;
 
 export type ListInvoicesParams = {
   /**
@@ -537,7 +614,23 @@ export type ListInvoicesParams = {
    * @nullable
    */
   customerId?: number | null;
+  search?: string;
+  /**
+   * @minimum 1
+   * @maximum 500
+   */
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: ListInvoicesSortOrder;
 };
+
+export type ListInvoicesSortOrder =
+  (typeof ListInvoicesSortOrder)[keyof typeof ListInvoicesSortOrder];
+
+export const ListInvoicesSortOrder = {
+  asc: "asc",
+  desc: "desc",
+} as const;
 
 export type ListPurchaseOrdersParams = {
   /**
@@ -548,14 +641,50 @@ export type ListPurchaseOrdersParams = {
    * @nullable
    */
   supplierId?: number | null;
+  search?: string;
+  /**
+   * @minimum 1
+   * @maximum 500
+   */
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: ListPurchaseOrdersSortOrder;
 };
+
+export type ListPurchaseOrdersSortOrder =
+  (typeof ListPurchaseOrdersSortOrder)[keyof typeof ListPurchaseOrdersSortOrder];
+
+export const ListPurchaseOrdersSortOrder = {
+  asc: "asc",
+  desc: "desc",
+} as const;
 
 export type ListPurchaseInvoicesParams = {
   /**
    * @nullable
    */
   status?: string | null;
+  /**
+   * @nullable
+   */
+  supplierId?: number | null;
+  search?: string;
+  /**
+   * @minimum 1
+   * @maximum 500
+   */
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: ListPurchaseInvoicesSortOrder;
 };
+
+export type ListPurchaseInvoicesSortOrder =
+  (typeof ListPurchaseInvoicesSortOrder)[keyof typeof ListPurchaseInvoicesSortOrder];
+
+export const ListPurchaseInvoicesSortOrder = {
+  asc: "asc",
+  desc: "desc",
+} as const;
 
 export type GetSalesReportParams = {
   /**

@@ -14,6 +14,7 @@ import type { Order, OrderInput } from "@sme-erp/api-client";
 import { useQueryClient } from "@tanstack/react-query";
 import { CPageHeader } from "@/components/CPageHeader";
 import { CDataTable } from "@/components/CDataTable";
+import { CListQueryControls } from "@/components/CListQueryControls";
 import { CStatusBadge } from "@/components/CStatusBadge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -64,6 +65,10 @@ export default function COrders() {
   const [customerId, setCustomerId] = useState("");
   const [status, setStatus] = useState("pending");
   const [notes, setNotes] = useState("");
+  const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState("createdAt");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [limit, setLimit] = useState(100);
   const [items, setItems] = useState<
     {
       productId: number;
@@ -76,7 +81,13 @@ export default function COrders() {
   const qc = useQueryClient();
   const { toast } = useToast();
 
-  const { data, isLoading } = useListOrders();
+  const listParams = {
+    search: search || undefined,
+    sortBy,
+    sortOrder,
+    limit,
+  };
+  const { data, isLoading } = useListOrders(listParams);
   const { data: customers } = useListCustomers();
   const { data: products } = useListProducts();
   const createMutation = useCreateOrder();
@@ -192,7 +203,10 @@ export default function COrders() {
       ),
     },
     { header: "Customer", cell: (r: Order) => r.customerName },
-    { header: "Status", cell: (r: Order) => <CStatusBadge status={r.status} /> },
+    {
+      header: "Status",
+      cell: (r: Order) => <CStatusBadge status={r.status} />,
+    },
     {
       header: "Total",
       cell: (r: Order) => (
@@ -249,6 +263,23 @@ export default function COrders() {
             New Order
           </Button>
         }
+      />
+      <CListQueryControls
+        search={search}
+        onSearchChange={setSearch}
+        sortBy={sortBy}
+        onSortByChange={setSortBy}
+        sortOrder={sortOrder}
+        onSortOrderChange={setSortOrder}
+        limit={limit}
+        onLimitChange={setLimit}
+        sortOptions={[
+          { value: "createdAt", label: "Date" },
+          { value: "totalAmount", label: "Total" },
+          { value: "customerName", label: "Customer" },
+          { value: "status", label: "Status" },
+          { value: "reference", label: "Reference" },
+        ]}
       />
       <CDataTable
         columns={columns}

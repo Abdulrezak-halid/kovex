@@ -303,8 +303,13 @@ export const GetLowStockAlertsResponse = zod.array(
 /**
  * @summary List all customers
  */
+export const listCustomersQueryLimitMax = 500;
+
 export const ListCustomersQueryParams = zod.object({
   search: zod.coerce.string().optional(),
+  limit: zod.coerce.number().min(1).max(listCustomersQueryLimitMax).optional(),
+  sortBy: zod.coerce.string().optional(),
+  sortOrder: zod.enum(["asc", "desc"]).optional(),
 });
 
 export const ListCustomersResponseItem = zod.object({
@@ -372,8 +377,13 @@ export const DeleteCustomerParams = zod.object({
 /**
  * @summary List all suppliers
  */
+export const listSuppliersQueryLimitMax = 500;
+
 export const ListSuppliersQueryParams = zod.object({
   search: zod.coerce.string().optional(),
+  limit: zod.coerce.number().min(1).max(listSuppliersQueryLimitMax).optional(),
+  sortBy: zod.coerce.string().optional(),
+  sortOrder: zod.enum(["asc", "desc"]).optional(),
 });
 
 export const ListSuppliersResponseItem = zod.object({
@@ -441,9 +451,14 @@ export const DeleteSupplierParams = zod.object({
 /**
  * @summary List all products
  */
+export const listProductsQueryLimitMax = 500;
+
 export const ListProductsQueryParams = zod.object({
   search: zod.coerce.string().optional(),
   categoryId: zod.coerce.number().nullish(),
+  limit: zod.coerce.number().min(1).max(listProductsQueryLimitMax).optional(),
+  sortBy: zod.coerce.string().optional(),
+  sortOrder: zod.enum(["asc", "desc"]).optional(),
 });
 
 export const ListProductsResponseItem = zod.object({
@@ -590,9 +605,15 @@ export const ListStockResponse = zod.array(ListStockResponseItem);
 /**
  * @summary List all quotations
  */
+export const listQuotationsQueryLimitMax = 500;
+
 export const ListQuotationsQueryParams = zod.object({
   status: zod.coerce.string().nullish(),
   customerId: zod.coerce.number().nullish(),
+  search: zod.coerce.string().optional(),
+  limit: zod.coerce.number().min(1).max(listQuotationsQueryLimitMax).optional(),
+  sortBy: zod.coerce.string().optional(),
+  sortOrder: zod.enum(["asc", "desc"]).optional(),
 });
 
 export const ListQuotationsResponseItem = zod.object({
@@ -715,9 +736,15 @@ export const ConvertQuotationToOrderParams = zod.object({
 /**
  * @summary List all sales orders
  */
+export const listOrdersQueryLimitMax = 500;
+
 export const ListOrdersQueryParams = zod.object({
   status: zod.coerce.string().nullish(),
   customerId: zod.coerce.number().nullish(),
+  search: zod.coerce.string().optional(),
+  limit: zod.coerce.number().min(1).max(listOrdersQueryLimitMax).optional(),
+  sortBy: zod.coerce.string().optional(),
+  sortOrder: zod.enum(["asc", "desc"]).optional(),
 });
 
 export const ListOrdersResponseItem = zod.object({
@@ -829,9 +856,15 @@ export const CreateInvoiceFromOrderParams = zod.object({
 /**
  * @summary List all invoices
  */
+export const listInvoicesQueryLimitMax = 500;
+
 export const ListInvoicesQueryParams = zod.object({
   status: zod.coerce.string().nullish(),
   customerId: zod.coerce.number().nullish(),
+  search: zod.coerce.string().optional(),
+  limit: zod.coerce.number().min(1).max(listInvoicesQueryLimitMax).optional(),
+  sortBy: zod.coerce.string().optional(),
+  sortOrder: zod.enum(["asc", "desc"]).optional(),
 });
 
 export const ListInvoicesResponseItem = zod.object({
@@ -938,9 +971,19 @@ export const UpdateInvoiceResponse = zod.object({
 /**
  * @summary List all purchase orders
  */
+export const listPurchaseOrdersQueryLimitMax = 500;
+
 export const ListPurchaseOrdersQueryParams = zod.object({
   status: zod.coerce.string().nullish(),
   supplierId: zod.coerce.number().nullish(),
+  search: zod.coerce.string().optional(),
+  limit: zod.coerce
+    .number()
+    .min(1)
+    .max(listPurchaseOrdersQueryLimitMax)
+    .optional(),
+  sortBy: zod.coerce.string().optional(),
+  sortOrder: zod.enum(["asc", "desc"]).optional(),
 });
 
 export const ListPurchaseOrdersResponseItem = zod.object({
@@ -1078,8 +1121,19 @@ export const ReceivePurchaseOrderResponse = zod.object({
 /**
  * @summary List all purchase invoices
  */
+export const listPurchaseInvoicesQueryLimitMax = 500;
+
 export const ListPurchaseInvoicesQueryParams = zod.object({
   status: zod.coerce.string().nullish(),
+  supplierId: zod.coerce.number().nullish(),
+  search: zod.coerce.string().optional(),
+  limit: zod.coerce
+    .number()
+    .min(1)
+    .max(listPurchaseInvoicesQueryLimitMax)
+    .optional(),
+  sortBy: zod.coerce.string().optional(),
+  sortOrder: zod.enum(["asc", "desc"]).optional(),
 });
 
 export const ListPurchaseInvoicesResponseItem = zod.object({

@@ -1832,6 +1832,59 @@ function mockNumberParam(
     : null;
 }
 
+function applyMockListQuery(
+  rows: JsonObject[],
+  searchParams: URLSearchParams,
+  searchFields: string[],
+  sortFields: Record<string, string>,
+) {
+  const search = searchParams.get("search")?.trim().toLowerCase();
+  const status = searchParams.get("status");
+  const customerId = mockNumberParam(searchParams, "customerId");
+  const supplierId = mockNumberParam(searchParams, "supplierId");
+  const requestedLimit = Number(searchParams.get("limit") ?? 100);
+  const limit = Number.isFinite(requestedLimit)
+    ? Math.min(Math.max(Math.floor(requestedLimit), 1), 500)
+    : 100;
+  const sortBy = searchParams.get("sortBy") ?? "createdAt";
+  const sortOrder = searchParams.get("sortOrder") === "asc" ? 1 : -1;
+
+  let next = rows;
+  if (status) next = next.filter((row) => row.status === status);
+  if (customerId)
+    next = next.filter((row) => Number(row.customerId) === customerId);
+  if (supplierId)
+    next = next.filter((row) => Number(row.supplierId) === supplierId);
+  if (search) {
+    next = next.filter((row) =>
+      searchFields.some((field) =>
+        String(row[field] ?? "")
+          .toLowerCase()
+          .includes(search),
+      ),
+    );
+  }
+
+  const field = sortFields[sortBy] ?? sortFields.createdAt ?? sortFields.name;
+  if (field) {
+    next = [...next].sort((a, b) => {
+      const left = a[field] ?? "";
+      const right = b[field] ?? "";
+      const leftTime = new Date(String(left)).getTime();
+      const rightTime = new Date(String(right)).getTime();
+      if (!Number.isNaN(leftTime) && !Number.isNaN(rightTime)) {
+        return (leftTime - rightTime) * sortOrder;
+      }
+      if (typeof left === "number" && typeof right === "number") {
+        return (left - right) * sortOrder;
+      }
+      return String(left).localeCompare(String(right)) * sortOrder;
+    });
+  }
+
+  return next.slice(0, limit);
+}
+
 function salesReport(searchParams?: URLSearchParams) {
   const from = parseMockDateBoundary(
     searchParams?.get("from") ?? null,
@@ -2243,18 +2296,99 @@ function mockGet(
     return user ? { user: publicMockUser(user) } : undefined;
   }
 
-  if (path === "/api/customers") return mockCustomers;
-  if (path === "/api/products") return mockProducts;
-  if (path === "/api/suppliers") return mockSuppliers;
+  if (path === "/api/customers")
+    return applyMockListQuery(
+      mockCustomers,
+      searchParams,
+      ["name", "company", "email", "phone"],
+      { name: "name", company: "company", createdAt: "createdAt" },
+    );
+  if (path === "/api/products")
+    return applyMockListQuery(
+      mockProducts,
+      searchParams,
+      ["name", "sku", "description", "unit"],
+      { name: "name", sku: "sku", price: "price", createdAt: "createdAt" },
+    );
+  if (path === "/api/suppliers")
+    return applyMockListQuery(
+      mockSuppliers,
+      searchParams,
+      ["name", "company", "email", "phone"],
+      { name: "name", company: "company", createdAt: "createdAt" },
+    );
   if (path === "/api/warehouses") return mockWarehouses;
   if (path === "/api/users") return mockUsers.map(publicMockUser);
   if (path === "/api/projects") return mockProjects;
   if (path === "/api/tasks") return mockTasks;
-  if (path === "/api/quotations") return mockQuotations;
-  if (path === "/api/orders") return mockOrders;
-  if (path === "/api/invoices") return mockInvoices;
-  if (path === "/api/purchase-orders") return mockPurchaseOrders;
-  if (path === "/api/purchase-invoices") return mockPurchaseInvoices;
+  if (path === "/api/quotations")
+    return applyMockListQuery(
+      mockQuotations,
+      searchParams,
+      ["reference", "customerName", "status"],
+      {
+        reference: "reference",
+        customerName: "customerName",
+        status: "status",
+        totalAmount: "totalAmount",
+        createdAt: "createdAt",
+      },
+    );
+  if (path === "/api/orders")
+    return applyMockListQuery(
+      mockOrders,
+      searchParams,
+      ["reference", "customerName", "status"],
+      {
+        reference: "reference",
+        customerName: "customerName",
+        status: "status",
+        totalAmount: "totalAmount",
+        createdAt: "createdAt",
+      },
+    );
+  if (path === "/api/invoices")
+    return applyMockListQuery(
+      mockInvoices,
+      searchParams,
+      ["reference", "customerName", "status"],
+      {
+        reference: "reference",
+        customerName: "customerName",
+        status: "status",
+        totalAmount: "totalAmount",
+        dueDate: "dueDate",
+        createdAt: "createdAt",
+      },
+    );
+  if (path === "/api/purchase-orders")
+    return applyMockListQuery(
+      mockPurchaseOrders,
+      searchParams,
+      ["reference", "supplierName", "status"],
+      {
+        reference: "reference",
+        supplierName: "supplierName",
+        status: "status",
+        totalAmount: "totalAmount",
+        expectedDate: "expectedDate",
+        createdAt: "createdAt",
+      },
+    );
+  if (path === "/api/purchase-invoices")
+    return applyMockListQuery(
+      mockPurchaseInvoices,
+      searchParams,
+      ["reference", "supplierName", "status"],
+      {
+        reference: "reference",
+        supplierName: "supplierName",
+        status: "status",
+        totalAmount: "totalAmount",
+        dueDate: "dueDate",
+        createdAt: "createdAt",
+      },
+    );
 
   const projectIdForTasks = projectTasksPath(path);
   if (projectIdForTasks != null) {

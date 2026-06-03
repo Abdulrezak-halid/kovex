@@ -5,6 +5,7 @@
  * Kovex ERP API - Smart Business Management for SMEs
  * OpenAPI spec version: 0.1.0
  */
+import type { ListProductsSortOrder } from "./listProductsSortOrder";
 
 export type ListProductsParams = {
   search?: string;
@@ -12,4 +13,11 @@ export type ListProductsParams = {
    * @nullable
    */
   categoryId?: number | null;
+  /**
+   * @minimum 1
+   * @maximum 500
+   */
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: ListProductsSortOrder;
 };

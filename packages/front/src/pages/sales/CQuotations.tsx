@@ -14,6 +14,7 @@ import type { Quotation, QuotationInput } from "@sme-erp/api-client";
 import { useQueryClient } from "@tanstack/react-query";
 import { CPageHeader } from "@/components/CPageHeader";
 import { CDataTable } from "@/components/CDataTable";
+import { CListQueryControls } from "@/components/CListQueryControls";
 import { CStatusBadge } from "@/components/CStatusBadge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -58,6 +59,10 @@ export default function CQuotations() {
   const [customerId, setCustomerId] = useState("");
   const [status, setStatus] = useState("draft");
   const [notes, setNotes] = useState("");
+  const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState("createdAt");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [limit, setLimit] = useState(100);
   const [items, setItems] = useState<
     {
       productId: number;
@@ -70,7 +75,13 @@ export default function CQuotations() {
   const qc = useQueryClient();
   const { toast } = useToast();
 
-  const { data, isLoading } = useListQuotations();
+  const listParams = {
+    search: search || undefined,
+    sortBy,
+    sortOrder,
+    limit,
+  };
+  const { data, isLoading } = useListQuotations(listParams);
   const { data: customers } = useListCustomers();
   const { data: products } = useListProducts();
   const createMutation = useCreateQuotation();
@@ -250,6 +261,23 @@ export default function CQuotations() {
             New Quotation
           </Button>
         }
+      />
+      <CListQueryControls
+        search={search}
+        onSearchChange={setSearch}
+        sortBy={sortBy}
+        onSortByChange={setSortBy}
+        sortOrder={sortOrder}
+        onSortOrderChange={setSortOrder}
+        limit={limit}
+        onLimitChange={setLimit}
+        sortOptions={[
+          { value: "createdAt", label: "Date" },
+          { value: "totalAmount", label: "Total" },
+          { value: "customerName", label: "Customer" },
+          { value: "status", label: "Status" },
+          { value: "reference", label: "Reference" },
+        ]}
       />
       <CDataTable
         columns={columns}

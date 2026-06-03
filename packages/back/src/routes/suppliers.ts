@@ -10,6 +10,7 @@ import {
   UpdateSupplierParams,
 } from "@sme-erp/api-validation";
 import { validationErrorMessage } from "./validation";
+import { applyListQuery, parseListQuery } from "./list-query";
 
 const router = Router();
 
@@ -29,7 +30,14 @@ router.get("/suppliers", async (req, res) => {
             ),
           )
       : await db.select().from(suppliersTable);
-    res.json(rows);
+    const options = parseListQuery(req.query);
+    res.json(
+      applyListQuery(rows, options, ["name", "company", "email", "phone"], {
+        name: (row) => row.name,
+        company: (row) => row.company,
+        createdAt: (row) => row.createdAt,
+      }),
+    );
   } catch (err) {
     req.log.error({ err });
     res.status(500).json({ error: "Internal server error" });

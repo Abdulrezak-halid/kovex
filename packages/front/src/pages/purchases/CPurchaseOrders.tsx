@@ -13,6 +13,7 @@ import type { PurchaseOrder } from "@sme-erp/api-client";
 import { useQueryClient } from "@tanstack/react-query";
 import { CPageHeader } from "@/components/CPageHeader";
 import { CDataTable } from "@/components/CDataTable";
+import { CListQueryControls } from "@/components/CListQueryControls";
 import { CStatusBadge } from "@/components/CStatusBadge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -57,6 +58,10 @@ export default function CPurchaseOrders() {
   const [supplierId, setSupplierId] = useState("");
   const [status, setStatus] = useState("draft");
   const [notes, setNotes] = useState("");
+  const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState("createdAt");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [limit, setLimit] = useState(100);
   const [items, setItems] = useState<
     {
       productId: number;
@@ -69,7 +74,13 @@ export default function CPurchaseOrders() {
   const qc = useQueryClient();
   const { toast } = useToast();
 
-  const { data, isLoading } = useListPurchaseOrders();
+  const listParams = {
+    search: search || undefined,
+    sortBy,
+    sortOrder,
+    limit,
+  };
+  const { data, isLoading } = useListPurchaseOrders(listParams);
   const { data: suppliers } = useListSuppliers();
   const { data: products } = useListProducts();
   const createMutation = useCreatePurchaseOrder();
@@ -250,6 +261,23 @@ export default function CPurchaseOrders() {
             New PO
           </Button>
         }
+      />
+      <CListQueryControls
+        search={search}
+        onSearchChange={setSearch}
+        sortBy={sortBy}
+        onSortByChange={setSortBy}
+        sortOrder={sortOrder}
+        onSortOrderChange={setSortOrder}
+        limit={limit}
+        onLimitChange={setLimit}
+        sortOptions={[
+          { value: "createdAt", label: "Date" },
+          { value: "expectedDate", label: "Expected Date" },
+          { value: "totalAmount", label: "Total" },
+          { value: "supplierName", label: "Supplier" },
+          { value: "status", label: "Status" },
+        ]}
       />
       <CDataTable
         columns={columns}

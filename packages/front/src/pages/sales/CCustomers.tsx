@@ -11,6 +11,7 @@ import type { Customer, CustomerInput } from "@sme-erp/api-client";
 import { useQueryClient } from "@tanstack/react-query";
 import { CPageHeader } from "@/components/CPageHeader";
 import { CDataTable } from "@/components/CDataTable";
+import { CListQueryControls } from "@/components/CListQueryControls";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,7 +32,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Plus, Pencil, Trash2, Search } from "lucide-react";
+import { Plus, Pencil, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiErrorMessage } from "@/lib/api-error";
 
@@ -48,6 +49,9 @@ const emptyForm: Partial<CustomerInput> = {
 export default function CCustomers() {
   const { t } = useTranslation();
   const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState("name");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [limit, setLimit] = useState(100);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [editing, setEditing] = useState<ICustomerRow | null>(null);
@@ -56,7 +60,13 @@ export default function CCustomers() {
   const qc = useQueryClient();
   const { toast } = useToast();
 
-  const { data, isLoading } = useListCustomers({ search: search || undefined });
+  const listParams = {
+    search: search || undefined,
+    sortBy,
+    sortOrder,
+    limit,
+  };
+  const { data, isLoading } = useListCustomers(listParams);
   const createMutation = useCreateCustomer();
   const updateMutation = useUpdateCustomer();
   const deleteMutation = useDeleteCustomer();
@@ -179,15 +189,22 @@ export default function CCustomers() {
         }
       />
 
-      <div className="mb-4 relative w-64">
-        <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
-        <Input
-          placeholder={t("searchCustomers")}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="pl-8 h-8 text-sm"
-        />
-      </div>
+      <CListQueryControls
+        search={search}
+        onSearchChange={setSearch}
+        sortBy={sortBy}
+        onSortByChange={setSortBy}
+        sortOrder={sortOrder}
+        onSortOrderChange={setSortOrder}
+        limit={limit}
+        onLimitChange={setLimit}
+        searchPlaceholder={t("searchCustomers")}
+        sortOptions={[
+          { value: "name", label: t("name") },
+          { value: "company", label: t("company") },
+          { value: "createdAt", label: t("created") },
+        ]}
+      />
 
       <CDataTable
         columns={columns}
