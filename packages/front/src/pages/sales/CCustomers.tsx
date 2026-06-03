@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Plus, Pencil, Trash2, Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { apiErrorMessage } from "@/lib/api-error";
 
 type ICustomerRow = Customer;
 
@@ -89,10 +90,10 @@ export default function CCustomers() {
       }
       qc.invalidateQueries({ queryKey: getListCustomersQueryKey() });
       setDialogOpen(false);
-    } catch {
+    } catch (err) {
       toast({
         title: t("error"),
-        description: t("somethingWentWrong"),
+        description: apiErrorMessage(err),
         variant: "destructive",
       });
     }
@@ -104,10 +105,10 @@ export default function CCustomers() {
       await deleteMutation.mutateAsync({ id: deleteId });
       toast({ title: t("customerDeleted") });
       qc.invalidateQueries({ queryKey: getListCustomersQueryKey() });
-    } catch {
+    } catch (err) {
       toast({
         title: t("error"),
-        description: t("somethingWentWrong"),
+        description: apiErrorMessage(err),
         variant: "destructive",
       });
     } finally {

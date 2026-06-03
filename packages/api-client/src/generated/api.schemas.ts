@@ -347,6 +347,7 @@ export interface User {
 export interface UserInput {
   name: string;
   email: string;
+  password: string;
   role: string;
   department?: string;
   active?: boolean;
@@ -355,6 +356,7 @@ export interface UserInput {
 export interface UserUpdate {
   name?: string;
   email?: string;
+  password?: string;
   role?: string;
   department?: string;
   active?: boolean;

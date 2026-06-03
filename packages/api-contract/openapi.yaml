@@ -1425,7 +1425,8 @@ components:
           type: integer
         warehouseName:
           type: string
-      required: [productId, productName, sku, currentStock, minimumStock, warehouseName]
+      required:
+        [productId, productName, sku, currentStock, minimumStock, warehouseName]
 
     # Customer
     Customer:
@@ -1635,7 +1636,16 @@ components:
           type: integer
         minimumStock:
           type: integer
-      required: [productId, productName, sku, warehouseId, warehouseName, quantity, minimumStock]
+      required:
+        [
+          productId,
+          productName,
+          sku,
+          warehouseId,
+          warehouseName,
+          quantity,
+          minimumStock,
+        ]
 
     # Order Item
     OrderItem:
@@ -1692,7 +1702,17 @@ components:
             $ref: "#/components/schemas/OrderItem"
         createdAt:
           type: string
-      required: [id, reference, customerId, customerName, status, totalAmount, createdAt, items]
+      required:
+        [
+          id,
+          reference,
+          customerId,
+          customerName,
+          status,
+          totalAmount,
+          createdAt,
+          items,
+        ]
 
     QuotationInput:
       type: object
@@ -1749,7 +1769,17 @@ components:
             $ref: "#/components/schemas/OrderItem"
         createdAt:
           type: string
-      required: [id, reference, customerId, customerName, status, totalAmount, createdAt, items]
+      required:
+        [
+          id,
+          reference,
+          customerId,
+          customerName,
+          status,
+          totalAmount,
+          createdAt,
+          items,
+        ]
 
     OrderInput:
       type: object
@@ -1800,7 +1830,17 @@ components:
             $ref: "#/components/schemas/OrderItem"
         createdAt:
           type: string
-      required: [id, reference, customerId, customerName, status, totalAmount, createdAt, items]
+      required:
+        [
+          id,
+          reference,
+          customerId,
+          customerName,
+          status,
+          totalAmount,
+          createdAt,
+          items,
+        ]
 
     InvoiceInput:
       type: object
@@ -1883,7 +1923,17 @@ components:
             $ref: "#/components/schemas/PurchaseOrderItem"
         createdAt:
           type: string
-      required: [id, reference, supplierId, supplierName, status, totalAmount, createdAt, items]
+      required:
+        [
+          id,
+          reference,
+          supplierId,
+          supplierName,
+          status,
+          totalAmount,
+          createdAt,
+          items,
+        ]
 
     PurchaseOrderInput:
       type: object
@@ -1934,7 +1984,16 @@ components:
           type: ["string", "null"]
         createdAt:
           type: string
-      required: [id, reference, supplierId, supplierName, status, totalAmount, createdAt]
+      required:
+        [
+          id,
+          reference,
+          supplierId,
+          supplierName,
+          status,
+          totalAmount,
+          createdAt,
+        ]
 
     PurchaseInvoiceInput:
       type: object
@@ -1971,6 +2030,10 @@ components:
           type: string
         email:
           type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
         role:
           type: string
         department:
@@ -1994,7 +2057,7 @@ components:
           type: string
         active:
           type: boolean
-      required: [name, email, role]
+      required: [name, email, password, role]
 
     UserUpdate:
       type: object
@@ -2003,6 +2066,10 @@ components:
           type: string
         email:
           type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
         role:
           type: string
         department:
@@ -2067,7 +2134,8 @@ components:
           type: integer
         stockValue:
           type: number
-      required: [productId, productName, sku, totalStock, minimumStock, stockValue]
+      required:
+        [productId, productName, sku, totalStock, minimumStock, stockValue]
 
     InventoryReport:
       type: object
@@ -2157,7 +2225,8 @@ components:
           type: integer
         createdAt:
           type: string
-      required: [id, name, status, priority, taskCount, completedTaskCount, createdAt]
+      required:
+        [id, name, status, priority, taskCount, completedTaskCount, createdAt]
 
     ProjectInput:
       type: object

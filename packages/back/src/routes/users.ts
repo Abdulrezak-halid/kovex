@@ -1,7 +1,14 @@
-import { Router, type NextFunction, type Request, type Response } from "express";
+import {
+  Router,
+  type NextFunction,
+  type Request,
+  type Response,
+} from "express";
 import { db, usersTable } from "@sme-erp/database";
 import { eq } from "drizzle-orm";
+import { CreateUserBody, UpdateUserBody } from "@sme-erp/api-validation";
 import { hashPassword, isAdminRole, publicUser } from "../lib/auth";
+import { validationErrorResponse } from "./validation";
 
 const router = Router();
 const roles = new Set([
@@ -26,11 +33,29 @@ function validEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
+const CreateUserWithPasswordBody = CreateUserBody.extend({
+  password: CreateUserBody.shape.name.min(
+    8,
+    "Password must be at least 8 characters",
+  ),
+});
+
+const UpdateUserWithPasswordBody = UpdateUserBody.extend({
+  password: CreateUserBody.shape.name
+    .min(8, "Password must be at least 8 characters")
+    .optional(),
+});
+
 function validateUserInput(input: any, options: { creating: boolean }) {
-  const name = String(input.name ?? "").trim();
-  const email = String(input.email ?? "").trim().toLowerCase();
+  const parsed = options.creating
+    ? CreateUserWithPasswordBody.parse(input)
+    : UpdateUserWithPasswordBody.parse(input);
+  const name = String(parsed.name ?? input.name ?? "").trim();
+  const email = String(parsed.email ?? input.email ?? "")
+    .trim()
+    .toLowerCase();
   const password =
-    input.password === undefined ? undefined : String(input.password ?? "");
+    parsed.password === undefined ? undefined : String(parsed.password ?? "");
   const role = String(input.role ?? "user");
   const department =
     input.department === undefined || input.department === null
@@ -44,7 +69,12 @@ function validateUserInput(input: any, options: { creating: boolean }) {
   if (options.creating && (!password || password.length < 8)) {
     return { error: "Password must be at least 8 characters" };
   }
-  if (!options.creating && password !== undefined && password.length > 0 && password.length < 8) {
+  if (
+    !options.creating &&
+    password !== undefined &&
+    password.length > 0 &&
+    password.length < 8
+  ) {
     return { error: "Password must be at least 8 characters" };
   }
 
@@ -68,7 +98,8 @@ router.post("/users", requireAdmin, async (req, res) => {
 
     const { name, email, role, department, active } = parsed.value;
     const password = parsed.value.password;
-    if (!password) return res.status(400).json({ error: "Password is required" });
+    if (!password)
+      return res.status(400).json({ error: "Password is required" });
     const [row] = await db
       .insert(usersTable)
       .values({
@@ -83,13 +114,16 @@ router.post("/users", requireAdmin, async (req, res) => {
     res.status(201).json(publicUser(row));
   } catch (err) {
     req.log.error({ err });
-    res.status(400).json({ error: "Invalid input" });
+    res.status(400).json(validationErrorResponse(err));
   }
 });
 
 router.get("/users/:id", async (req, res) => {
   try {
-    const [row] = await db.select().from(usersTable).where(eq(usersTable.id, Number(req.params.id)));
+    const [row] = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.id, Number(req.params.id)));
     if (!row) return res.status(404).json({ error: "Not found" });
     res.json(publicUser(row));
   } catch (err) {
@@ -130,7 +164,7 @@ router.patch("/users/:id", requireAdmin, async (req, res) => {
     res.json(publicUser(row));
   } catch (err) {
     req.log.error({ err });
-    res.status(400).json({ error: "Invalid input" });
+    res.status(400).json(validationErrorResponse(err));
   }
 });
 
