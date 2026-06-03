@@ -1429,13 +1429,13 @@ function inventoryReport() {
       totalStock,
       minimumStock: product.minimumStock,
       unitCost,
-      totalValue: money(totalStock * unitCost),
+      stockValue: money(totalStock * unitCost),
     };
   });
 
   return {
     totalProducts: mockProducts.length,
-    totalStockValue: money(total(rows, "totalValue")),
+    totalStockValue: money(total(rows, "stockValue")),
     lowStockCount: rows.filter(
       (row) => Number(row.totalStock) <= Number(row.minimumStock),
     ).length,
@@ -1446,15 +1446,19 @@ function inventoryReport() {
 function purchasesReport() {
   const byMonth = new Map<
     string,
-    { date: string; ordersCount: number; purchases: number }
+    { date: string; purchaseOrdersCount: number; totalSpent: number }
   >();
   const bySupplier = new Map<number, JsonObject>();
 
   for (const order of mockPurchaseOrders) {
     const date = String(order.createdAt).slice(0, 7);
-    const month = byMonth.get(date) ?? { date, ordersCount: 0, purchases: 0 };
-    month.ordersCount += 1;
-    month.purchases += Number(order.totalAmount ?? 0);
+    const month = byMonth.get(date) ?? {
+      date,
+      purchaseOrdersCount: 0,
+      totalSpent: 0,
+    };
+    month.purchaseOrdersCount += 1;
+    month.totalSpent += Number(order.totalAmount ?? 0);
     byMonth.set(date, month);
 
     const supplierId = Number(order.supplierId);
@@ -1472,11 +1476,11 @@ function purchasesReport() {
   }
 
   return {
-    totalPurchases: money(total(mockPurchaseOrders, "totalAmount")),
-    totalOrders: mockPurchaseOrders.length,
+    totalSpent: money(total(mockPurchaseOrders, "totalAmount")),
+    totalPurchaseOrders: mockPurchaseOrders.length,
     rows: [...byMonth.values()].map((row) => ({
       ...row,
-      purchases: money(row.purchases),
+      totalSpent: money(row.totalSpent),
     })),
     topSuppliers: [...bySupplier.values()].sort(
       (a, b) => Number(b.totalPurchased) - Number(a.totalPurchased),
@@ -1544,7 +1548,7 @@ function reportExportSections(path: string) {
             String(row.sku),
             Number(row.totalStock),
             Number(row.minimumStock),
-            Number(row.totalValue),
+            Number(row.stockValue),
           ]),
         },
       ],
@@ -1561,8 +1565,8 @@ function reportExportSections(path: string) {
           title: "Summary",
           headers: ["Metric", "Value"],
           rows: [
-            ["Total Purchases", report.totalPurchases],
-            ["Purchase Orders", report.totalOrders],
+            ["Total Purchases", report.totalSpent],
+            ["Purchase Orders", report.totalPurchaseOrders],
           ],
         },
         {
@@ -1570,8 +1574,8 @@ function reportExportSections(path: string) {
           headers: ["Date", "Purchase Orders", "Total Spent"],
           rows: report.rows.map((row) => [
             String(row.date),
-            Number(row.ordersCount),
-            Number(row.purchases),
+            Number(row.purchaseOrdersCount),
+            Number(row.totalSpent),
           ]),
         },
         {
@@ -1695,7 +1699,8 @@ export function mockApiPlugin(): Plugin {
         if (!url.pathname.startsWith("/api")) return next();
 
         const publicPath =
-          url.pathname === "/api/healthz" || url.pathname.startsWith("/api/auth/");
+          url.pathname === "/api/healthz" ||
+          url.pathname.startsWith("/api/auth/");
         if (!publicPath && mockSessionUserId == null) {
           return sendJson(res, { error: "Unauthenticated" }, 401);
         }
@@ -1713,7 +1718,11 @@ export function mockApiPlugin(): Plugin {
           const format = url.searchParams.get("format");
           if (reportExport) {
             if (format !== "pdf" && format !== "excel") {
-              return sendJson(res, { error: "format must be pdf or excel" }, 400);
+              return sendJson(
+                res,
+                { error: "format must be pdf or excel" },
+                400,
+              );
             }
 
             return sendReportExport(
@@ -1813,7 +1822,9 @@ export function mockApiPlugin(): Plugin {
           }
           return sendJson(
             res,
-            basePath === "/api/users" ? publicMockUser(rows[index]) : rows[index],
+            basePath === "/api/users"
+              ? publicMockUser(rows[index])
+              : rows[index],
           );
         }
 

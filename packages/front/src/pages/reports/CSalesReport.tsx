@@ -16,10 +16,16 @@ import {
 import {
   BarChart,
   Bar,
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
+  Legend,
   ResponsiveContainer,
 } from "recharts";
 
@@ -29,6 +35,14 @@ const fmt = (n: number) =>
     currency: "USD",
     maximumFractionDigits: 0,
   }).format(n);
+
+const chartColors = [
+  "hsl(var(--primary))",
+  "hsl(var(--chart-2))",
+  "hsl(var(--chart-3))",
+  "hsl(var(--chart-4))",
+  "hsl(var(--chart-5))",
+];
 
 export default function CSalesReport() {
   const { t } = useTranslation();
@@ -49,6 +63,11 @@ export default function CSalesReport() {
       setExporting(null);
     }
   };
+  const topCustomerChartRows =
+    data?.topCustomers?.slice(0, 5).map((customer) => ({
+      name: customer.customerName,
+      value: customer.totalSpent,
+    })) ?? [];
 
   return (
     <div className="p-6">
@@ -153,10 +172,75 @@ export default function CSalesReport() {
       </div>
 
       {data?.rows && data.rows.length > 0 && (
+        <div className="grid gap-4 lg:grid-cols-2 mb-6">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-semibold">
+                {t("revenueOverTime")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={240}>
+                <LineChart data={data.rows}>
+                  <CartesianGrid strokeDasharray="3 3" className="opacity-50" />
+                  <XAxis dataKey="date" tick={{ fontSize: 11 }} />
+                  <YAxis
+                    tick={{ fontSize: 11 }}
+                    tickFormatter={(v) => `$${(Number(v) / 1000).toFixed(0)}k`}
+                  />
+                  <Tooltip formatter={(v) => fmt(Number(v))} />
+                  <Line
+                    type="monotone"
+                    dataKey="revenue"
+                    stroke="hsl(var(--primary))"
+                    strokeWidth={2.5}
+                    dot={{ r: 3, fill: "hsl(var(--primary))" }}
+                    activeDot={{ r: 5 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+          {topCustomerChartRows.length > 0 && (
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-semibold">
+                  {t("topCustomers")}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={240}>
+                  <PieChart>
+                    <Pie
+                      data={topCustomerChartRows}
+                      dataKey="value"
+                      nameKey="name"
+                      innerRadius={54}
+                      outerRadius={82}
+                      paddingAngle={3}
+                    >
+                      {topCustomerChartRows.map((entry, index) => (
+                        <Cell
+                          key={entry.name}
+                          fill={chartColors[index % chartColors.length]}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(v) => fmt(Number(v))} />
+                    <Legend wrapperStyle={{ fontSize: 12 }} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      )}
+
+      {data?.rows && data.rows.length > 0 && (
         <Card className="mb-6">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold">
-              {t("revenueOverTime")}
+              {t("revenue")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -166,7 +250,7 @@ export default function CSalesReport() {
                 <XAxis dataKey="date" tick={{ fontSize: 11 }} />
                 <YAxis
                   tick={{ fontSize: 11 }}
-                  tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
+                  tickFormatter={(v) => `$${(Number(v) / 1000).toFixed(0)}k`}
                 />
                 <Tooltip formatter={(v) => fmt(Number(v))} />
                 <Bar

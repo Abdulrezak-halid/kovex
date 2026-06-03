@@ -16,7 +16,7 @@ export function CSidebar({ onNavigate }: { onNavigate?: () => void }) {
           <div className="flex items-center gap-2.5">
             <div className="h-7 w-7 rounded-md flex items-center justify-center overflow-hidden">
               <img
-                src="/kovex-icon.png"
+                src="/assets/images/icons/project-icon.png"
                 alt={t("appName")}
                 className="h-full w-full object-cover"
               />
@@ -59,7 +59,7 @@ export function CSidebar({ onNavigate }: { onNavigate?: () => void }) {
       </nav>
       <div className="px-4 py-3 border-t border-sidebar-border">
         <img
-          src="/kovex-removebg.png"
+          src="/assets/images/logos/project-logo-horizontal.png"
           alt={t("appName")}
           className="w-auto items-baseline"
         />

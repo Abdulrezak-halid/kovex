@@ -13,6 +13,19 @@ import {
   downloadReportExport,
   type ReportExportFormat,
 } from "@/lib/report-export";
+import {
+  CartesianGrid,
+  Cell,
+  Legend,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 const fmt = (n: number) =>
   new Intl.NumberFormat("en-US", {
@@ -20,6 +33,14 @@ const fmt = (n: number) =>
     currency: "USD",
     maximumFractionDigits: 0,
   }).format(n);
+
+const chartColors = [
+  "hsl(var(--primary))",
+  "hsl(var(--chart-2))",
+  "hsl(var(--chart-3))",
+  "hsl(var(--chart-4))",
+  "hsl(var(--chart-5))",
+];
 
 export default function CPurchasesReport() {
   const { t } = useTranslation();
@@ -40,6 +61,11 @@ export default function CPurchasesReport() {
       setExporting(null);
     }
   };
+  const topSupplierChartRows =
+    data?.topSuppliers?.slice(0, 5).map((supplier) => ({
+      name: supplier.supplierName,
+      value: supplier.totalPurchased,
+    })) ?? [];
 
   return (
     <div className="p-6">
@@ -142,6 +168,78 @@ export default function CPurchasesReport() {
           </CardContent>
         </Card>
       </div>
+
+      {(data?.rows?.length || topSupplierChartRows.length) && (
+        <div className="grid gap-4 lg:grid-cols-2 mb-6">
+          {data?.rows && data.rows.length > 0 && (
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-semibold">
+                  {t("totalSpent")}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={240}>
+                  <LineChart data={data.rows}>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      className="opacity-50"
+                    />
+                    <XAxis dataKey="date" tick={{ fontSize: 11 }} />
+                    <YAxis
+                      tick={{ fontSize: 11 }}
+                      tickFormatter={(v) =>
+                        `$${(Number(v) / 1000).toFixed(0)}k`
+                      }
+                    />
+                    <Tooltip formatter={(v) => fmt(Number(v))} />
+                    <Line
+                      type="monotone"
+                      dataKey="totalSpent"
+                      stroke="hsl(var(--primary))"
+                      strokeWidth={2.5}
+                      dot={{ r: 3, fill: "hsl(var(--primary))" }}
+                      activeDot={{ r: 5 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          )}
+          {topSupplierChartRows.length > 0 && (
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-semibold">
+                  {t("topSuppliers")}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={240}>
+                  <PieChart>
+                    <Pie
+                      data={topSupplierChartRows}
+                      dataKey="value"
+                      nameKey="name"
+                      innerRadius={54}
+                      outerRadius={82}
+                      paddingAngle={3}
+                    >
+                      {topSupplierChartRows.map((entry, index) => (
+                        <Cell
+                          key={entry.name}
+                          fill={chartColors[index % chartColors.length]}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(v) => fmt(Number(v))} />
+                    <Legend wrapperStyle={{ fontSize: 12 }} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      )}
 
       {data?.topSuppliers && data.topSuppliers.length > 0 && (
         <Card>

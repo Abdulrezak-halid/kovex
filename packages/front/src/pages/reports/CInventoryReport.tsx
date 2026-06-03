@@ -12,6 +12,19 @@ import {
   downloadReportExport,
   type ReportExportFormat,
 } from "@/lib/report-export";
+import {
+  CartesianGrid,
+  Cell,
+  Legend,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 const fmt = (n: number) =>
   new Intl.NumberFormat("en-US", {
@@ -20,11 +33,28 @@ const fmt = (n: number) =>
     maximumFractionDigits: 0,
   }).format(n);
 
+const chartColors = [
+  "hsl(var(--primary))",
+  "hsl(var(--chart-2))",
+  "hsl(var(--chart-3))",
+  "hsl(var(--chart-4))",
+  "hsl(var(--chart-5))",
+];
+
 export default function CInventoryReport() {
   const { t } = useTranslation();
   const { toast } = useToast();
   const [exporting, setExporting] = useState<ReportExportFormat | null>(null);
   const { data, isLoading } = useGetInventoryReport();
+  const topStockValueRows =
+    data?.rows
+      ?.filter((row) => row.stockValue > 0)
+      .sort((a, b) => b.stockValue - a.stockValue)
+      .slice(0, 5)
+      .map((row) => ({
+        name: row.productName,
+        value: row.stockValue,
+      })) ?? [];
   const handleExport = async (format: ReportExportFormat) => {
     try {
       setExporting(format);
@@ -89,6 +119,87 @@ export default function CInventoryReport() {
           </Card>
         ))}
       </div>
+
+      {data?.rows && data.rows.length > 0 && (
+        <div className="grid gap-4 lg:grid-cols-2 mb-6">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-semibold">
+                {t("stockLevels")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={240}>
+                <LineChart data={data.rows.slice(0, 12)}>
+                  <CartesianGrid strokeDasharray="3 3" className="opacity-50" />
+                  <XAxis
+                    dataKey="sku"
+                    tick={{ fontSize: 11 }}
+                    interval="preserveStartEnd"
+                  />
+                  <YAxis tick={{ fontSize: 11 }} />
+                  <Tooltip
+                    formatter={(value, name) => [
+                      Number(value),
+                      name === "totalStock" ? t("stock") : t("minStock"),
+                    ]}
+                    labelFormatter={(label) => String(label)}
+                  />
+                  <Legend wrapperStyle={{ fontSize: 12 }} />
+                  <Line
+                    type="monotone"
+                    dataKey="totalStock"
+                    stroke="hsl(var(--primary))"
+                    strokeWidth={2.5}
+                    dot={{ r: 3, fill: "hsl(var(--primary))" }}
+                    activeDot={{ r: 5 }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="minimumStock"
+                    stroke="hsl(var(--chart-4))"
+                    strokeWidth={2}
+                    strokeDasharray="4 4"
+                    dot={false}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+          {topStockValueRows.length > 0 && (
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-semibold">
+                  {t("stockValue")}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={240}>
+                  <PieChart>
+                    <Pie
+                      data={topStockValueRows}
+                      dataKey="value"
+                      nameKey="name"
+                      innerRadius={54}
+                      outerRadius={82}
+                      paddingAngle={3}
+                    >
+                      {topStockValueRows.map((entry, index) => (
+                        <Cell
+                          key={entry.name}
+                          fill={chartColors[index % chartColors.length]}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(v) => fmt(Number(v))} />
+                    <Legend wrapperStyle={{ fontSize: 12 }} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      )}
 
       <Card>
         <CardHeader className="pb-2">
