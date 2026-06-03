@@ -1,4 +1,5 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
+import crypto from "node:crypto";
 import type { Plugin } from "vite";
 
 type JsonValue =
@@ -16,6 +17,38 @@ const daysAgo = (days: number) =>
 const dueIn = (days: number) =>
   new Date(Date.UTC(2026, 5, 1 + days, 9, 0, 0)).toISOString();
 const money = (value: number) => Number(value.toFixed(2));
+
+function hashMockPassword(password: string) {
+  const salt = crypto.randomBytes(12).toString("base64url");
+  const hash = crypto
+    .createHash("sha256")
+    .update(`${salt}:${password}`)
+    .digest("base64url");
+
+  return `mock-sha256:${salt}:${hash}`;
+}
+
+function verifyMockPassword(password: string, storedHash: unknown) {
+  if (typeof storedHash !== "string") return password === "admin123";
+
+  const [algorithm, salt, expectedHash] = storedHash.split(":");
+  if (algorithm !== "mock-sha256" || !salt || !expectedHash) return false;
+
+  const actualHash = crypto
+    .createHash("sha256")
+    .update(`${salt}:${password}`)
+    .digest("base64url");
+
+  return actualHash === expectedHash;
+}
+
+function publicMockUser(user: JsonObject) {
+  const { password, passwordHash, ...safeUser } = user;
+  void password;
+  void passwordHash;
+
+  return safeUser;
+}
 
 function item(productId: number, quantity: number) {
   const product = mockProducts.find((row) => row.id === productId);
@@ -391,6 +424,8 @@ const mockUsers: JsonObject[] = [
     createdAt: daysAgo(52),
   },
 ];
+
+let mockSessionUserId: number | null = null;
 
 const mockQuotations: JsonObject[] = [
   {
@@ -1073,6 +1108,12 @@ function withDefaults(
       mockUsers.find((user) => user.id === created.assignedTo)?.name ?? null;
   }
 
+  if (basePath === "/api/users") {
+    const password = String(created.password ?? "");
+    if (password) created.passwordHash = hashMockPassword(password);
+    delete created.password;
+  }
+
   return created;
 }
 
@@ -1289,11 +1330,16 @@ function mockGet(path: string): JsonValue | undefined {
       .map((stock) => ({ ...stock, currentStock: stock.quantity }));
   }
 
+  if (path === "/api/auth/me") {
+    const user = mockUsers.find((row) => row.id === mockSessionUserId);
+    return user ? { user: publicMockUser(user) } : undefined;
+  }
+
   if (path === "/api/customers") return mockCustomers;
   if (path === "/api/products") return mockProducts;
   if (path === "/api/suppliers") return mockSuppliers;
   if (path === "/api/warehouses") return mockWarehouses;
-  if (path === "/api/users") return mockUsers;
+  if (path === "/api/users") return mockUsers.map(publicMockUser);
   if (path === "/api/projects") return mockProjects;
   if (path === "/api/tasks") return mockTasks;
   if (path === "/api/quotations") return mockQuotations;
@@ -1311,6 +1357,12 @@ function mockGet(path: string): JsonValue | undefined {
   if (basePath) {
     const rows = collections[basePath];
     const id = rowId(path, basePath);
+    if (basePath === "/api/users") {
+      if (id == null) return rows.map(publicMockUser);
+
+      const row = rows.find((item) => item.id === id);
+      return row ? publicMockUser(row) : undefined;
+    }
     return id == null ? rows : rows.find((row) => row.id === id);
   }
 
@@ -1335,13 +1387,43 @@ export function mockApiPlugin(): Plugin {
         const url = new URL(req.url ?? "/", "http://localhost");
         if (!url.pathname.startsWith("/api")) return next();
 
+        const publicPath =
+          url.pathname === "/api/healthz" || url.pathname.startsWith("/api/auth/");
+        if (!publicPath && mockSessionUserId == null) {
+          return sendJson(res, { error: "Unauthenticated" }, 401);
+        }
+
         if (req.method === "GET") {
           const data = mockGet(url.pathname);
           if (data !== undefined) return sendJson(res, data);
+          if (url.pathname === "/api/auth/me")
+            return sendJson(res, { error: "Unauthenticated" }, 401);
         }
 
         if (req.method === "POST") {
           const body = await readBody(req);
+
+          if (url.pathname === "/api/auth/login") {
+            const email = String(body.email ?? "").toLowerCase();
+            const password = String(body.password ?? "");
+            const user = mockUsers.find(
+              (row) => String(row.email).toLowerCase() === email && row.active,
+            );
+
+            if (!user || !verifyMockPassword(password, user.passwordHash)) {
+              return sendJson(res, { error: "Invalid email or password" }, 401);
+            }
+
+            mockSessionUserId = Number(user.id);
+            return sendJson(res, { user: publicMockUser(user) });
+          }
+
+          if (url.pathname === "/api/auth/logout") {
+            mockSessionUserId = null;
+            res.statusCode = 204;
+            return res.end();
+          }
+
           const projectIdForTasks = projectTasksPath(url.pathname);
           if (projectIdForTasks != null) {
             const rows = collections["/api/tasks"];
@@ -1362,7 +1444,11 @@ export function mockApiPlugin(): Plugin {
           const rows = collections[basePath];
           const created = withDefaults(basePath, body, nextId(rows));
           rows.unshift(created);
-          return sendJson(res, created, 201);
+          return sendJson(
+            res,
+            basePath === "/api/users" ? publicMockUser(created) : created,
+            201,
+          );
         }
 
         if (req.method === "PATCH") {
@@ -1378,6 +1464,10 @@ export function mockApiPlugin(): Plugin {
             return sendJson(res, { error: "Mock record not found" }, 404);
 
           const oldProjectId = Number(rows[index].projectId);
+          if (basePath === "/api/users" && body.password) {
+            body.passwordHash = hashMockPassword(String(body.password));
+            delete body.password;
+          }
           rows[index] = { ...rows[index], ...(body as JsonObject) };
           if (basePath === "/api/tasks") {
             rows[index].projectName ??=
@@ -1390,7 +1480,10 @@ export function mockApiPlugin(): Plugin {
             refreshProjectTaskCounts(oldProjectId);
             refreshProjectTaskCounts(Number(rows[index].projectId));
           }
-          return sendJson(res, rows[index]);
+          return sendJson(
+            res,
+            basePath === "/api/users" ? publicMockUser(rows[index]) : rows[index],
+          );
         }
 
         if (req.method === "DELETE") {

@@ -3,6 +3,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { CAppLayout } from "@/components/CAppLayout";
+import { CAuthProvider, useCAuth } from "@/lib/auth";
+import CLogin from "@/pages/CLogin";
 import CDashboard from "@/pages/CDashboard";
 import CCustomers from "@/pages/sales/CCustomers";
 import CQuotations from "@/pages/sales/CQuotations";
@@ -33,6 +35,25 @@ const queryClient = new QueryClient({
 });
 
 function CRouter() {
+  const { loading, user } = useCAuth();
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background text-sm text-muted-foreground">
+        Loading
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <Switch>
+        <Route path="/login" component={CLogin} />
+        <Route component={CLogin} />
+      </Switch>
+    );
+  }
+
   return (
     <CAppLayout>
       <Switch>
@@ -64,9 +85,11 @@ function CApp() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-          <CRouter />
-        </WouterRouter>
+        <CAuthProvider>
+          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+            <CRouter />
+          </WouterRouter>
+        </CAuthProvider>
         <Toaster />
       </TooltipProvider>
     </QueryClientProvider>

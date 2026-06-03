@@ -20,8 +20,25 @@ import { Plus, Pencil, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 
-const roles = ["admin", "sysadmin"];
-const emptyForm = { name: "", email: "", role: "admin", department: "", active: true };
+const roles = ["admin", "sysadmin", "sales", "purchasing", "inventory", "planner"];
+type UserForm = {
+  name: string;
+  email: string;
+  password: string;
+  role: string;
+  department: string;
+  active: boolean;
+};
+type UserPayload = UserInput & { password?: string };
+
+const emptyForm: UserForm = {
+  name: "",
+  email: "",
+  password: "",
+  role: "admin",
+  department: "",
+  active: true,
+};
 
 export default function CUsers() {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -40,16 +57,26 @@ export default function CUsers() {
   function openCreate() { setEditing(null); setForm(emptyForm); setDialogOpen(true); }
   function openEdit(row: User) {
     setEditing(row);
-    setForm({ name: row.name, email: row.email, role: row.role, department: row.department ?? "", active: row.active });
+    setForm({ name: row.name, email: row.email, password: "", role: row.role, department: row.department ?? "", active: row.active });
     setDialogOpen(true);
   }
 
   async function handleSave() {
     try {
+      const payload: UserPayload = {
+        name: form.name.trim(),
+        email: form.email.trim(),
+        role: form.role,
+        department: form.department.trim(),
+        active: form.active,
+      };
+
+      if (form.password) payload.password = form.password;
+
       if (editing) {
-        await updateMutation.mutateAsync({ id: editing.id, data: form as UserInput });
+        await updateMutation.mutateAsync({ id: editing.id, data: payload as UserInput });
       } else {
-        await createMutation.mutateAsync({ data: form as UserInput });
+        await createMutation.mutateAsync({ data: payload as UserInput });
       }
       toast({ title: editing ? "User updated" : "User created" });
       qc.invalidateQueries({ queryKey: getListUsersQueryKey() });
@@ -115,6 +142,17 @@ export default function CUsers() {
             <div><Label>Name</Label><Input className="mt-1" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} /></div>
             <div><Label>Email</Label><Input className="mt-1" type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} /></div>
             <div>
+              <Label>Password</Label>
+              <Input
+                className="mt-1"
+                type="password"
+                autoComplete="new-password"
+                placeholder={editing ? "Leave blank to keep current password" : "At least 8 characters"}
+                value={form.password}
+                onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
+              />
+            </div>
+            <div>
               <Label>Role</Label>
               <Select value={form.role} onValueChange={(v) => setForm((f) => ({ ...f, role: v }))}>
                 <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
@@ -132,7 +170,16 @@ export default function CUsers() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleSave} disabled={!form.name || !form.email || createMutation.isPending || updateMutation.isPending}>
+            <Button
+              onClick={handleSave}
+              disabled={
+                !form.name.trim() ||
+                !form.email.trim() ||
+                (!editing && form.password.length < 8) ||
+                createMutation.isPending ||
+                updateMutation.isPending
+              }
+            >
               {editing ? "Save" : "Create"}
             </Button>
           </DialogFooter>
