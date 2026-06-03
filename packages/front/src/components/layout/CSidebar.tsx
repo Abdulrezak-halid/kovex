@@ -2,10 +2,12 @@ import { useTranslation } from "react-i18next";
 import { ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CNavSection } from "@/components/layout/CNavSection";
-import { navItems } from "@/components/layout/CNavigationConfig";
+import { permittedNavItems } from "@/components/layout/CNavigationConfig";
+import { useCAuth } from "@/lib/auth";
 
 export function CSidebar({ onNavigate }: { onNavigate?: () => void }) {
   const { t } = useTranslation();
+  const { canManageUsers } = useCAuth();
 
   return (
     <div className="flex flex-col h-full bg-sidebar text-sidebar-foreground">
@@ -47,7 +49,7 @@ export function CSidebar({ onNavigate }: { onNavigate?: () => void }) {
         </div>
       </div>
       <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-0.5">
-        {navItems.map((item) => (
+        {permittedNavItems(canManageUsers).map((item) => (
           <CNavSection
             key={item.labelKey}
             item={item}

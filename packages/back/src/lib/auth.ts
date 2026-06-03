@@ -12,6 +12,8 @@ type AuthUser = Pick<
   "id" | "name" | "email" | "role" | "department" | "active" | "createdAt"
 >;
 
+const adminRoles = new Set(["admin", "sysadmin"]);
+
 declare global {
   namespace Express {
     interface Request {
@@ -135,6 +137,21 @@ export async function requireAuth(
     req.log.error({ err });
     res.status(500).json({ error: "Internal server error" });
   }
+}
+
+export function isAdminRole(role: string | undefined) {
+  return !!role && adminRoles.has(role);
+}
+
+export function requireDataWritePermission(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  if (["GET", "HEAD", "OPTIONS"].includes(req.method)) return next();
+  if (isAdminRole(req.authUser?.role)) return next();
+
+  return res.status(403).json({ error: "Forbidden" });
 }
 
 export function hashPassword(password: string) {

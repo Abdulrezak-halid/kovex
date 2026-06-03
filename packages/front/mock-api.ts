@@ -427,6 +427,15 @@ const mockUsers: JsonObject[] = [
 
 let mockSessionUserId: number | null = null;
 
+function currentMockUser() {
+  return mockUsers.find((row) => row.id === mockSessionUserId) ?? null;
+}
+
+function canMockManageData() {
+  const role = String(currentMockUser()?.role ?? "");
+  return role === "admin" || role === "sysadmin";
+}
+
 const mockQuotations: JsonObject[] = [
   {
     id: 1,
@@ -1391,6 +1400,14 @@ export function mockApiPlugin(): Plugin {
           url.pathname === "/api/healthz" || url.pathname.startsWith("/api/auth/");
         if (!publicPath && mockSessionUserId == null) {
           return sendJson(res, { error: "Unauthenticated" }, 401);
+        }
+
+        if (
+          !publicPath &&
+          !["GET", "HEAD", "OPTIONS"].includes(req.method ?? "GET") &&
+          !canMockManageData()
+        ) {
+          return sendJson(res, { error: "Forbidden" }, 403);
         }
 
         if (req.method === "GET") {

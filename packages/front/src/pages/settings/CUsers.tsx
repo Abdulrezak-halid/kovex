@@ -20,7 +20,7 @@ import { Plus, Pencil, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 
-const roles = ["admin", "sysadmin", "sales", "purchasing", "inventory", "planner"];
+const roles = ["admin", "sysadmin", "user", "sales", "purchasing", "inventory", "planner"];
 type UserForm = {
   name: string;
   email: string;
@@ -35,7 +35,7 @@ const emptyForm: UserForm = {
   name: "",
   email: "",
   password: "",
-  role: "admin",
+  role: "user",
   department: "",
   active: true,
 };

@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { translateText } from "@/lib/i18n";
+import { useCAuth } from "@/lib/auth";
 
 interface IPageHeaderProps {
   title: string;
@@ -9,6 +10,7 @@ interface IPageHeaderProps {
 
 export function CPageHeader({ title, description, action }: IPageHeaderProps) {
   const { t } = useTranslation();
+  const { canManageData } = useCAuth();
 
   return (
     <div className="flex items-start justify-between mb-6">
@@ -22,7 +24,7 @@ export function CPageHeader({ title, description, action }: IPageHeaderProps) {
           </p>
         )}
       </div>
-      {action && <div>{action}</div>}
+      {action && canManageData && <div>{action}</div>}
     </div>
   );
 }

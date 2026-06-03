@@ -13,6 +13,7 @@ export interface INavItem {
   labelKey: string;
   href?: string;
   icon: ComponentType<{ className?: string }>;
+  adminOnly?: boolean;
   children?: { labelKey: string; href: string }[];
 }
 
@@ -66,14 +67,21 @@ export const navItems: INavItem[] = [
   {
     labelKey: "settings",
     icon: Settings,
+    adminOnly: true,
     children: [{ labelKey: "users", href: "/settings/users" }],
   },
 ];
 
-export const searchItems = navItems.flatMap((item) => {
-  if (item.href) {
-    return [{ labelKey: item.labelKey, href: item.href }];
-  }
+export function permittedNavItems(isAdmin: boolean) {
+  return navItems.filter((item) => !item.adminOnly || isAdmin);
+}
 
-  return item.children ?? [];
-});
+export function searchItems(isAdmin: boolean) {
+  return permittedNavItems(isAdmin).flatMap((item) => {
+    if (item.href) {
+      return [{ labelKey: item.labelKey, href: item.href }];
+    }
+
+    return item.children ?? [];
+  });
+}

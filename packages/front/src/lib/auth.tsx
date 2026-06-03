@@ -17,9 +17,17 @@ export type CAuthUser = {
   createdAt: string;
 };
 
+const adminRoles = new Set(["admin", "sysadmin"]);
+
+export function isAdminRole(role: string | undefined) {
+  return !!role && adminRoles.has(role);
+}
+
 type CAuthContextValue = {
   user: CAuthUser | null;
   loading: boolean;
+  canManageData: boolean;
+  canManageUsers: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 };
@@ -70,7 +78,14 @@ export function CAuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ user, loading, login, logout }),
+    () => ({
+      user,
+      loading,
+      canManageData: isAdminRole(user?.role),
+      canManageUsers: isAdminRole(user?.role),
+      login,
+      logout,
+    }),
     [loading, login, logout, user],
   );
 

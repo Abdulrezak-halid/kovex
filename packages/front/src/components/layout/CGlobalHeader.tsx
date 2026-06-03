@@ -12,10 +12,10 @@ export function CGlobalHeader({ onMenuClick }: { onMenuClick: () => void }) {
   const { t } = useTranslation();
   const [, setLocation] = useLocation();
   const [search, setSearch] = useState("");
-  const { user, logout } = useCAuth();
+  const { user, logout, canManageUsers } = useCAuth();
 
   const matches = search
-    ? searchItems
+    ? searchItems(canManageUsers)
         .map((item) => ({ ...item, label: t(item.labelKey) }))
         .filter((item) =>
           item.label.toLowerCase().includes(search.toLowerCase()),

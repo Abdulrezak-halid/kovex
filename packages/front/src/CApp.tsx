@@ -35,7 +35,7 @@ const queryClient = new QueryClient({
 });
 
 function CRouter() {
-  const { loading, user } = useCAuth();
+  const { loading, user, canManageUsers } = useCAuth();
 
   if (loading) {
     return (
@@ -71,7 +71,7 @@ function CRouter() {
         <Route path="/reports/sales" component={CSalesReport} />
         <Route path="/reports/inventory" component={CInventoryReport} />
         <Route path="/reports/purchases" component={CPurchasesReport} />
-        <Route path="/settings/users" component={CUsers} />
+        {canManageUsers && <Route path="/settings/users" component={CUsers} />}
         <Route path="/planning/projects" component={CProjects} />
         <Route path="/planning/projects/:id" component={CProjectDetail} />
         <Route path="/planning/tasks" component={CTasks} />

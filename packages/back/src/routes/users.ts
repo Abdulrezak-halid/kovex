@@ -1,21 +1,21 @@
 import { Router, type NextFunction, type Request, type Response } from "express";
 import { db, usersTable } from "@sme-erp/database";
 import { eq } from "drizzle-orm";
-import { hashPassword, publicUser } from "../lib/auth";
+import { hashPassword, isAdminRole, publicUser } from "../lib/auth";
 
 const router = Router();
 const roles = new Set([
   "admin",
   "sysadmin",
+  "user",
   "sales",
   "purchasing",
   "inventory",
   "planner",
 ]);
-const adminRoles = new Set(["admin", "sysadmin"]);
 
 function requireAdmin(req: Request, res: Response, next: NextFunction) {
-  if (!req.authUser || !adminRoles.has(req.authUser.role)) {
+  if (!isAdminRole(req.authUser?.role)) {
     return res.status(403).json({ error: "Forbidden" });
   }
 
@@ -31,7 +31,7 @@ function validateUserInput(input: any, options: { creating: boolean }) {
   const email = String(input.email ?? "").trim().toLowerCase();
   const password =
     input.password === undefined ? undefined : String(input.password ?? "");
-  const role = String(input.role ?? "admin");
+  const role = String(input.role ?? "user");
   const department =
     input.department === undefined || input.department === null
       ? null
