@@ -509,131 +509,141 @@ Completion Note: Verified task assignment stores real user id and returns assign
 Sprint 3 - Authentication, Authorization, And Security
 
 TASK-034 - Implement user login
-Status: Ready
+Status: Completed
 Priority: P0 Critical
 Sprint: Sprint 3
 Labels: security, backend, frontend
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Add login capability.
 Acceptance Criteria:
 - Login page exists.
 - Backend verifies credentials.
 - Invalid login shows safe error message.
 - Successful login stores session/token safely.
+Completion Note: Login page, backend credential verification, safe invalid-login feedback, and session cookie handling are implemented.
 
 TASK-035 - Implement user logout
-Status: Ready
+Status: Completed
 Priority: P1 High
 Sprint: Sprint 3
 Labels: security, frontend, backend
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Allow authenticated users to log out.
 Acceptance Criteria:
 - Logout button exists.
 - Session/token is cleared.
 - User is redirected to login.
+Completion Note: Logout flow clears the session and returns the user to the unauthenticated state.
 
 TASK-036 - Implement admin user creation or registration
-Status: Ready
+Status: Completed
 Priority: P1 High
 Sprint: Sprint 3
 Labels: security, users
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Allow admin to create system users or support controlled registration.
 Acceptance Criteria:
 - Admin can create user.
 - Required user fields are validated.
 - User appears in Users page.
+Completion Note: Admin user management is available with validated user creation and Users page integration.
 
 TASK-037 - Add password hashing
-Status: Ready
+Status: Completed
 Priority: P0 Critical
 Sprint: Sprint 3
 Labels: security, backend, database
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Never store passwords in plain text.
 Acceptance Criteria:
 - Passwords are hashed before saving.
 - Login compares password using secure hash verification.
 - Existing plain-text password storage is removed.
+Completion Note: Passwords are hashed before storage and login verifies against stored hashes.
 
 TASK-038 - Implement JWT or session authentication
-Status: Ready
+Status: Completed
 Priority: P0 Critical
 Sprint: Sprint 3
 Labels: security, backend
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Protect API requests using a session or token strategy.
 Acceptance Criteria:
 - Auth middleware exists.
 - Protected endpoints reject unauthenticated requests.
 - Token/session expiry is handled.
+Completion Note: Session authentication middleware protects API access and handles authenticated user context.
 
 TASK-039 - Implement roles and permissions
-Status: Ready
+Status: Completed
 Priority: P0 Critical
 Sprint: Sprint 3
 Labels: security, backend, frontend
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Support Admin and User roles at minimum.
 Acceptance Criteria:
 - Admin role can manage users and data.
 - User role has limited access.
 - Backend enforces permissions.
 - Frontend hides unavailable actions.
+Completion Note: Admin/user role checks are enforced by backend routes and reflected in frontend controls.
 
 TASK-040 - Add protected frontend routes
-Status: Ready
+Status: Completed
 Priority: P1 High
 Sprint: Sprint 3
 Labels: security, frontend
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Prevent unauthenticated users from opening application pages.
 Acceptance Criteria:
 - Unauthenticated users redirect to login.
 - Authenticated users can access allowed pages.
 - Unauthorized role access is blocked.
+Completion Note: Frontend auth state gates application pages and blocks unauthorized access.
 
 TASK-041 - Strengthen input validation
-Status: Ready
+Status: Completed
 Priority: P1 High
 Sprint: Sprint 3
 Labels: security, api, backend
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Validate all user input consistently.
 Acceptance Criteria:
 - Request bodies are validated with generated schemas.
 - Invalid data returns useful API errors.
 - Frontend displays validation messages.
+Completion Note: Generated validation schemas and safe validation error responses are integrated across key API routes.
 
 TASK-042 - Verify SQL injection protection
-Status: Ready
+Status: Completed
 Priority: P1 High
 Sprint: Sprint 3
 Labels: security, database
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Confirm database access is protected from SQL injection.
 Acceptance Criteria:
 - ORM/query builder is used for user input.
 - No unsafe raw SQL accepts direct input.
 - Test cases for malicious input are documented.
+Completion Note: SQL injection review is documented and confirms user input flows through Drizzle query builder patterns.
 
 TASK-043 - Add XSS and CSRF protection review
-Status: Ready
+Status: Completed
 Priority: P2 Medium
 Sprint: Sprint 3
 Labels: security
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Review browser-side and request security.
 Acceptance Criteria:
 - XSS risk points are reviewed.
 - CSRF approach is documented if using cookies/sessions.
 - Unsafe HTML rendering is avoided.
+Completion Note: Browser security review is documented, covering XSS risks, cookie session considerations, and unsafe rendering checks.
 
 Sprint 4 - Reports, Dashboard, UX, And Performance
 
 TASK-044 - Make dashboard summary use real database data
-Status: Ready
+Status: In Progress
 Priority: P0 Critical
 Sprint: Sprint 4
 Labels: reports, dashboard, backend
@@ -646,7 +656,7 @@ Acceptance Criteria:
 - Dashboard updates after transactions.
 
 TASK-045 - Implement real sales report
-Status: Ready
+Status: In Progress
 Priority: P0 Critical
 Sprint: Sprint 4
 Labels: reports, sales, backend
@@ -660,7 +670,7 @@ Acceptance Criteria:
 - Chart displays real rows.
 
 TASK-046 - Implement real purchase report
-Status: Ready
+Status: In Progress
 Priority: P0 Critical
 Sprint: Sprint 4
 Labels: reports, purchases, backend
@@ -673,7 +683,7 @@ Acceptance Criteria:
 - Chart displays real rows.
 
 TASK-047 - Implement real inventory report
-Status: Ready
+Status: In Progress
 Priority: P0 Critical
 Sprint: Sprint 4
 Labels: reports, inventory, backend
@@ -686,7 +696,7 @@ Acceptance Criteria:
 - Rows show product, stock, minimum stock, and value.
 
 TASK-048 - Add advanced report filters
-Status: Ready
+Status: In Progress
 Priority: P2 Medium
 Sprint: Sprint 4
 Labels: reports, frontend, backend
@@ -699,7 +709,7 @@ Acceptance Criteria:
 - Filter by product exists where relevant.
 
 TASK-049 - Verify responsive design
-Status: Ready
+Status: In Progress
 Priority: P1 High
 Sprint: Sprint 4
 Labels: frontend, testing
@@ -713,7 +723,7 @@ Acceptance Criteria:
 - Tables do not break layout.
 
 TASK-050 - Improve UI error and empty states
-Status: Ready
+Status: In Progress
 Priority: P1 High
 Sprint: Sprint 4
 Labels: frontend, ux
@@ -726,7 +736,7 @@ Acceptance Criteria:
 - No raw technical errors are shown to users.
 
 TASK-051 - Add pagination/search/sorting where needed
-Status: Ready
+Status: In Progress
 Priority: P2 Medium
 Sprint: Sprint 4
 Labels: frontend, backend, performance
@@ -739,7 +749,7 @@ Acceptance Criteria:
 - Backend supports query parameters as needed.
 
 TASK-052 - Optimize performance
-Status: Ready
+Status: In Progress
 Priority: P2 Medium
 Sprint: Sprint 4
 Labels: performance
@@ -1213,18 +1223,19 @@ Acceptance Criteria:
 - Reports support useful filters and summaries.
 
 TASK-088 - Add PDF/Excel export
-Status: Ready
+Status: Completed
 Priority: P1 High
 Sprint: Sprint 4
 Labels: reports, export, graduation
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Export reports and documents.
 Acceptance Criteria:
 - PDF export works for selected reports.
 - Excel export works for selected reports.
+Completion Note: PDF and Excel-compatible export endpoints and report page download controls were added for selected reports.
 
 TASK-089 - Add multi-language support
-Status: Ready
+Status: In Progress
 Priority: P2 Medium
 Sprint: Sprint 4
 Labels: frontend, i18n, graduation

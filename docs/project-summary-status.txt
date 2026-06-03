@@ -19,9 +19,9 @@ The project is a simplified ERP system for small and medium businesses. It helps
 
 3. Current Project Status
 
-Status: Running and structured
+Status: Sprint 4 in progress
 
-The project has been installed, typechecked, restructured, and tested locally. The frontend application runs successfully from the new folder structure.
+The project has completed Sprint 3 - Authentication, Authorization, and Security. Sprint 4 - Reports, Dashboard, UX, and Performance has started, with report export work already completed for selected reports.
 
 Current local frontend URL:
 http://localhost:8081/

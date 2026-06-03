@@ -9,6 +9,7 @@
 export interface UserUpdate {
   name?: string;
   email?: string;
+  /** @minLength 8 */
   password?: string;
   role?: string;
   department?: string;

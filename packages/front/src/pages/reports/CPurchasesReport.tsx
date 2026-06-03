@@ -1,12 +1,18 @@
 import { useState } from "react";
 import { useGetPurchasesReport } from "@sme-erp/api-client";
 import { useTranslation } from "react-i18next";
+import { FileSpreadsheet, FileText } from "lucide-react";
 import { CPageHeader } from "@/components/CPageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
+import {
+  downloadReportExport,
+  type ReportExportFormat,
+} from "@/lib/report-export";
 
 const fmt = (n: number) =>
   new Intl.NumberFormat("en-US", {
@@ -17,11 +23,23 @@ const fmt = (n: number) =>
 
 export default function CPurchasesReport() {
   const { t } = useTranslation();
+  const { toast } = useToast();
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [params, setParams] = useState<{ from?: string; to?: string }>({});
+  const [exporting, setExporting] = useState<ReportExportFormat | null>(null);
 
   const { data, isLoading } = useGetPurchasesReport(params);
+  const handleExport = async (format: ReportExportFormat) => {
+    try {
+      setExporting(format);
+      await downloadReportExport("purchases", format, params);
+    } catch {
+      toast({ title: t("exportFailed"), variant: "destructive" });
+    } finally {
+      setExporting(null);
+    }
+  };
 
   return (
     <div className="p-6">
@@ -32,7 +50,7 @@ export default function CPurchasesReport() {
 
       <Card className="mb-6">
         <CardContent className="pt-4">
-          <div className="flex items-end gap-4">
+          <div className="flex flex-wrap items-end gap-4">
             <div>
               <Label className="text-xs">{t("from")}</Label>
               <Input
@@ -70,6 +88,26 @@ export default function CPurchasesReport() {
             >
               {t("clear")}
             </Button>
+            <div className="ml-auto flex gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => handleExport("pdf")}
+                disabled={exporting !== null}
+              >
+                <FileText className="h-4 w-4" />
+                {exporting === "pdf" ? t("exporting") : t("exportPdf")}
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => handleExport("excel")}
+                disabled={exporting !== null}
+              >
+                <FileSpreadsheet className="h-4 w-4" />
+                {exporting === "excel" ? t("exporting") : t("exportExcel")}
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>

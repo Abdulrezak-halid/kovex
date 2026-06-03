@@ -21,6 +21,9 @@ import type {
   CustomerInput,
   CustomerUpdate,
   DashboardSummary,
+  ExportInventoryReportParams,
+  ExportPurchasesReportParams,
+  ExportSalesReportParams,
   GetPurchasesReportParams,
   GetSalesReportParams,
   HealthStatus,
@@ -5999,6 +6002,309 @@ export function useGetPurchasesReport<
   },
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
   const queryOptions = getGetPurchasesReportQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Export sales report
+ */
+export const getExportSalesReportUrl = (params: ExportSalesReportParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/reports/sales/export?${stringifiedParams}`
+    : `/api/reports/sales/export`;
+};
+
+export const exportSalesReport = async (
+  params: ExportSalesReportParams,
+  options?: RequestInit,
+): Promise<Blob> => {
+  return customFetch<Blob>(getExportSalesReportUrl(params), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getExportSalesReportQueryKey = (
+  params?: ExportSalesReportParams,
+) => {
+  return [`/api/reports/sales/export`, ...(params ? [params] : [])] as const;
+};
+
+export const getExportSalesReportQueryOptions = <
+  TData = Awaited<ReturnType<typeof exportSalesReport>>,
+  TError = ErrorType<void>,
+>(
+  params: ExportSalesReportParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof exportSalesReport>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getExportSalesReportQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof exportSalesReport>>
+  > = ({ signal }) => exportSalesReport(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof exportSalesReport>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ExportSalesReportQueryResult = NonNullable<
+  Awaited<ReturnType<typeof exportSalesReport>>
+>;
+export type ExportSalesReportQueryError = ErrorType<void>;
+
+/**
+ * @summary Export sales report
+ */
+
+export function useExportSalesReport<
+  TData = Awaited<ReturnType<typeof exportSalesReport>>,
+  TError = ErrorType<void>,
+>(
+  params: ExportSalesReportParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof exportSalesReport>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getExportSalesReportQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Export inventory report
+ */
+export const getExportInventoryReportUrl = (
+  params: ExportInventoryReportParams,
+) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/reports/inventory/export?${stringifiedParams}`
+    : `/api/reports/inventory/export`;
+};
+
+export const exportInventoryReport = async (
+  params: ExportInventoryReportParams,
+  options?: RequestInit,
+): Promise<Blob> => {
+  return customFetch<Blob>(getExportInventoryReportUrl(params), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getExportInventoryReportQueryKey = (
+  params?: ExportInventoryReportParams,
+) => {
+  return [
+    `/api/reports/inventory/export`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
+export const getExportInventoryReportQueryOptions = <
+  TData = Awaited<ReturnType<typeof exportInventoryReport>>,
+  TError = ErrorType<void>,
+>(
+  params: ExportInventoryReportParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof exportInventoryReport>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getExportInventoryReportQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof exportInventoryReport>>
+  > = ({ signal }) =>
+    exportInventoryReport(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof exportInventoryReport>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ExportInventoryReportQueryResult = NonNullable<
+  Awaited<ReturnType<typeof exportInventoryReport>>
+>;
+export type ExportInventoryReportQueryError = ErrorType<void>;
+
+/**
+ * @summary Export inventory report
+ */
+
+export function useExportInventoryReport<
+  TData = Awaited<ReturnType<typeof exportInventoryReport>>,
+  TError = ErrorType<void>,
+>(
+  params: ExportInventoryReportParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof exportInventoryReport>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getExportInventoryReportQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Export purchases report
+ */
+export const getExportPurchasesReportUrl = (
+  params: ExportPurchasesReportParams,
+) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/reports/purchases/export?${stringifiedParams}`
+    : `/api/reports/purchases/export`;
+};
+
+export const exportPurchasesReport = async (
+  params: ExportPurchasesReportParams,
+  options?: RequestInit,
+): Promise<Blob> => {
+  return customFetch<Blob>(getExportPurchasesReportUrl(params), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getExportPurchasesReportQueryKey = (
+  params?: ExportPurchasesReportParams,
+) => {
+  return [
+    `/api/reports/purchases/export`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
+export const getExportPurchasesReportQueryOptions = <
+  TData = Awaited<ReturnType<typeof exportPurchasesReport>>,
+  TError = ErrorType<void>,
+>(
+  params: ExportPurchasesReportParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof exportPurchasesReport>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getExportPurchasesReportQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof exportPurchasesReport>>
+  > = ({ signal }) =>
+    exportPurchasesReport(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof exportPurchasesReport>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ExportPurchasesReportQueryResult = NonNullable<
+  Awaited<ReturnType<typeof exportPurchasesReport>>
+>;
+export type ExportPurchasesReportQueryError = ErrorType<void>;
+
+/**
+ * @summary Export purchases report
+ */
+
+export function useExportPurchasesReport<
+  TData = Awaited<ReturnType<typeof exportPurchasesReport>>,
+  TError = ErrorType<void>,
+>(
+  params: ExportPurchasesReportParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof exportPurchasesReport>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getExportPurchasesReportQueryOptions(params, options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;

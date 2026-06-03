@@ -1,9 +1,17 @@
 import { useGetInventoryReport } from "@sme-erp/api-client";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { FileSpreadsheet, FileText } from "lucide-react";
 import { CPageHeader } from "@/components/CPageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import {
+  downloadReportExport,
+  type ReportExportFormat,
+} from "@/lib/report-export";
 
 const fmt = (n: number) =>
   new Intl.NumberFormat("en-US", {
@@ -14,7 +22,19 @@ const fmt = (n: number) =>
 
 export default function CInventoryReport() {
   const { t } = useTranslation();
+  const { toast } = useToast();
+  const [exporting, setExporting] = useState<ReportExportFormat | null>(null);
   const { data, isLoading } = useGetInventoryReport();
+  const handleExport = async (format: ReportExportFormat) => {
+    try {
+      setExporting(format);
+      await downloadReportExport("inventory", format);
+    } catch {
+      toast({ title: t("exportFailed"), variant: "destructive" });
+    } finally {
+      setExporting(null);
+    }
+  };
 
   return (
     <div className="p-6">
@@ -22,6 +42,29 @@ export default function CInventoryReport() {
         title={t("inventoryReport")}
         description={t("stockLevelsAndValuation")}
       />
+
+      <Card className="mb-6">
+        <CardContent className="flex justify-end gap-2 pt-4">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => handleExport("pdf")}
+            disabled={exporting !== null}
+          >
+            <FileText className="h-4 w-4" />
+            {exporting === "pdf" ? t("exporting") : t("exportPdf")}
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => handleExport("excel")}
+            disabled={exporting !== null}
+          >
+            <FileSpreadsheet className="h-4 w-4" />
+            {exporting === "excel" ? t("exporting") : t("exportExcel")}
+          </Button>
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-3 gap-4 mb-6">
         {[
@@ -49,7 +92,9 @@ export default function CInventoryReport() {
 
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-semibold">{t("products")}</CardTitle>
+          <CardTitle className="text-sm font-semibold">
+            {t("products")}
+          </CardTitle>
         </CardHeader>
         <CardContent className="px-0">
           <table className="w-full text-sm">

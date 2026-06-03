@@ -1356,6 +1356,119 @@ paths:
               schema:
                 $ref: "#/components/schemas/PurchasesReport"
 
+  /reports/sales/export:
+    get:
+      operationId: exportSalesReport
+      tags: [reports]
+      summary: Export sales report
+      parameters:
+        - name: format
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [pdf, excel]
+        - name: from
+          in: query
+          schema:
+            type: ["string", "null"]
+          description: Optional start date for date-based reports
+        - name: to
+          in: query
+          schema:
+            type: ["string", "null"]
+          description: Optional end date for date-based reports
+      responses:
+        "200":
+          description: Exported sales report file
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+            application/vnd.ms-excel:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: Invalid export format
+
+  /reports/inventory/export:
+    get:
+      operationId: exportInventoryReport
+      tags: [reports]
+      summary: Export inventory report
+      parameters:
+        - name: format
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [pdf, excel]
+      responses:
+        "200":
+          description: Exported inventory report file
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+            application/vnd.ms-excel:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: Invalid export format
+
+  /reports/purchases/export:
+    get:
+      operationId: exportPurchasesReport
+      tags: [reports]
+      summary: Export purchases report
+      parameters:
+        - name: format
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [pdf, excel]
+        - name: from
+          in: query
+          schema:
+            type: ["string", "null"]
+          description: Optional start date for date-based reports
+        - name: to
+          in: query
+          schema:
+            type: ["string", "null"]
+          description: Optional end date for date-based reports
+      responses:
+        "200":
+          description: Exported purchases report file
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+            application/vnd.ms-excel:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: Invalid export format
+
 components:
   schemas:
     HealthStatus:
@@ -2031,9 +2144,6 @@ components:
         email:
           type: string
           format: email
-        password:
-          type: string
-          minLength: 8
         role:
           type: string
         department:
@@ -2051,6 +2161,9 @@ components:
           type: string
         email:
           type: string
+        password:
+          type: string
+          minLength: 8
         role:
           type: string
         department:

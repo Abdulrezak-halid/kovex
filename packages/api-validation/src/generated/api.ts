@@ -1155,7 +1155,7 @@ export const UpdatePurchaseInvoiceResponse = zod.object({
 export const ListUsersResponseItem = zod.object({
   id: zod.number(),
   name: zod.string(),
-  email: zod.string(),
+  email: zod.string().email(),
   role: zod.string(),
   department: zod.string().nullish(),
   active: zod.boolean(),
@@ -1166,10 +1166,12 @@ export const ListUsersResponse = zod.array(ListUsersResponseItem);
 /**
  * @summary Create a user
  */
+export const createUserBodyPasswordMin = 8;
+
 export const CreateUserBody = zod.object({
   name: zod.string(),
-  email: zod.string().email(),
-  password: zod.string().min(8),
+  email: zod.string(),
+  password: zod.string().min(createUserBodyPasswordMin),
   role: zod.string(),
   department: zod.string().optional(),
   active: zod.boolean().optional(),
@@ -1182,7 +1184,7 @@ export const GetUserParams = zod.object({
 export const GetUserResponse = zod.object({
   id: zod.number(),
   name: zod.string(),
-  email: zod.string(),
+  email: zod.string().email(),
   role: zod.string(),
   department: zod.string().nullish(),
   active: zod.boolean(),
@@ -1193,10 +1195,12 @@ export const UpdateUserParams = zod.object({
   id: zod.coerce.number(),
 });
 
+export const updateUserBodyPasswordMin = 8;
+
 export const UpdateUserBody = zod.object({
   name: zod.string().optional(),
   email: zod.string().email().optional(),
-  password: zod.string().min(8).optional(),
+  password: zod.string().min(updateUserBodyPasswordMin).optional(),
   role: zod.string().optional(),
   department: zod.string().optional(),
   active: zod.boolean().optional(),
@@ -1205,7 +1209,7 @@ export const UpdateUserBody = zod.object({
 export const UpdateUserResponse = zod.object({
   id: zod.number(),
   name: zod.string(),
-  email: zod.string(),
+  email: zod.string().email(),
   role: zod.string(),
   department: zod.string().nullish(),
   active: zod.boolean(),
@@ -1289,4 +1293,41 @@ export const GetPurchasesReportResponse = zod.object({
       ordersCount: zod.number(),
     }),
   ),
+});
+
+/**
+ * @summary Export sales report
+ */
+export const ExportSalesReportQueryParams = zod.object({
+  format: zod.enum(["pdf", "excel"]),
+  from: zod.coerce
+    .string()
+    .nullish()
+    .describe("Optional start date for date-based reports"),
+  to: zod.coerce
+    .string()
+    .nullish()
+    .describe("Optional end date for date-based reports"),
+});
+
+/**
+ * @summary Export inventory report
+ */
+export const ExportInventoryReportQueryParams = zod.object({
+  format: zod.enum(["pdf", "excel"]),
+});
+
+/**
+ * @summary Export purchases report
+ */
+export const ExportPurchasesReportQueryParams = zod.object({
+  format: zod.enum(["pdf", "excel"]),
+  from: zod.coerce
+    .string()
+    .nullish()
+    .describe("Optional start date for date-based reports"),
+  to: zod.coerce
+    .string()
+    .nullish()
+    .describe("Optional end date for date-based reports"),
 });

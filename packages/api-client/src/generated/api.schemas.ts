@@ -347,6 +347,7 @@ export interface User {
 export interface UserInput {
   name: string;
   email: string;
+  /** @minLength 8 */
   password: string;
   role: string;
   department?: string;
@@ -356,6 +357,7 @@ export interface UserInput {
 export interface UserUpdate {
   name?: string;
   email?: string;
+  /** @minLength 8 */
   password?: string;
   role?: string;
   department?: string;
@@ -576,3 +578,59 @@ export type GetPurchasesReportParams = {
    */
   to?: string | null;
 };
+
+export type ExportSalesReportParams = {
+  format: ExportSalesReportFormat;
+  /**
+   * Optional start date for date-based reports
+   * @nullable
+   */
+  from?: string | null;
+  /**
+   * Optional end date for date-based reports
+   * @nullable
+   */
+  to?: string | null;
+};
+
+export type ExportSalesReportFormat =
+  (typeof ExportSalesReportFormat)[keyof typeof ExportSalesReportFormat];
+
+export const ExportSalesReportFormat = {
+  pdf: "pdf",
+  excel: "excel",
+} as const;
+
+export type ExportInventoryReportParams = {
+  format: ExportInventoryReportFormat;
+};
+
+export type ExportInventoryReportFormat =
+  (typeof ExportInventoryReportFormat)[keyof typeof ExportInventoryReportFormat];
+
+export const ExportInventoryReportFormat = {
+  pdf: "pdf",
+  excel: "excel",
+} as const;
+
+export type ExportPurchasesReportParams = {
+  format: ExportPurchasesReportFormat;
+  /**
+   * Optional start date for date-based reports
+   * @nullable
+   */
+  from?: string | null;
+  /**
+   * Optional end date for date-based reports
+   * @nullable
+   */
+  to?: string | null;
+};
+
+export type ExportPurchasesReportFormat =
+  (typeof ExportPurchasesReportFormat)[keyof typeof ExportPurchasesReportFormat];
+
+export const ExportPurchasesReportFormat = {
+  pdf: "pdf",
+  excel: "excel",
+} as const;

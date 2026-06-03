@@ -10,6 +10,13 @@ type JsonValue =
   | JsonValue[]
   | { [key: string]: JsonValue };
 type JsonObject = { [key: string]: JsonValue };
+type ExportFormat = "pdf" | "excel";
+type TableCell = string | number;
+type ExportSection = {
+  title: string;
+  headers: string[];
+  rows: TableCell[][];
+};
 
 const now = () => new Date().toISOString();
 const daysAgo = (days: number) =>
@@ -1132,6 +1139,191 @@ function sendJson(res: ServerResponse, data: JsonValue, status = 200) {
   res.end(JSON.stringify(data));
 }
 
+function htmlEscape(value: TableCell) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
+function renderExcelHtml(title: string, sections: ExportSection[]) {
+  const tables = sections
+    .map(
+      (section) => `
+        <h2>${htmlEscape(section.title)}</h2>
+        <table>
+          <thead>
+            <tr>${section.headers.map((h) => `<th>${htmlEscape(h)}</th>`).join("")}</tr>
+          </thead>
+          <tbody>
+            ${section.rows
+              .map(
+                (row) =>
+                  `<tr>${row.map((cell) => `<td>${htmlEscape(cell)}</td>`).join("")}</tr>`,
+              )
+              .join("")}
+          </tbody>
+        </table>`,
+    )
+    .join("");
+
+  return `<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <style>
+    body { font-family: Arial, sans-serif; }
+    h1 { font-size: 20px; }
+    h2 { font-size: 15px; margin-top: 22px; }
+    table { border-collapse: collapse; margin-bottom: 18px; }
+    th, td { border: 1px solid #999; padding: 6px 8px; text-align: left; }
+    th { background: #e8eef7; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <h1>${htmlEscape(title)}</h1>
+  ${tables}
+</body>
+</html>`;
+}
+
+function pdfText(value: TableCell) {
+  const text = String(value);
+  const hex = ["feff"];
+
+  for (const char of text) {
+    const code = char.codePointAt(0) ?? 0;
+    if (code <= 0xffff) {
+      hex.push(code.toString(16).padStart(4, "0"));
+      continue;
+    }
+
+    const adjusted = code - 0x10000;
+    hex.push(((adjusted >> 10) + 0xd800).toString(16).padStart(4, "0"));
+    hex.push(((adjusted & 0x3ff) + 0xdc00).toString(16).padStart(4, "0"));
+  }
+
+  return `<${hex.join("")}>`;
+}
+
+function wrapLine(line: string, maxLength = 95) {
+  if (line.length <= maxLength) return [line];
+
+  const words = line.split(" ");
+  const lines: string[] = [];
+  let current = "";
+
+  for (const word of words) {
+    if (`${current} ${word}`.trim().length > maxLength) {
+      if (current) lines.push(current);
+      current = word;
+    } else {
+      current = `${current} ${word}`.trim();
+    }
+  }
+
+  if (current) lines.push(current);
+  return lines;
+}
+
+function renderPdf(title: string, sections: ExportSection[]) {
+  const lines = [
+    title,
+    `Generated: ${new Date().toISOString().slice(0, 10)}`,
+    "",
+  ];
+
+  for (const section of sections) {
+    lines.push(section.title);
+    lines.push(section.headers.join(" | "));
+    for (const row of section.rows) {
+      lines.push(...wrapLine(row.map(String).join(" | ")));
+    }
+    lines.push("");
+  }
+
+  const pageLines = 44;
+  const pages: string[][] = [];
+  for (let i = 0; i < lines.length; i += pageLines) {
+    pages.push(lines.slice(i, i + pageLines));
+  }
+
+  const objects: string[] = [
+    "<< /Type /Catalog /Pages 2 0 R >>",
+    `<< /Type /Pages /Kids [${pages.map((_, i) => `${4 + i * 2} 0 R`).join(" ")}] /Count ${pages.length} >>`,
+    "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+  ];
+
+  pages.forEach((page, index) => {
+    const pageObjectNumber = 4 + index * 2;
+    const contentObjectNumber = pageObjectNumber + 1;
+    const content = [
+      "BT",
+      "/F1 10 Tf",
+      "50 790 Td",
+      "14 TL",
+      ...page.map((line, lineIndex) =>
+        lineIndex === 0 ? `${pdfText(line)} Tj` : `T* ${pdfText(line)} Tj`,
+      ),
+      "ET",
+    ].join("\n");
+
+    objects.push(
+      `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents ${contentObjectNumber} 0 R >>`,
+    );
+    objects.push(
+      `<< /Length ${Buffer.byteLength(content)} >>\nstream\n${content}\nendstream`,
+    );
+  });
+
+  let pdf = "%PDF-1.4\n";
+  const offsets = [0];
+  objects.forEach((object, index) => {
+    offsets.push(Buffer.byteLength(pdf));
+    pdf += `${index + 1} 0 obj\n${object}\nendobj\n`;
+  });
+
+  const xrefOffset = Buffer.byteLength(pdf);
+  pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`;
+  pdf += offsets
+    .slice(1)
+    .map((offset) => `${offset.toString().padStart(10, "0")} 00000 n \n`)
+    .join("");
+  pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`;
+
+  return Buffer.from(pdf);
+}
+
+function sendReportExport(
+  res: ServerResponse,
+  reportType: "sales" | "inventory" | "purchases",
+  format: ExportFormat,
+  title: string,
+  sections: ExportSection[],
+) {
+  const fileBase = `${reportType}-report-${new Date().toISOString().slice(0, 10)}`;
+
+  if (format === "pdf") {
+    res.statusCode = 200;
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${fileBase}.pdf"`,
+    );
+    res.end(renderPdf(title, sections));
+    return;
+  }
+
+  res.statusCode = 200;
+  res.setHeader("Content-Type", "application/vnd.ms-excel");
+  res.setHeader(
+    "Content-Disposition",
+    `attachment; filename="${fileBase}.xls"`,
+  );
+  res.end(renderExcelHtml(title, sections));
+}
+
 function readBody(req: IncomingMessage): Promise<Record<string, unknown>> {
   return new Promise((resolve) => {
     const chunks: Buffer[] = [];
@@ -1292,6 +1484,112 @@ function purchasesReport() {
   };
 }
 
+function reportExportSections(path: string) {
+  if (path === "/api/reports/sales/export") {
+    const report = salesReport();
+    return {
+      reportType: "sales" as const,
+      title: "Sales Report",
+      sections: [
+        {
+          title: "Summary",
+          headers: ["Metric", "Value"],
+          rows: [
+            ["Total Revenue", report.totalRevenue],
+            ["Total Orders", report.totalOrders],
+          ],
+        },
+        {
+          title: "Revenue Over Time",
+          headers: ["Date", "Orders", "Revenue"],
+          rows: report.rows.map((row) => [
+            String(row.date),
+            Number(row.ordersCount),
+            Number(row.revenue),
+          ]),
+        },
+        {
+          title: "Top Customers",
+          headers: ["Customer", "Orders", "Total Spent"],
+          rows: report.topCustomers.map((row) => [
+            String(row.customerName),
+            Number(row.ordersCount),
+            Number(row.totalSpent),
+          ]),
+        },
+      ],
+    };
+  }
+
+  if (path === "/api/reports/inventory/export") {
+    const report = inventoryReport();
+    return {
+      reportType: "inventory" as const,
+      title: "Inventory Report",
+      sections: [
+        {
+          title: "Summary",
+          headers: ["Metric", "Value"],
+          rows: [
+            ["Total Products", report.totalProducts],
+            ["Low Stock Items", report.lowStockCount],
+            ["Total Stock Value", report.totalStockValue],
+          ],
+        },
+        {
+          title: "Products",
+          headers: ["Product", "SKU", "Stock", "Min Stock", "Stock Value"],
+          rows: report.rows.map((row) => [
+            String(row.productName),
+            String(row.sku),
+            Number(row.totalStock),
+            Number(row.minimumStock),
+            Number(row.totalValue),
+          ]),
+        },
+      ],
+    };
+  }
+
+  if (path === "/api/reports/purchases/export") {
+    const report = purchasesReport();
+    return {
+      reportType: "purchases" as const,
+      title: "Purchases Report",
+      sections: [
+        {
+          title: "Summary",
+          headers: ["Metric", "Value"],
+          rows: [
+            ["Total Purchases", report.totalPurchases],
+            ["Purchase Orders", report.totalOrders],
+          ],
+        },
+        {
+          title: "Purchases Over Time",
+          headers: ["Date", "Purchase Orders", "Total Spent"],
+          rows: report.rows.map((row) => [
+            String(row.date),
+            Number(row.ordersCount),
+            Number(row.purchases),
+          ]),
+        },
+        {
+          title: "Top Suppliers",
+          headers: ["Supplier", "Orders", "Total Purchased"],
+          rows: report.topSuppliers.map((row) => [
+            String(row.supplierName),
+            Number(row.ordersCount),
+            Number(row.totalPurchased),
+          ]),
+        },
+      ],
+    };
+  }
+
+  return null;
+}
+
 function mockGet(path: string): JsonValue | undefined {
   if (path === "/api/healthz") return { status: "ok" };
 
@@ -1411,6 +1709,22 @@ export function mockApiPlugin(): Plugin {
         }
 
         if (req.method === "GET") {
+          const reportExport = reportExportSections(url.pathname);
+          const format = url.searchParams.get("format");
+          if (reportExport) {
+            if (format !== "pdf" && format !== "excel") {
+              return sendJson(res, { error: "format must be pdf or excel" }, 400);
+            }
+
+            return sendReportExport(
+              res,
+              reportExport.reportType,
+              format,
+              reportExport.title,
+              reportExport.sections,
+            );
+          }
+
           const data = mockGet(url.pathname);
           if (data !== undefined) return sendJson(res, data);
           if (url.pathname === "/api/auth/me")
