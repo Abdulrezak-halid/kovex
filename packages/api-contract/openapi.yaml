@@ -1313,6 +1313,10 @@ paths:
           in: query
           schema:
             type: ["string", "null"]
+        - name: customerId
+          in: query
+          schema:
+            type: ["integer", "null"]
       responses:
         "200":
           description: Sales report
@@ -1326,6 +1330,11 @@ paths:
       operationId: getInventoryReport
       tags: [reports]
       summary: Get inventory report
+      parameters:
+        - name: productId
+          in: query
+          schema:
+            type: ["integer", "null"]
       responses:
         "200":
           description: Inventory report
@@ -1348,6 +1357,10 @@ paths:
           in: query
           schema:
             type: ["string", "null"]
+        - name: supplierId
+          in: query
+          schema:
+            type: ["integer", "null"]
       responses:
         "200":
           description: Purchases report
@@ -1378,6 +1391,11 @@ paths:
           schema:
             type: ["string", "null"]
           description: Optional end date for date-based reports
+        - name: customerId
+          in: query
+          schema:
+            type: ["integer", "null"]
+          description: Optional customer filter for the sales report
       responses:
         "200":
           description: Exported sales report file
@@ -1409,6 +1427,11 @@ paths:
           schema:
             type: string
             enum: [pdf, excel]
+        - name: productId
+          in: query
+          schema:
+            type: ["integer", "null"]
+          description: Optional product filter for the inventory report
       responses:
         "200":
           description: Exported inventory report file
@@ -1450,6 +1473,11 @@ paths:
           schema:
             type: ["string", "null"]
           description: Optional end date for date-based reports
+        - name: supplierId
+          in: query
+          schema:
+            type: ["integer", "null"]
+          description: Optional supplier filter for the purchases report
       responses:
         "200":
           description: Exported purchases report file

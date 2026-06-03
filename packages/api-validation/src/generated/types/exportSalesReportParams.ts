@@ -19,4 +19,9 @@ export type ExportSalesReportParams = {
    * @nullable
    */
   to?: string | null;
+  /**
+   * Optional customer filter for the sales report
+   * @nullable
+   */
+  customerId?: number | null;
 };

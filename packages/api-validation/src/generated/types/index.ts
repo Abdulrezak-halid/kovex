@@ -16,6 +16,7 @@ export * from "./exportPurchasesReportFormat";
 export * from "./exportPurchasesReportParams";
 export * from "./exportSalesReportFormat";
 export * from "./exportSalesReportParams";
+export * from "./getInventoryReportParams";
 export * from "./getPurchasesReportParams";
 export * from "./getSalesReportParams";
 export * from "./healthStatus";

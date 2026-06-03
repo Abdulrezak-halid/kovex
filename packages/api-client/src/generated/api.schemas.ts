@@ -566,6 +566,17 @@ export type GetSalesReportParams = {
    * @nullable
    */
   to?: string | null;
+  /**
+   * @nullable
+   */
+  customerId?: number | null;
+};
+
+export type GetInventoryReportParams = {
+  /**
+   * @nullable
+   */
+  productId?: number | null;
 };
 
 export type GetPurchasesReportParams = {
@@ -577,6 +588,10 @@ export type GetPurchasesReportParams = {
    * @nullable
    */
   to?: string | null;
+  /**
+   * @nullable
+   */
+  supplierId?: number | null;
 };
 
 export type ExportSalesReportParams = {
@@ -591,6 +606,11 @@ export type ExportSalesReportParams = {
    * @nullable
    */
   to?: string | null;
+  /**
+   * Optional customer filter for the sales report
+   * @nullable
+   */
+  customerId?: number | null;
 };
 
 export type ExportSalesReportFormat =
@@ -603,6 +623,11 @@ export const ExportSalesReportFormat = {
 
 export type ExportInventoryReportParams = {
   format: ExportInventoryReportFormat;
+  /**
+   * Optional product filter for the inventory report
+   * @nullable
+   */
+  productId?: number | null;
 };
 
 export type ExportInventoryReportFormat =
@@ -625,6 +650,11 @@ export type ExportPurchasesReportParams = {
    * @nullable
    */
   to?: string | null;
+  /**
+   * Optional supplier filter for the purchases report
+   * @nullable
+   */
+  supplierId?: number | null;
 };
 
 export type ExportPurchasesReportFormat =

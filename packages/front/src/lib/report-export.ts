@@ -4,6 +4,9 @@ export type ReportExportFormat = "pdf" | "excel";
 type ReportExportParams = {
   from?: string;
   to?: string;
+  customerId?: number;
+  supplierId?: number;
+  productId?: number;
 };
 
 function filenameFromDisposition(disposition: string | null) {
@@ -19,6 +22,9 @@ export async function downloadReportExport(
   const search = new URLSearchParams({ format });
   if (params.from) search.set("from", params.from);
   if (params.to) search.set("to", params.to);
+  if (params.customerId) search.set("customerId", String(params.customerId));
+  if (params.supplierId) search.set("supplierId", String(params.supplierId));
+  if (params.productId) search.set("productId", String(params.productId));
 
   const response = await fetch(`/api/reports/${type}/export?${search}`, {
     credentials: "include",

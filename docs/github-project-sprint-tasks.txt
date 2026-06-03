@@ -698,17 +698,18 @@ Acceptance Criteria:
 Completion Note: Inventory report now uses database products and stock totals, cost-based valuation, low-stock counts, and product-level stock rows.
 
 TASK-048 - Add advanced report filters
-Status: In Progress
+Status: Completed
 Priority: P2 Medium
 Sprint: Sprint 4
 Labels: reports, frontend, backend
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Add useful report filters.
 Acceptance Criteria:
 - Filter by date exists.
 - Filter by customer exists where relevant.
 - Filter by supplier exists where relevant.
 - Filter by product exists where relevant.
+Completion Note: Report filters now include date ranges for sales and purchases, customer filtering for sales, supplier filtering for purchases, and product filtering for inventory, with exports using the active filters.
 
 TASK-049 - Verify responsive design
 Status: In Progress

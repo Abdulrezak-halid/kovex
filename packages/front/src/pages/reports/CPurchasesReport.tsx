@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useGetPurchasesReport } from "@sme-erp/api-client";
+import { useGetPurchasesReport, useListSuppliers } from "@sme-erp/api-client";
 import { useTranslation } from "react-i18next";
 import { FileSpreadsheet, FileText } from "lucide-react";
 import { CPageHeader } from "@/components/CPageHeader";
@@ -8,6 +8,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import {
   downloadReportExport,
@@ -47,10 +54,23 @@ export default function CPurchasesReport() {
   const { toast } = useToast();
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
-  const [params, setParams] = useState<{ from?: string; to?: string }>({});
+  const [supplierId, setSupplierId] = useState("all");
+  const [params, setParams] = useState<{
+    from?: string;
+    to?: string;
+    supplierId?: number;
+  }>({});
   const [exporting, setExporting] = useState<ReportExportFormat | null>(null);
 
   const { data, isLoading } = useGetPurchasesReport(params);
+  const { data: suppliers } = useListSuppliers();
+  const applyFilters = () =>
+    setParams({
+      from: from || undefined,
+      to: to || undefined,
+      supplierId:
+        supplierId !== "all" && supplierId ? Number(supplierId) : undefined,
+    });
   const handleExport = async (format: ReportExportFormat) => {
     try {
       setExporting(format);
@@ -95,12 +115,23 @@ export default function CPurchasesReport() {
                 onChange={(e) => setTo(e.target.value)}
               />
             </div>
-            <Button
-              size="sm"
-              onClick={() =>
-                setParams({ from: from || undefined, to: to || undefined })
-              }
-            >
+            <div className="min-w-55">
+              <Label className="text-xs">{t("supplier")}</Label>
+              <Select value={supplierId} onValueChange={setSupplierId}>
+                <SelectTrigger className="mt-1 h-8 text-sm">
+                  <SelectValue placeholder={t("selectSupplier")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t("allSuppliers")}</SelectItem>
+                  {suppliers?.map((supplier) => (
+                    <SelectItem key={supplier.id} value={String(supplier.id)}>
+                      {supplier.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <Button size="sm" onClick={applyFilters}>
               {t("apply")}
             </Button>
             <Button
@@ -109,6 +140,7 @@ export default function CPurchasesReport() {
               onClick={() => {
                 setFrom("");
                 setTo("");
+                setSupplierId("all");
                 setParams({});
               }}
             >

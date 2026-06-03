@@ -15,6 +15,7 @@ import {
   suppliersTable,
 } from "@sme-erp/database";
 import { and, eq, gte, lte } from "drizzle-orm";
+import type { SQL } from "drizzle-orm";
 
 const router = Router();
 
@@ -99,23 +100,32 @@ function queryDateRange(query: Record<string, unknown>) {
   return { from, to };
 }
 
+function queryNumber(query: Record<string, unknown>, key: string) {
+  const value = query[key];
+  const numberValue = typeof value === "string" ? Number(value) : null;
+  return numberValue != null && Number.isFinite(numberValue) && numberValue > 0
+    ? numberValue
+    : null;
+}
+
 async function getSalesReport(query: Record<string, unknown>) {
   const { from, to } = queryDateRange(query);
+  const customerId = queryNumber(query, "customerId");
 
   let ordersQuery = db.select().from(ordersTable).$dynamic();
-  const orderFilters = [
-    from ? gte(ordersTable.createdAt, from) : undefined,
-    to ? lte(ordersTable.createdAt, to) : undefined,
-  ].filter(Boolean);
+  const orderFilters: SQL[] = [];
+  if (from) orderFilters.push(gte(ordersTable.createdAt, from));
+  if (to) orderFilters.push(lte(ordersTable.createdAt, to));
+  if (customerId) orderFilters.push(eq(ordersTable.customerId, customerId));
   if (orderFilters.length)
     ordersQuery = ordersQuery.where(and(...orderFilters));
 
   const orders = await ordersQuery;
   let invoicesQuery = db.select().from(invoicesTable).$dynamic();
-  const invoiceFilters = [
-    from ? gte(invoicesTable.createdAt, from) : undefined,
-    to ? lte(invoicesTable.createdAt, to) : undefined,
-  ].filter(Boolean);
+  const invoiceFilters: SQL[] = [];
+  if (from) invoiceFilters.push(gte(invoicesTable.createdAt, from));
+  if (to) invoiceFilters.push(lte(invoicesTable.createdAt, to));
+  if (customerId) invoiceFilters.push(eq(invoicesTable.customerId, customerId));
   if (invoiceFilters.length)
     invoicesQuery = invoicesQuery.where(and(...invoiceFilters));
 
@@ -196,11 +206,15 @@ async function getSalesReport(query: Record<string, unknown>) {
   return { totalRevenue, totalOrders, rows, topCustomers };
 }
 
-async function getInventoryReport() {
+async function getInventoryReport(query: Record<string, unknown> = {}) {
+  const productId = queryNumber(query, "productId");
   const products = await db.select().from(productsTable);
   const stockRows = await db.select().from(stockTable);
 
-  const reportRows = products.map((p) => {
+  const filteredProducts = productId
+    ? products.filter((product) => product.id === productId)
+    : products;
+  const reportRows = filteredProducts.map((p) => {
     const totalStock = stockRows
       .filter((s) => s.productId === p.id)
       .reduce((sum, s) => sum + s.quantity, 0);
@@ -222,7 +236,7 @@ async function getInventoryReport() {
   ).length;
 
   return {
-    totalProducts: products.length,
+    totalProducts: filteredProducts.length,
     totalStockValue,
     lowStockCount,
     rows: reportRows,
@@ -231,12 +245,14 @@ async function getInventoryReport() {
 
 async function getPurchasesReport(query: Record<string, unknown>) {
   const { from, to } = queryDateRange(query);
+  const supplierId = queryNumber(query, "supplierId");
 
   let posQuery = db.select().from(purchaseOrdersTable).$dynamic();
-  const purchaseOrderFilters = [
-    from ? gte(purchaseOrdersTable.createdAt, from) : undefined,
-    to ? lte(purchaseOrdersTable.createdAt, to) : undefined,
-  ].filter(Boolean);
+  const purchaseOrderFilters: SQL[] = [];
+  if (from) purchaseOrderFilters.push(gte(purchaseOrdersTable.createdAt, from));
+  if (to) purchaseOrderFilters.push(lte(purchaseOrdersTable.createdAt, to));
+  if (supplierId)
+    purchaseOrderFilters.push(eq(purchaseOrdersTable.supplierId, supplierId));
   if (purchaseOrderFilters.length)
     posQuery = posQuery.where(and(...purchaseOrderFilters));
 
@@ -245,10 +261,14 @@ async function getPurchasesReport(query: Record<string, unknown>) {
     .select()
     .from(purchaseInvoicesTable)
     .$dynamic();
-  const purchaseInvoiceFilters = [
-    from ? gte(purchaseInvoicesTable.createdAt, from) : undefined,
-    to ? lte(purchaseInvoicesTable.createdAt, to) : undefined,
-  ].filter(Boolean);
+  const purchaseInvoiceFilters: SQL[] = [];
+  if (from)
+    purchaseInvoiceFilters.push(gte(purchaseInvoicesTable.createdAt, from));
+  if (to) purchaseInvoiceFilters.push(lte(purchaseInvoicesTable.createdAt, to));
+  if (supplierId)
+    purchaseInvoiceFilters.push(
+      eq(purchaseInvoicesTable.supplierId, supplierId),
+    );
   if (purchaseInvoiceFilters.length)
     purchaseInvoicesQuery = purchaseInvoicesQuery.where(
       and(...purchaseInvoiceFilters),
@@ -1017,7 +1037,7 @@ async function getReport(
   query: Record<string, unknown>,
 ) {
   if (reportType === "sales") return getSalesReport(query);
-  if (reportType === "inventory") return getInventoryReport();
+  if (reportType === "inventory") return getInventoryReport(query);
   return getPurchasesReport(query);
 }
 
@@ -1032,7 +1052,7 @@ router.get("/reports/sales", async (req, res) => {
 
 router.get("/reports/inventory", async (req, res) => {
   try {
-    res.json(await getInventoryReport());
+    res.json(await getInventoryReport(req.query));
   } catch (err) {
     req.log.error({ err });
     res.status(500).json({ error: "Internal server error" });

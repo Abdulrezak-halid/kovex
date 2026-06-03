@@ -1821,17 +1821,33 @@ function inMockDateRange(
   return true;
 }
 
+function mockNumberParam(
+  searchParams: URLSearchParams | undefined,
+  key: string,
+) {
+  const value = searchParams?.get(key);
+  const numberValue = value ? Number(value) : null;
+  return numberValue != null && Number.isFinite(numberValue) && numberValue > 0
+    ? numberValue
+    : null;
+}
+
 function salesReport(searchParams?: URLSearchParams) {
   const from = parseMockDateBoundary(
     searchParams?.get("from") ?? null,
     "start",
   );
   const to = parseMockDateBoundary(searchParams?.get("to") ?? null, "end");
-  const orders = mockOrders.filter((order) =>
-    inMockDateRange(order.createdAt, from, to),
+  const customerId = mockNumberParam(searchParams, "customerId");
+  const orders = mockOrders.filter(
+    (order) =>
+      inMockDateRange(order.createdAt, from, to) &&
+      (!customerId || Number(order.customerId) === customerId),
   );
-  const invoices = mockInvoices.filter((invoice) =>
-    inMockDateRange(invoice.createdAt, from, to),
+  const invoices = mockInvoices.filter(
+    (invoice) =>
+      inMockDateRange(invoice.createdAt, from, to) &&
+      (!customerId || Number(invoice.customerId) === customerId),
   );
   const invoicedOrderIds = new Set(
     invoices
@@ -1908,8 +1924,12 @@ function salesReport(searchParams?: URLSearchParams) {
   };
 }
 
-function inventoryReport() {
-  const rows = mockProducts.map((product) => {
+function inventoryReport(searchParams?: URLSearchParams) {
+  const productId = mockNumberParam(searchParams, "productId");
+  const products = productId
+    ? mockProducts.filter((product) => product.id === productId)
+    : mockProducts;
+  const rows = products.map((product) => {
     const productStock = mockStock.filter(
       (stock) => stock.productId === product.id,
     );
@@ -1931,7 +1951,7 @@ function inventoryReport() {
   });
 
   return {
-    totalProducts: mockProducts.length,
+    totalProducts: products.length,
     totalStockValue: money(total(rows, "stockValue")),
     lowStockCount: rows.filter(
       (row) => Number(row.totalStock) <= Number(row.minimumStock),
@@ -1946,11 +1966,16 @@ function purchasesReport(searchParams?: URLSearchParams) {
     "start",
   );
   const to = parseMockDateBoundary(searchParams?.get("to") ?? null, "end");
-  const purchaseOrders = mockPurchaseOrders.filter((order) =>
-    inMockDateRange(order.createdAt, from, to),
+  const supplierId = mockNumberParam(searchParams, "supplierId");
+  const purchaseOrders = mockPurchaseOrders.filter(
+    (order) =>
+      inMockDateRange(order.createdAt, from, to) &&
+      (!supplierId || Number(order.supplierId) === supplierId),
   );
-  const purchaseInvoices = mockPurchaseInvoices.filter((invoice) =>
-    inMockDateRange(invoice.createdAt, from, to),
+  const purchaseInvoices = mockPurchaseInvoices.filter(
+    (invoice) =>
+      inMockDateRange(invoice.createdAt, from, to) &&
+      (!supplierId || Number(invoice.supplierId) === supplierId),
   );
   const invoicedPurchaseOrderIds = new Set(
     purchaseInvoices
@@ -2099,7 +2124,7 @@ function reportExportSections(path: string, searchParams?: URLSearchParams) {
   }
 
   if (path === "/api/reports/inventory/export") {
-    const report = inventoryReport();
+    const report = inventoryReport(searchParams);
     return {
       reportType: "inventory" as const,
       title: "Inventory Report",
@@ -2256,7 +2281,7 @@ function mockGet(
   if (path === "/api/reports/sales") {
     return salesReport(searchParams);
   }
-  if (path === "/api/reports/inventory") return inventoryReport();
+  if (path === "/api/reports/inventory") return inventoryReport(searchParams);
   if (path === "/api/reports/purchases") return purchasesReport(searchParams);
 
   return undefined;

@@ -1226,6 +1226,7 @@ export const DeleteUserParams = zod.object({
 export const GetSalesReportQueryParams = zod.object({
   from: zod.coerce.string().nullish(),
   to: zod.coerce.string().nullish(),
+  customerId: zod.coerce.number().nullish(),
 });
 
 export const GetSalesReportResponse = zod.object({
@@ -1251,6 +1252,10 @@ export const GetSalesReportResponse = zod.object({
 /**
  * @summary Get inventory report
  */
+export const GetInventoryReportQueryParams = zod.object({
+  productId: zod.coerce.number().nullish(),
+});
+
 export const GetInventoryReportResponse = zod.object({
   totalProducts: zod.number(),
   totalStockValue: zod.number(),
@@ -1273,6 +1278,7 @@ export const GetInventoryReportResponse = zod.object({
 export const GetPurchasesReportQueryParams = zod.object({
   from: zod.coerce.string().nullish(),
   to: zod.coerce.string().nullish(),
+  supplierId: zod.coerce.number().nullish(),
 });
 
 export const GetPurchasesReportResponse = zod.object({
@@ -1308,6 +1314,10 @@ export const ExportSalesReportQueryParams = zod.object({
     .string()
     .nullish()
     .describe("Optional end date for date-based reports"),
+  customerId: zod.coerce
+    .number()
+    .nullish()
+    .describe("Optional customer filter for the sales report"),
 });
 
 /**
@@ -1315,6 +1325,10 @@ export const ExportSalesReportQueryParams = zod.object({
  */
 export const ExportInventoryReportQueryParams = zod.object({
   format: zod.enum(["pdf", "excel"]),
+  productId: zod.coerce
+    .number()
+    .nullish()
+    .describe("Optional product filter for the inventory report"),
 });
 
 /**
@@ -1330,4 +1344,8 @@ export const ExportPurchasesReportQueryParams = zod.object({
     .string()
     .nullish()
     .describe("Optional end date for date-based reports"),
+  supplierId: zod.coerce
+    .number()
+    .nullish()
+    .describe("Optional supplier filter for the purchases report"),
 });

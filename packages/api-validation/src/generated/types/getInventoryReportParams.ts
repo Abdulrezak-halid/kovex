@@ -6,17 +6,9 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export type GetPurchasesReportParams = {
+export type GetInventoryReportParams = {
   /**
    * @nullable
    */
-  from?: string | null;
-  /**
-   * @nullable
-   */
-  to?: string | null;
-  /**
-   * @nullable
-   */
-  supplierId?: number | null;
+  productId?: number | null;
 };

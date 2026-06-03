@@ -1,4 +1,4 @@
-import { useGetInventoryReport } from "@sme-erp/api-client";
+import { useGetInventoryReport, useListProducts } from "@sme-erp/api-client";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FileSpreadsheet, FileText } from "lucide-react";
@@ -7,11 +7,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import {
   downloadReportExport,
   type ReportExportFormat,
 } from "@/lib/report-export";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   CartesianGrid,
   Cell,
@@ -44,8 +52,16 @@ const chartColors = [
 export default function CInventoryReport() {
   const { t } = useTranslation();
   const { toast } = useToast();
+  const [productId, setProductId] = useState("all");
+  const [params, setParams] = useState<{ productId?: number }>({});
   const [exporting, setExporting] = useState<ReportExportFormat | null>(null);
-  const { data, isLoading } = useGetInventoryReport();
+  const { data, isLoading } = useGetInventoryReport(params);
+  const { data: products } = useListProducts();
+  const applyFilters = () =>
+    setParams({
+      productId:
+        productId !== "all" && productId ? Number(productId) : undefined,
+    });
   const topStockValueRows =
     data?.rows
       ?.filter((row) => row.stockValue > 0)
@@ -58,7 +74,7 @@ export default function CInventoryReport() {
   const handleExport = async (format: ReportExportFormat) => {
     try {
       setExporting(format);
-      await downloadReportExport("inventory", format);
+      await downloadReportExport("inventory", format, params);
     } catch {
       toast({ title: t("exportFailed"), variant: "destructive" });
     } finally {
@@ -74,25 +90,58 @@ export default function CInventoryReport() {
       />
 
       <Card className="mb-6">
-        <CardContent className="flex justify-end gap-2 pt-4">
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => handleExport("pdf")}
-            disabled={exporting !== null}
-          >
-            <FileText className="h-4 w-4" />
-            {exporting === "pdf" ? t("exporting") : t("exportPdf")}
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => handleExport("excel")}
-            disabled={exporting !== null}
-          >
-            <FileSpreadsheet className="h-4 w-4" />
-            {exporting === "excel" ? t("exporting") : t("exportExcel")}
-          </Button>
+        <CardContent className="pt-4">
+          <div className="flex flex-wrap items-end gap-4">
+            <div className="min-w-[240px]">
+              <Label className="text-xs">{t("product")}</Label>
+              <Select value={productId} onValueChange={setProductId}>
+                <SelectTrigger className="mt-1 h-8 text-sm">
+                  <SelectValue placeholder={t("selectProduct")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t("allProducts")}</SelectItem>
+                  {products?.map((product) => (
+                    <SelectItem key={product.id} value={String(product.id)}>
+                      {product.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <Button size="sm" onClick={applyFilters}>
+              {t("apply")}
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                setProductId("all");
+                setParams({});
+              }}
+            >
+              {t("clear")}
+            </Button>
+            <div className="ml-auto flex gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => handleExport("pdf")}
+                disabled={exporting !== null}
+              >
+                <FileText className="h-4 w-4" />
+                {exporting === "pdf" ? t("exporting") : t("exportPdf")}
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => handleExport("excel")}
+                disabled={exporting !== null}
+              >
+                <FileSpreadsheet className="h-4 w-4" />
+                {exporting === "excel" ? t("exporting") : t("exportExcel")}
+              </Button>
+            </div>
+          </div>
         </CardContent>
       </Card>
 

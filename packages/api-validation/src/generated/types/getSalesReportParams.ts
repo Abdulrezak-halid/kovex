@@ -15,4 +15,8 @@ export type GetSalesReportParams = {
    * @nullable
    */
   to?: string | null;
+  /**
+   * @nullable
+   */
+  customerId?: number | null;
 };

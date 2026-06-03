@@ -24,6 +24,7 @@ import type {
   ExportInventoryReportParams,
   ExportPurchasesReportParams,
   ExportSalesReportParams,
+  GetInventoryReportParams,
   GetPurchasesReportParams,
   GetSalesReportParams,
   HealthStatus,
@@ -5841,41 +5842,60 @@ export function useGetSalesReport<
 /**
  * @summary Get inventory report
  */
-export const getGetInventoryReportUrl = () => {
-  return `/api/reports/inventory`;
+export const getGetInventoryReportUrl = (params?: GetInventoryReportParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/reports/inventory?${stringifiedParams}`
+    : `/api/reports/inventory`;
 };
 
 export const getInventoryReport = async (
+  params?: GetInventoryReportParams,
   options?: RequestInit,
 ): Promise<InventoryReport> => {
-  return customFetch<InventoryReport>(getGetInventoryReportUrl(), {
+  return customFetch<InventoryReport>(getGetInventoryReportUrl(params), {
     ...options,
     method: "GET",
   });
 };
 
-export const getGetInventoryReportQueryKey = () => {
-  return [`/api/reports/inventory`] as const;
+export const getGetInventoryReportQueryKey = (
+  params?: GetInventoryReportParams,
+) => {
+  return [`/api/reports/inventory`, ...(params ? [params] : [])] as const;
 };
 
 export const getGetInventoryReportQueryOptions = <
   TData = Awaited<ReturnType<typeof getInventoryReport>>,
   TError = ErrorType<unknown>,
->(options?: {
-  query?: UseQueryOptions<
-    Awaited<ReturnType<typeof getInventoryReport>>,
-    TError,
-    TData
-  >;
-  request?: SecondParameter<typeof customFetch>;
-}) => {
+>(
+  params?: GetInventoryReportParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getInventoryReport>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetInventoryReportQueryKey();
+  const queryKey =
+    queryOptions?.queryKey ?? getGetInventoryReportQueryKey(params);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof getInventoryReport>>
-  > = ({ signal }) => getInventoryReport({ signal, ...requestOptions });
+  > = ({ signal }) => getInventoryReport(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof getInventoryReport>>,
@@ -5896,15 +5916,18 @@ export type GetInventoryReportQueryError = ErrorType<unknown>;
 export function useGetInventoryReport<
   TData = Awaited<ReturnType<typeof getInventoryReport>>,
   TError = ErrorType<unknown>,
->(options?: {
-  query?: UseQueryOptions<
-    Awaited<ReturnType<typeof getInventoryReport>>,
-    TError,
-    TData
-  >;
-  request?: SecondParameter<typeof customFetch>;
-}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-  const queryOptions = getGetInventoryReportQueryOptions(options);
+>(
+  params?: GetInventoryReportParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getInventoryReport>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetInventoryReportQueryOptions(params, options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;

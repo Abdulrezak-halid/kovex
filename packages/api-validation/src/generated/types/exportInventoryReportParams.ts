@@ -9,4 +9,9 @@ import type { ExportInventoryReportFormat } from "./exportInventoryReportFormat"
 
 export type ExportInventoryReportParams = {
   format: ExportInventoryReportFormat;
+  /**
+   * Optional product filter for the inventory report
+   * @nullable
+   */
+  productId?: number | null;
 };

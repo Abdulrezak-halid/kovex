@@ -19,4 +19,9 @@ export type ExportPurchasesReportParams = {
    * @nullable
    */
   to?: string | null;
+  /**
+   * Optional supplier filter for the purchases report
+   * @nullable
+   */
+  supplierId?: number | null;
 };

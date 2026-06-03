@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useGetSalesReport } from "@sme-erp/api-client";
+import { useGetSalesReport, useListCustomers } from "@sme-erp/api-client";
 import { useTranslation } from "react-i18next";
 import { FileSpreadsheet, FileText } from "lucide-react";
 import { CPageHeader } from "@/components/CPageHeader";
@@ -8,6 +8,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import {
   downloadReportExport,
@@ -49,10 +56,23 @@ export default function CSalesReport() {
   const { toast } = useToast();
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
-  const [params, setParams] = useState<{ from?: string; to?: string }>({});
+  const [customerId, setCustomerId] = useState("all");
+  const [params, setParams] = useState<{
+    from?: string;
+    to?: string;
+    customerId?: number;
+  }>({});
   const [exporting, setExporting] = useState<ReportExportFormat | null>(null);
 
   const { data, isLoading } = useGetSalesReport(params);
+  const { data: customers } = useListCustomers();
+  const applyFilters = () =>
+    setParams({
+      from: from || undefined,
+      to: to || undefined,
+      customerId:
+        customerId !== "all" && customerId ? Number(customerId) : undefined,
+    });
   const handleExport = async (format: ReportExportFormat) => {
     try {
       setExporting(format);
@@ -97,12 +117,23 @@ export default function CSalesReport() {
                 onChange={(e) => setTo(e.target.value)}
               />
             </div>
-            <Button
-              size="sm"
-              onClick={() =>
-                setParams({ from: from || undefined, to: to || undefined })
-              }
-            >
+            <div className="min-w-55">
+              <Label className="text-xs">{t("customer")}</Label>
+              <Select value={customerId} onValueChange={setCustomerId}>
+                <SelectTrigger className="mt-1 h-8 text-sm">
+                  <SelectValue placeholder={t("selectCustomer")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t("allCustomers")}</SelectItem>
+                  {customers?.map((customer) => (
+                    <SelectItem key={customer.id} value={String(customer.id)}>
+                      {customer.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <Button size="sm" onClick={applyFilters}>
               {t("apply")}
             </Button>
             <Button
@@ -111,6 +142,7 @@ export default function CSalesReport() {
               onClick={() => {
                 setFrom("");
                 setTo("");
+                setCustomerId("all");
                 setParams({});
               }}
             >
