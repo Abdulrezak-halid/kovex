@@ -1,12 +1,41 @@
 import { Router } from "express";
 import { db } from "@sme-erp/database";
 import {
-  customersTable, productsTable, ordersTable, orderItemsTable,
-  invoicesTable, stockTable, quotationItemsTable,
+  customersTable,
+  productsTable,
+  ordersTable,
+  orderItemsTable,
+  invoicesTable,
+  stockTable,
 } from "@sme-erp/database";
-import { sql, desc, lt, and } from "drizzle-orm";
+import { desc, gte, inArray, sql } from "drizzle-orm";
 
 const router = Router();
+
+async function getLowStockProducts() {
+  const [products, stockRows] = await Promise.all([
+    db.select().from(productsTable),
+    db.select().from(stockTable),
+  ]);
+
+  return products
+    .map((product) => {
+      const currentStock = stockRows
+        .filter((stock) => stock.productId === product.id)
+        .reduce((sum, stock) => sum + stock.quantity, 0);
+
+      return {
+        productId: product.id,
+        productName: product.name,
+        sku: product.sku,
+        minimumStock: product.minimumStock,
+        currentStock,
+        warehouseName: "All warehouses",
+      };
+    })
+    .filter((product) => product.currentStock <= product.minimumStock)
+    .sort((a, b) => a.currentStock - b.currentStock);
+}
 
 router.get("/dashboard/summary", async (req, res) => {
   try {
@@ -22,29 +51,31 @@ router.get("/dashboard/summary", async (req, res) => {
       pendingOrders,
       revenueThisYear,
       pendingInvoices,
-      lowStockCount,
+      lowStockProducts,
     ] = await Promise.all([
       db.select({ count: sql<number>`count(*)::int` }).from(customersTable),
       db.select({ count: sql<number>`count(*)::int` }).from(productsTable),
-      db.select({ total: sql<number>`coalesce(sum(total_amount::numeric), 0)` })
+      db
+        .select({ total: sql<number>`coalesce(sum(total_amount::numeric), 0)` })
         .from(ordersTable)
-        .where(sql`created_at >= ${startOfMonth.toISOString()}`),
-      db.select({ count: sql<number>`count(*)::int` })
+        .where(gte(ordersTable.createdAt, startOfMonth)),
+      db
+        .select({ count: sql<number>`count(*)::int` })
         .from(ordersTable)
-        .where(sql`created_at >= ${startOfMonth.toISOString()}`),
-      db.select({ count: sql<number>`count(*)::int` })
+        .where(gte(ordersTable.createdAt, startOfMonth)),
+      db
+        .select({ count: sql<number>`count(*)::int` })
         .from(ordersTable)
-        .where(sql`status = 'pending'`),
-      db.select({ total: sql<number>`coalesce(sum(total_amount::numeric), 0)` })
+        .where(inArray(ordersTable.status, ["pending", "confirmed"])),
+      db
+        .select({ total: sql<number>`coalesce(sum(total_amount::numeric), 0)` })
         .from(ordersTable)
-        .where(sql`created_at >= ${startOfYear.toISOString()}`),
-      db.select({ count: sql<number>`count(*)::int` })
+        .where(gte(ordersTable.createdAt, startOfYear)),
+      db
+        .select({ count: sql<number>`count(*)::int` })
         .from(invoicesTable)
-        .where(sql`status in ('draft', 'sent')`),
-      db.select({ count: sql<number>`count(*)::int` })
-        .from(stockTable)
-        .innerJoin(productsTable, sql`${stockTable.productId} = ${productsTable.id}`)
-        .where(sql`${stockTable.quantity} <= ${productsTable.minimumStock}`),
+        .where(inArray(invoicesTable.status, ["draft", "sent", "overdue"])),
+      getLowStockProducts(),
     ]);
 
     res.json({
@@ -55,7 +86,7 @@ router.get("/dashboard/summary", async (req, res) => {
       pendingOrders: pendingOrders[0]?.count ?? 0,
       totalRevenueThisYear: Number(revenueThisYear[0]?.total ?? 0),
       pendingInvoicesCount: pendingInvoices[0]?.count ?? 0,
-      lowStockCount: lowStockCount[0]?.count ?? 0,
+      lowStockCount: lowStockProducts.length,
     });
   } catch (err) {
     req.log.error({ err }, "dashboard summary error");
@@ -74,8 +105,15 @@ router.get("/dashboard/top-products", async (req, res) => {
         totalRevenue: sql<number>`sum(${orderItemsTable.total}::numeric)`,
       })
       .from(orderItemsTable)
-      .innerJoin(productsTable, sql`${orderItemsTable.productId} = ${productsTable.id}`)
-      .groupBy(orderItemsTable.productId, orderItemsTable.productName, productsTable.sku)
+      .innerJoin(
+        productsTable,
+        sql`${orderItemsTable.productId} = ${productsTable.id}`,
+      )
+      .groupBy(
+        orderItemsTable.productId,
+        orderItemsTable.productName,
+        productsTable.sku,
+      )
       .orderBy(desc(sql`sum(${orderItemsTable.quantity})`))
       .limit(10);
     res.json(rows);
@@ -100,10 +138,19 @@ router.get("/dashboard/recent-orders", async (req, res) => {
         createdAt: ordersTable.createdAt,
       })
       .from(ordersTable)
-      .innerJoin(customersTable, sql`${ordersTable.customerId} = ${customersTable.id}`)
+      .innerJoin(
+        customersTable,
+        sql`${ordersTable.customerId} = ${customersTable.id}`,
+      )
       .orderBy(desc(ordersTable.createdAt))
       .limit(10);
-    res.json(rows.map((r) => ({ ...r, items: [], totalAmount: Number(r.totalAmount) })));
+    res.json(
+      rows.map((r) => ({
+        ...r,
+        items: [],
+        totalAmount: Number(r.totalAmount),
+      })),
+    );
   } catch (err) {
     req.log.error({ err }, "recent orders error");
     res.status(500).json({ error: "Internal server error" });
@@ -112,21 +159,8 @@ router.get("/dashboard/recent-orders", async (req, res) => {
 
 router.get("/dashboard/low-stock", async (req, res) => {
   try {
-    const rows = await db
-      .select({
-        productId: productsTable.id,
-        productName: productsTable.name,
-        sku: productsTable.sku,
-        minimumStock: productsTable.minimumStock,
-        currentStock: stockTable.quantity,
-        warehouseName: sql<string>`'Default'`,
-      })
-      .from(stockTable)
-      .innerJoin(productsTable, sql`${stockTable.productId} = ${productsTable.id}`)
-      .where(sql`${stockTable.quantity} <= ${productsTable.minimumStock}`)
-      .orderBy(stockTable.quantity)
-      .limit(20);
-    res.json(rows);
+    const rows = await getLowStockProducts();
+    res.json(rows.slice(0, 20));
   } catch (err) {
     req.log.error({ err }, "low stock error");
     res.status(500).json({ error: "Internal server error" });

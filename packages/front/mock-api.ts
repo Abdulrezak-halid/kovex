@@ -1911,6 +1911,26 @@ function purchasesReport() {
   };
 }
 
+function lowStockProducts() {
+  return mockProducts
+    .map((product) => {
+      const currentStock = mockStock
+        .filter((stock) => stock.productId === product.id)
+        .reduce((sum, stock) => sum + Number(stock.quantity ?? 0), 0);
+
+      return {
+        productId: Number(product.id),
+        productName: String(product.name),
+        sku: String(product.sku),
+        minimumStock: Number(product.minimumStock ?? 0),
+        currentStock,
+        warehouseName: "All warehouses",
+      };
+    })
+    .filter((product) => product.currentStock <= product.minimumStock)
+    .sort((a, b) => a.currentStock - b.currentStock);
+}
+
 function reportExportSections(path: string) {
   if (path === "/api/reports/sales/export") {
     const report = salesReport();
@@ -2027,9 +2047,7 @@ function mockGet(path: string): JsonValue | undefined {
     const pendingInvoices = mockInvoices.filter((invoice) =>
       ["draft", "sent", "overdue"].includes(String(invoice.status)),
     );
-    const lowStock = mockStock.filter(
-      (stock) => Number(stock.quantity) <= Number(stock.minimumStock),
-    );
+    const lowStock = lowStockProducts();
 
     return {
       totalSalesThisMonth: money(total(currentMonthOrders, "totalAmount")),
@@ -2059,9 +2077,7 @@ function mockGet(path: string): JsonValue | undefined {
   }
 
   if (path === "/api/dashboard/low-stock") {
-    return mockStock
-      .filter((stock) => Number(stock.quantity) <= Number(stock.minimumStock))
-      .map((stock) => ({ ...stock, currentStock: stock.quantity }));
+    return lowStockProducts().slice(0, 20);
   }
 
   if (path === "/api/auth/me") {

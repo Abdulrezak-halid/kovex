@@ -643,17 +643,18 @@ Completion Note: Browser security review is documented, covering XSS risks, cook
 Sprint 4 - Reports, Dashboard, UX, And Performance
 
 TASK-044 - Make dashboard summary use real database data
-Status: In Progress
+Status: Completed
 Priority: P0 Critical
 Sprint: Sprint 4
 Labels: reports, dashboard, backend
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Dashboard should reflect real business data.
 Acceptance Criteria:
 - Sales summary uses database.
 - Inventory alerts use database.
 - General counters use database.
 - Dashboard updates after transactions.
+Completion Note: Dashboard summary now calculates sales, orders, counters, pending items, and product-level low-stock alerts from live database tables.
 
 TASK-045 - Implement real sales report
 Status: In Progress
