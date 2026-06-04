@@ -297,5 +297,8 @@
   "warehouseCreated": "Warehouse created",
   "warehouseDeleted": "Warehouse deleted",
   "warehouses": "Warehouses",
-  "warehouseUpdated": "Warehouse updated"
+  "warehouseUpdated": "Warehouse updated",
+  "requiredField": "Required",
+  "invalidEmail": "Enter a valid email address.",
+  "invalidPhone": "Phone can only contain numbers and phone symbols."
 }

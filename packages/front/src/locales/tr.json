@@ -297,5 +297,8 @@
   "warehouseCreated": "Depo oluşturuldu",
   "warehouseDeleted": "Depo silindi",
   "warehouses": "Depolar",
-  "warehouseUpdated": "Depo güncellendi"
+  "warehouseUpdated": "Depo güncellendi",
+  "requiredField": "Zorunlu",
+  "invalidEmail": "Geçerli bir e-posta adresi girin.",
+  "invalidPhone": "Telefon yalnızca rakam ve telefon sembolleri içerebilir."
 }

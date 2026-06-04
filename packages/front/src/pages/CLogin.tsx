@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "wouter";
 import { AlertCircle, LogIn } from "lucide-react";
 import { useCAuth } from "@/lib/auth";
+import { isValidEmail, normalizeEmail } from "@/lib/form-validation";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,14 +24,23 @@ export default function CLogin() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setSubmitted(true);
+
+    const normalizedEmail = normalizeEmail(email);
+    const emailMissing = !normalizedEmail;
+    const emailInvalid = !emailMissing && !isValidEmail(normalizedEmail);
+    const passwordMissing = !password;
+    if (emailMissing || emailInvalid || passwordMissing) return;
+
     setError("");
     setSubmitting(true);
 
     try {
-      await login(email, password);
+      await login(normalizedEmail, password);
       setLocation("/");
     } catch {
       setError(t("invalidLogin"));
@@ -38,6 +48,12 @@ export default function CLogin() {
       setSubmitting(false);
     }
   }
+
+  const normalizedEmail = normalizeEmail(email);
+  const emailMissing = submitted && !normalizedEmail;
+  const emailInvalid =
+    submitted && !!normalizedEmail && !isValidEmail(normalizedEmail);
+  const passwordMissing = submitted && !password;
 
   return (
     <main className="min-h-screen bg-background">
@@ -76,9 +92,22 @@ export default function CLogin() {
                     type="email"
                     autoComplete="email"
                     value={email}
+                    onBlur={(event) =>
+                      setEmail(normalizeEmail(event.target.value))
+                    }
                     onChange={(event) => setEmail(event.target.value)}
                     required
                   />
+                  {emailMissing && (
+                    <p className="text-xs text-destructive">
+                      {t("requiredField")}
+                    </p>
+                  )}
+                  {emailInvalid && (
+                    <p className="text-xs text-destructive">
+                      {t("invalidEmail")}
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -91,12 +120,17 @@ export default function CLogin() {
                     onChange={(event) => setPassword(event.target.value)}
                     required
                   />
+                  {passwordMissing && (
+                    <p className="text-xs text-destructive">
+                      {t("requiredField")}
+                    </p>
+                  )}
                 </div>
 
                 <Button
                   type="submit"
                   className="w-full"
-                  disabled={submitting || !email || !password}
+                  disabled={submitting || !email || !password || emailInvalid}
                 >
                   <LogIn className="mr-2 h-4 w-4" />
                   {submitting ? t("signingIn") : t("login")}

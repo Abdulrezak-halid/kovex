@@ -33,6 +33,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import {
+  isValidEmail,
+  isValidPhone,
+  normalizeEmail,
+  phoneInputPattern,
+  sanitizePhoneInput,
+} from "@/lib/form-validation";
 
 const emptyForm = { name: "", email: "", phone: "", address: "", company: "" };
 
@@ -78,11 +85,26 @@ export default function CSuppliers() {
   }
 
   async function handleSave() {
+    const nameMissing = !form.name.trim();
+    const emailInvalid = !!form.email.trim() && !isValidEmail(form.email);
+    const phoneInvalid = !!form.phone.trim() && !isValidPhone(form.phone);
+    if (nameMissing || emailInvalid || phoneInvalid) return;
+
+    const payload = {
+      ...form,
+      name: form.name.trim(),
+      email: form.email.trim() ? normalizeEmail(form.email) : undefined,
+      phone: form.phone.trim() || undefined,
+    };
+
     try {
       if (editing) {
-        await updateMutation.mutateAsync({ id: editing.id, data: form as any });
+        await updateMutation.mutateAsync({
+          id: editing.id,
+          data: payload as any,
+        });
       } else {
-        await createMutation.mutateAsync({ data: form as SupplierInput });
+        await createMutation.mutateAsync({ data: payload as SupplierInput });
       }
       toast({ title: editing ? "Supplier updated" : "Supplier created" });
       qc.invalidateQueries({ queryKey: getListSuppliersQueryKey() });
@@ -104,6 +126,10 @@ export default function CSuppliers() {
       setDeleteId(null);
     }
   }
+
+  const nameMissing = !form.name.trim();
+  const emailInvalid = !!form.email.trim() && !isValidEmail(form.email);
+  const phoneInvalid = !!form.phone.trim() && !isValidPhone(form.phone);
 
   const columns = [
     {
@@ -201,11 +227,46 @@ export default function CSuppliers() {
                   <Label className="capitalize">{field}</Label>
                   <Input
                     className="mt-1"
-                    value={(form as any)[field]}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, [field]: e.target.value }))
+                    type={
+                      field === "email"
+                        ? "email"
+                        : field === "phone"
+                          ? "tel"
+                          : "text"
                     }
+                    inputMode={field === "phone" ? "tel" : undefined}
+                    pattern={field === "phone" ? phoneInputPattern : undefined}
+                    value={(form as any)[field]}
+                    onBlur={(e) => {
+                      if (field === "email") {
+                        setForm((f) => ({
+                          ...f,
+                          email: normalizeEmail(e.target.value),
+                        }));
+                      }
+                    }}
+                    onChange={(e) => {
+                      const value =
+                        field === "phone"
+                          ? sanitizePhoneInput(e.target.value)
+                          : e.target.value;
+                      setForm((f) => ({ ...f, [field]: value }));
+                    }}
+                    required={field === "name"}
                   />
+                  {field === "name" && nameMissing && (
+                    <p className="mt-1 text-xs text-destructive">Required</p>
+                  )}
+                  {field === "email" && emailInvalid && (
+                    <p className="mt-1 text-xs text-destructive">
+                      Enter a valid email address.
+                    </p>
+                  )}
+                  {field === "phone" && phoneInvalid && (
+                    <p className="mt-1 text-xs text-destructive">
+                      Phone can only contain numbers and phone symbols.
+                    </p>
+                  )}
                 </div>
               ),
             )}
@@ -217,7 +278,9 @@ export default function CSuppliers() {
             <Button
               onClick={handleSave}
               disabled={
-                !form.name ||
+                nameMissing ||
+                emailInvalid ||
+                phoneInvalid ||
                 createMutation.isPending ||
                 updateMutation.isPending
               }

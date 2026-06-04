@@ -35,6 +35,13 @@ import {
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiErrorMessage } from "@/lib/api-error";
+import {
+  isValidEmail,
+  isValidPhone,
+  normalizeEmail,
+  phoneInputPattern,
+  sanitizePhoneInput,
+} from "@/lib/form-validation";
 
 type ICustomerRow = Customer;
 
@@ -90,12 +97,27 @@ export default function CCustomers() {
   }
 
   async function handleSave() {
+    const nameMissing = !form.name?.trim();
+    const emailInvalid = !!form.email?.trim() && !isValidEmail(form.email);
+    const phoneInvalid = !!form.phone?.trim() && !isValidPhone(form.phone);
+    if (nameMissing || emailInvalid || phoneInvalid) return;
+
+    const payload = {
+      ...form,
+      name: form.name?.trim(),
+      email: form.email?.trim() ? normalizeEmail(form.email) : undefined,
+      phone: form.phone?.trim() || undefined,
+    };
+
     try {
       if (editing) {
-        await updateMutation.mutateAsync({ id: editing.id, data: form as any });
+        await updateMutation.mutateAsync({
+          id: editing.id,
+          data: payload as any,
+        });
         toast({ title: t("customerUpdated") });
       } else {
-        await createMutation.mutateAsync({ data: form as CustomerInput });
+        await createMutation.mutateAsync({ data: payload as CustomerInput });
         toast({ title: t("customerCreated") });
       }
       qc.invalidateQueries({ queryKey: getListCustomersQueryKey() });
@@ -125,6 +147,10 @@ export default function CCustomers() {
       setDeleteId(null);
     }
   }
+
+  const nameMissing = !form.name?.trim();
+  const emailInvalid = !!form.email?.trim() && !isValidEmail(form.email);
+  const phoneInvalid = !!form.phone?.trim() && !isValidPhone(form.phone);
 
   const columns = [
     {
@@ -228,12 +254,48 @@ export default function CCustomers() {
                   <Label className="capitalize text-sm">{t(field)}</Label>
                   <Input
                     className="mt-1"
-                    value={(form as any)[field] ?? ""}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, [field]: e.target.value }))
+                    type={
+                      field === "email"
+                        ? "email"
+                        : field === "phone"
+                          ? "tel"
+                          : "text"
                     }
+                    inputMode={field === "phone" ? "tel" : undefined}
+                    pattern={field === "phone" ? phoneInputPattern : undefined}
+                    value={(form as any)[field] ?? ""}
+                    onBlur={(e) => {
+                      if (field === "email") {
+                        setForm((f) => ({
+                          ...f,
+                          email: normalizeEmail(e.target.value),
+                        }));
+                      }
+                    }}
+                    onChange={(e) => {
+                      const value =
+                        field === "phone"
+                          ? sanitizePhoneInput(e.target.value)
+                          : e.target.value;
+                      setForm((f) => ({ ...f, [field]: value }));
+                    }}
                     required={field === "name"}
                   />
+                  {field === "name" && nameMissing && (
+                    <p className="mt-1 text-xs text-destructive">
+                      {t("requiredField")}
+                    </p>
+                  )}
+                  {field === "email" && emailInvalid && (
+                    <p className="mt-1 text-xs text-destructive">
+                      {t("invalidEmail")}
+                    </p>
+                  )}
+                  {field === "phone" && phoneInvalid && (
+                    <p className="mt-1 text-xs text-destructive">
+                      {t("invalidPhone")}
+                    </p>
+                  )}
                 </div>
               ),
             )}
@@ -245,7 +307,9 @@ export default function CCustomers() {
             <Button
               onClick={handleSave}
               disabled={
-                !form.name ||
+                nameMissing ||
+                emailInvalid ||
+                phoneInvalid ||
                 createMutation.isPending ||
                 updateMutation.isPending
               }

@@ -41,6 +41,7 @@ import { Plus, Pencil, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { apiErrorMessage } from "@/lib/api-error";
+import { isValidEmail, normalizeEmail } from "@/lib/form-validation";
 
 const roles = [
   "admin",
@@ -103,10 +104,25 @@ export default function CUsers() {
   }
 
   async function handleSave() {
+    const nameMissing = !form.name.trim();
+    const emailMissing = !form.email.trim();
+    const emailInvalid = !emailMissing && !isValidEmail(form.email);
+    const passwordMissing = !editing && !form.password;
+    const passwordTooShort =
+      !editing && !!form.password && form.password.length < 8;
+    if (
+      nameMissing ||
+      emailMissing ||
+      emailInvalid ||
+      passwordMissing ||
+      passwordTooShort
+    )
+      return;
+
     try {
       const payload: UserPayload = {
         name: form.name.trim(),
-        email: form.email.trim(),
+        email: normalizeEmail(form.email),
         role: form.role,
         department: form.department.trim(),
         active: form.active,
@@ -150,6 +166,13 @@ export default function CUsers() {
       setDeleteId(null);
     }
   }
+
+  const nameMissing = !form.name.trim();
+  const emailMissing = !form.email.trim();
+  const emailInvalid = !emailMissing && !isValidEmail(form.email);
+  const passwordMissing = !editing && !form.password;
+  const passwordTooShort =
+    !editing && !!form.password && form.password.length < 8;
 
   const columns = [
     {
@@ -246,7 +269,11 @@ export default function CUsers() {
                 onChange={(e) =>
                   setForm((f) => ({ ...f, name: e.target.value }))
                 }
+                required
               />
+              {nameMissing && (
+                <p className="mt-1 text-xs text-destructive">Required</p>
+              )}
             </div>
             <div>
               <Label>Email</Label>
@@ -254,10 +281,25 @@ export default function CUsers() {
                 className="mt-1"
                 type="email"
                 value={form.email}
+                onBlur={(e) =>
+                  setForm((f) => ({
+                    ...f,
+                    email: normalizeEmail(e.target.value),
+                  }))
+                }
                 onChange={(e) =>
                   setForm((f) => ({ ...f, email: e.target.value }))
                 }
+                required
               />
+              {emailMissing && (
+                <p className="mt-1 text-xs text-destructive">Required</p>
+              )}
+              {emailInvalid && (
+                <p className="mt-1 text-xs text-destructive">
+                  Enter a valid email address.
+                </p>
+              )}
             </div>
             <div>
               <Label>Password</Label>
@@ -274,7 +316,16 @@ export default function CUsers() {
                 onChange={(e) =>
                   setForm((f) => ({ ...f, password: e.target.value }))
                 }
+                required={!editing}
               />
+              {passwordMissing && (
+                <p className="mt-1 text-xs text-destructive">Required</p>
+              )}
+              {passwordTooShort && (
+                <p className="mt-1 text-xs text-destructive">
+                  Password must be at least 8 characters.
+                </p>
+              )}
             </div>
             <div>
               <Label>Role</Label>
@@ -329,9 +380,11 @@ export default function CUsers() {
             <Button
               onClick={handleSave}
               disabled={
-                !form.name.trim() ||
-                !form.email.trim() ||
-                (!editing && form.password.length < 8) ||
+                nameMissing ||
+                emailMissing ||
+                emailInvalid ||
+                passwordMissing ||
+                passwordTooShort ||
                 createMutation.isPending ||
                 updateMutation.isPending
               }

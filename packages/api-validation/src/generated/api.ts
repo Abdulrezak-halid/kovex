@@ -312,11 +312,15 @@ export const ListCustomersQueryParams = zod.object({
   sortOrder: zod.enum(["asc", "desc"]).optional(),
 });
 
+export const listCustomersResponsePhoneRegExp = new RegExp(
+  "^[0-9+()\\-\\s]\*$",
+);
+
 export const ListCustomersResponseItem = zod.object({
   id: zod.number(),
   name: zod.string(),
-  email: zod.string().nullish(),
-  phone: zod.string().nullish(),
+  email: zod.string().email().nullish(),
+  phone: zod.string().regex(listCustomersResponsePhoneRegExp).nullish(),
   address: zod.string().nullish(),
   company: zod.string().nullish(),
   createdAt: zod.string(),
@@ -326,10 +330,12 @@ export const ListCustomersResponse = zod.array(ListCustomersResponseItem);
 /**
  * @summary Create a customer
  */
+export const createCustomerBodyPhoneRegExp = new RegExp("^[0-9+()\\-\\s]\*$");
+
 export const CreateCustomerBody = zod.object({
   name: zod.string(),
-  email: zod.string().optional(),
-  phone: zod.string().optional(),
+  email: zod.string().email().optional(),
+  phone: zod.string().regex(createCustomerBodyPhoneRegExp).optional(),
   address: zod.string().optional(),
   company: zod.string().optional(),
 });
@@ -338,11 +344,13 @@ export const GetCustomerParams = zod.object({
   id: zod.coerce.number(),
 });
 
+export const getCustomerResponsePhoneRegExp = new RegExp("^[0-9+()\\-\\s]\*$");
+
 export const GetCustomerResponse = zod.object({
   id: zod.number(),
   name: zod.string(),
-  email: zod.string().nullish(),
-  phone: zod.string().nullish(),
+  email: zod.string().email().nullish(),
+  phone: zod.string().regex(getCustomerResponsePhoneRegExp).nullish(),
   address: zod.string().nullish(),
   company: zod.string().nullish(),
   createdAt: zod.string(),
@@ -352,19 +360,25 @@ export const UpdateCustomerParams = zod.object({
   id: zod.coerce.number(),
 });
 
+export const updateCustomerBodyPhoneRegExp = new RegExp("^[0-9+()\\-\\s]\*$");
+
 export const UpdateCustomerBody = zod.object({
   name: zod.string().optional(),
-  email: zod.string().optional(),
-  phone: zod.string().optional(),
+  email: zod.string().email().optional(),
+  phone: zod.string().regex(updateCustomerBodyPhoneRegExp).optional(),
   address: zod.string().optional(),
   company: zod.string().optional(),
 });
 
+export const updateCustomerResponsePhoneRegExp = new RegExp(
+  "^[0-9+()\\-\\s]\*$",
+);
+
 export const UpdateCustomerResponse = zod.object({
   id: zod.number(),
   name: zod.string(),
-  email: zod.string().nullish(),
-  phone: zod.string().nullish(),
+  email: zod.string().email().nullish(),
+  phone: zod.string().regex(updateCustomerResponsePhoneRegExp).nullish(),
   address: zod.string().nullish(),
   company: zod.string().nullish(),
   createdAt: zod.string(),
@@ -386,11 +400,15 @@ export const ListSuppliersQueryParams = zod.object({
   sortOrder: zod.enum(["asc", "desc"]).optional(),
 });
 
+export const listSuppliersResponsePhoneRegExp = new RegExp(
+  "^[0-9+()\\-\\s]\*$",
+);
+
 export const ListSuppliersResponseItem = zod.object({
   id: zod.number(),
   name: zod.string(),
-  email: zod.string().nullish(),
-  phone: zod.string().nullish(),
+  email: zod.string().email().nullish(),
+  phone: zod.string().regex(listSuppliersResponsePhoneRegExp).nullish(),
   address: zod.string().nullish(),
   company: zod.string().nullish(),
   createdAt: zod.string(),
@@ -400,10 +418,12 @@ export const ListSuppliersResponse = zod.array(ListSuppliersResponseItem);
 /**
  * @summary Create a supplier
  */
+export const createSupplierBodyPhoneRegExp = new RegExp("^[0-9+()\\-\\s]\*$");
+
 export const CreateSupplierBody = zod.object({
   name: zod.string(),
-  email: zod.string().optional(),
-  phone: zod.string().optional(),
+  email: zod.string().email().optional(),
+  phone: zod.string().regex(createSupplierBodyPhoneRegExp).optional(),
   address: zod.string().optional(),
   company: zod.string().optional(),
 });
@@ -412,11 +432,13 @@ export const GetSupplierParams = zod.object({
   id: zod.coerce.number(),
 });
 
+export const getSupplierResponsePhoneRegExp = new RegExp("^[0-9+()\\-\\s]\*$");
+
 export const GetSupplierResponse = zod.object({
   id: zod.number(),
   name: zod.string(),
-  email: zod.string().nullish(),
-  phone: zod.string().nullish(),
+  email: zod.string().email().nullish(),
+  phone: zod.string().regex(getSupplierResponsePhoneRegExp).nullish(),
   address: zod.string().nullish(),
   company: zod.string().nullish(),
   createdAt: zod.string(),
@@ -426,19 +448,25 @@ export const UpdateSupplierParams = zod.object({
   id: zod.coerce.number(),
 });
 
+export const updateSupplierBodyPhoneRegExp = new RegExp("^[0-9+()\\-\\s]\*$");
+
 export const UpdateSupplierBody = zod.object({
   name: zod.string().optional(),
-  email: zod.string().optional(),
-  phone: zod.string().optional(),
+  email: zod.string().email().optional(),
+  phone: zod.string().regex(updateSupplierBodyPhoneRegExp).optional(),
   address: zod.string().optional(),
   company: zod.string().optional(),
 });
 
+export const updateSupplierResponsePhoneRegExp = new RegExp(
+  "^[0-9+()\\-\\s]\*$",
+);
+
 export const UpdateSupplierResponse = zod.object({
   id: zod.number(),
   name: zod.string(),
-  email: zod.string().nullish(),
-  phone: zod.string().nullish(),
+  email: zod.string().email().nullish(),
+  phone: zod.string().regex(updateSupplierResponsePhoneRegExp).nullish(),
   address: zod.string().nullish(),
   company: zod.string().nullish(),
   createdAt: zod.string(),
@@ -1224,7 +1252,7 @@ export const createUserBodyPasswordMin = 8;
 
 export const CreateUserBody = zod.object({
   name: zod.string(),
-  email: zod.string(),
+  email: zod.string().email(),
   password: zod.string().min(createUserBodyPasswordMin),
   role: zod.string(),
   department: zod.string().optional(),

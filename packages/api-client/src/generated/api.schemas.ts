@@ -42,7 +42,10 @@ export interface Customer {
   name: string;
   /** @nullable */
   email?: string | null;
-  /** @nullable */
+  /**
+   * @nullable
+   * @pattern ^[0-9+()\-\s]*$
+   */
   phone?: string | null;
   /** @nullable */
   address?: string | null;
@@ -54,6 +57,7 @@ export interface Customer {
 export interface CustomerInput {
   name: string;
   email?: string;
+  /** @pattern ^[0-9+()\-\s]*$ */
   phone?: string;
   address?: string;
   company?: string;
@@ -62,6 +66,7 @@ export interface CustomerInput {
 export interface CustomerUpdate {
   name?: string;
   email?: string;
+  /** @pattern ^[0-9+()\-\s]*$ */
   phone?: string;
   address?: string;
   company?: string;
@@ -72,7 +77,10 @@ export interface Supplier {
   name: string;
   /** @nullable */
   email?: string | null;
-  /** @nullable */
+  /**
+   * @nullable
+   * @pattern ^[0-9+()\-\s]*$
+   */
   phone?: string | null;
   /** @nullable */
   address?: string | null;
@@ -84,6 +92,7 @@ export interface Supplier {
 export interface SupplierInput {
   name: string;
   email?: string;
+  /** @pattern ^[0-9+()\-\s]*$ */
   phone?: string;
   address?: string;
   company?: string;
@@ -92,6 +101,7 @@ export interface SupplierInput {
 export interface SupplierUpdate {
   name?: string;
   email?: string;
+  /** @pattern ^[0-9+()\-\s]*$ */
   phone?: string;
   address?: string;
   company?: string;

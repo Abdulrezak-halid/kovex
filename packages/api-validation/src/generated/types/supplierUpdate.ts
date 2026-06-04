@@ -9,6 +9,7 @@
 export interface SupplierUpdate {
   name?: string;
   email?: string;
+  /** @pattern ^[0-9+()\-\s]*$ */
   phone?: string;
   address?: string;
   company?: string;

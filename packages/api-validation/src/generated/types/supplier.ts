@@ -11,7 +11,10 @@ export interface Supplier {
   name: string;
   /** @nullable */
   email?: string | null;
-  /** @nullable */
+  /**
+   * @nullable
+   * @pattern ^[0-9+()\-\s]*$
+   */
   phone?: string | null;
   /** @nullable */
   address?: string | null;

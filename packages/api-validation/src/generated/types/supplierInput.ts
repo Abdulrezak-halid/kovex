@@ -9,6 +9,7 @@
 export interface SupplierInput {
   name: string;
   email?: string;
+  /** @pattern ^[0-9+()\-\s]*$ */
   phone?: string;
   address?: string;
   company?: string;
