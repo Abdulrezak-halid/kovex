@@ -238,6 +238,14 @@ export default function CCustomers() {
         isLoading={isLoading}
         keyField="id"
         emptyMessage={t("noCustomersFound")}
+        emptyAction={
+          <div className="flex justify-center">
+            <Button size="sm" onClick={openCreate}>
+              <Plus className="h-4 w-4 mr-1.5" />
+              {t("newCustomer")}
+            </Button>
+          </div>
+        }
       />
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
