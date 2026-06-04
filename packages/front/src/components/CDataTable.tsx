@@ -16,6 +16,7 @@ interface IDataTableProps<T> {
   isLoading?: boolean;
   keyField: keyof T;
   emptyMessage?: string;
+  emptyAction?: React.ReactNode;
 }
 
 export function CDataTable<T>({
@@ -24,6 +25,7 @@ export function CDataTable<T>({
   isLoading,
   keyField,
   emptyMessage,
+  emptyAction,
 }: IDataTableProps<T>) {
   const { t } = useTranslation();
   const { canManageData } = useCAuth();
@@ -63,9 +65,15 @@ export function CDataTable<T>({
                 colSpan={visibleColumns.length}
                 className="px-4 py-8 text-center text-sm text-muted-foreground"
               >
-                {emptyMessage
-                  ? translateText(t, emptyMessage)
-                  : t("noRecordsFound")}
+                <div className="space-y-2">
+                  <div>
+                    {emptyMessage
+                      ? translateText(t, emptyMessage)
+                      : t("noRecordsFound") + " Try adjusting filters or create a new item."}
+                  </div>
+                  {/** Optional action provided by caller (e.g., create button) */}
+                  {emptyAction ? <div className="mt-2">{emptyAction}</div> : null}
+                </div>
               </td>
             </tr>
           ) : (

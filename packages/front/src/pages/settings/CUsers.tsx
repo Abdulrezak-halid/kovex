@@ -253,6 +253,14 @@ export default function CUsers() {
         isLoading={isLoading}
         keyField="id"
         emptyMessage="No users."
+        emptyAction={
+          <div className="flex justify-center">
+            <Button size="sm" onClick={openCreate}>
+              <Plus className="h-4 w-4 mr-1.5" />
+              New User
+            </Button>
+          </div>
+        }
       />
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
