@@ -2,6 +2,27 @@
 
 Use this guide when a new developer needs to fork, clone, and run Kovex ERP on their laptop.
 
+This guide is written for Windows first because many setup errors happen when Linux-style commands are copied into PowerShell or Command Prompt.
+
+## Windows Quick Start
+
+After cloning the project, run these commands from PowerShell in the project root:
+
+```powershell
+corepack enable
+corepack prepare pnpm@11.3.0 --activate
+pnpm install
+pnpm run dev:front
+```
+
+Open:
+
+```text
+http://localhost:8081/
+```
+
+This starts the frontend with the mock API. You do not need PostgreSQL or the backend for this mode.
+
 ## 1. Install Required Tools
 
 Install these tools before cloning the project:
@@ -9,11 +30,18 @@ Install these tools before cloning the project:
 - Git
 - Node.js 24 or newer
 - pnpm
+- Docker Desktop, optional but useful for a quick mock frontend run
 - PostgreSQL, only if you need to run the real backend/database
+
+Recommended Windows terminal:
+
+- PowerShell
+- Windows Terminal with PowerShell
+- Git Bash also works for Git commands, but the examples below use PowerShell
 
 Check versions:
 
-```bash
+```powershell
 git --version
 node --version
 pnpm --version
@@ -21,10 +49,12 @@ pnpm --version
 
 If pnpm is not installed, enable it with Corepack:
 
-```bash
+```powershell
 corepack enable
 corepack prepare pnpm@11.3.0 --activate
 ```
+
+Close and reopen the terminal after installing Node.js or enabling Corepack.
 
 ## 2. Fork The Repository
 
@@ -43,14 +73,14 @@ https://github.com/YOUR_GITHUB_USERNAME/kovex-erp.git
 
 Clone the fork to your laptop:
 
-```bash
+```powershell
 git clone https://github.com/YOUR_GITHUB_USERNAME/kovex-erp.git
 cd kovex-erp
 ```
 
 Add the original repository as `upstream` so you can pull future changes from the main project:
 
-```bash
+```powershell
 git remote add upstream https://github.com/ORIGINAL_OWNER/kovex-erp.git
 git remote -v
 ```
@@ -66,17 +96,26 @@ upstream  https://github.com/ORIGINAL_OWNER/kovex-erp.git
 
 Install all workspace dependencies from the project root:
 
-```bash
+```powershell
 pnpm install
 ```
 
 Do not use `npm install` or `yarn install` in this repository. The project uses pnpm workspaces.
 
+If you cloned the project before the Windows setup fix was added, pull the latest changes first:
+
+```powershell
+git pull upstream main
+pnpm install
+```
+
 ## 5. Run The Frontend With Mock API
 
 This is the fastest setup for frontend work. It does not require PostgreSQL or the backend.
 
-```bash
+Use this command on Windows, Linux, or macOS:
+
+```powershell
 pnpm run dev:front
 ```
 
@@ -88,18 +127,17 @@ http://localhost:8081/
 
 If port `8081` is already used:
 
-Linux/macOS:
-
-```bash
-PORT=8082 BASE_PATH=/ pnpm --filter @sme-erp/front run dev
-```
-
 Windows PowerShell:
 
 ```powershell
 $env:PORT="8082"
-$env:BASE_PATH="/"
 pnpm run dev:front
+```
+
+Linux/macOS:
+
+```bash
+PORT=8082 BASE_PATH=/ pnpm --filter @sme-erp/front run dev
 ```
 
 Then open:
@@ -108,13 +146,19 @@ Then open:
 http://localhost:8082/
 ```
 
+If PowerShell still has the old port value later, clear it:
+
+```powershell
+Remove-Item Env:PORT
+```
+
 ## 6. Run The Mock Frontend With Docker
 
-Use Docker if you want a quick setup on a laptop without installing all project tools directly.
+Use Docker if you want a quick setup on Windows without installing all project tools directly.
 
-Install Docker Desktop, then run:
+Install Docker Desktop, open it, wait until Docker is running, then run this from the project root:
 
-```bash
+```powershell
 docker compose up --build front-mock
 ```
 
@@ -126,6 +170,28 @@ http://localhost:8081/
 
 This Docker service runs the frontend with the mock API only. It does not start PostgreSQL or the real backend.
 
+Stop Docker when finished:
+
+1. Press `Ctrl+C` in the terminal running Docker.
+2. Then run:
+
+```powershell
+docker compose down
+```
+
+If port `8081` is already used, change the left side of the port mapping in `docker-compose.yml`:
+
+```yaml
+ports:
+  - "8082:8081"
+```
+
+Then open:
+
+```text
+http://localhost:8082/
+```
+
 ## 7. Run With Real Backend And Database
 
 Use this mode when you need to test the real API and PostgreSQL database.
@@ -136,7 +202,15 @@ Create a PostgreSQL database, for example:
 sme_erp
 ```
 
-Set the database connection string:
+Set the database connection string.
+
+Windows PowerShell:
+
+```powershell
+$env:DATABASE_URL="postgres://postgres:postgres@localhost:5432/sme_erp"
+```
+
+Linux/macOS:
 
 ```bash
 export DATABASE_URL=postgres://postgres:postgres@localhost:5432/sme_erp
@@ -144,13 +218,13 @@ export DATABASE_URL=postgres://postgres:postgres@localhost:5432/sme_erp
 
 Push the database schema:
 
-```bash
+```powershell
 pnpm run db:push
 ```
 
 Start the backend API:
 
-```bash
+```powershell
 pnpm run dev:back
 ```
 
@@ -166,7 +240,16 @@ The API documentation is available at:
 http://localhost:5000/api-docs/
 ```
 
-In another terminal, start the frontend in real API mode:
+In another terminal, start the frontend in real API mode.
+
+Windows PowerShell:
+
+```powershell
+$env:MOCK_API="false"
+pnpm run dev:front
+```
+
+Linux/macOS:
 
 ```bash
 MOCK_API=false PORT=8081 BASE_PATH=/ pnpm --filter @sme-erp/front run dev
@@ -178,7 +261,17 @@ Open:
 http://localhost:8081/
 ```
 
-If the backend is not running on port `5000`, set `API_URL`:
+If the backend is not running on port `5000`, set `API_URL`.
+
+Windows PowerShell:
+
+```powershell
+$env:MOCK_API="false"
+$env:API_URL="http://localhost:5001"
+pnpm run dev:front
+```
+
+Linux/macOS:
 
 ```bash
 MOCK_API=false API_URL=http://localhost:5001 PORT=8081 BASE_PATH=/ pnpm --filter @sme-erp/front run dev
@@ -188,25 +281,25 @@ MOCK_API=false API_URL=http://localhost:5001 PORT=8081 BASE_PATH=/ pnpm --filter
 
 Run type checks:
 
-```bash
+```powershell
 pnpm run typecheck
 ```
 
 Build the project:
 
-```bash
+```powershell
 pnpm run build
 ```
 
 Generate API client and validation code after changing the OpenAPI contract:
 
-```bash
+```powershell
 pnpm run api:schema
 ```
 
 Push database schema changes:
 
-```bash
+```powershell
 pnpm run db:push
 ```
 
@@ -214,7 +307,7 @@ pnpm run db:push
 
 Before starting new work, update your local main branch:
 
-```bash
+```powershell
 git checkout main
 git fetch upstream
 git pull upstream main
@@ -223,26 +316,26 @@ git push origin main
 
 Create a feature branch:
 
-```bash
+```powershell
 git checkout -b feature/short-task-name
 ```
 
 Check your changes:
 
-```bash
+```powershell
 git status
 ```
 
 Commit your work:
 
-```bash
+```powershell
 git add .
 git commit -m "Describe the change"
 ```
 
 Push your branch to your fork:
 
-```bash
+```powershell
 git push origin feature/short-task-name
 ```
 
@@ -254,19 +347,45 @@ If `pnpm install` fails and says to use pnpm, make sure you are not running `npm
 
 If `pnpm run dev:front` fails on Windows, pull the latest project changes and run `pnpm install` again. The root `dev:front` script is designed to work on Windows, Linux, and macOS.
 
+```powershell
+git pull upstream main
+pnpm install
+pnpm run dev:front
+```
+
+If Windows says `pnpm` is not recognized, enable Corepack and reopen the terminal:
+
+```powershell
+corepack enable
+corepack prepare pnpm@11.3.0 --activate
+```
+
+If PowerShell blocks commands because of execution policy, run PowerShell as the current user and allow local scripts:
+
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+```
+
 If the frontend shows `ERR_CONNECTION_REFUSED`, either run mock mode:
 
-```bash
+```powershell
 pnpm run dev:front
 ```
 
 or start the backend and run the frontend with:
 
-```bash
-MOCK_API=false PORT=8081 BASE_PATH=/ pnpm --filter @sme-erp/front run dev
+```powershell
+$env:MOCK_API="false"
+pnpm run dev:front
 ```
 
 If the backend fails with `DATABASE_URL must be set`, export the database URL:
+
+```powershell
+$env:DATABASE_URL="postgres://postgres:postgres@localhost:5432/sme_erp"
+```
+
+Linux/macOS:
 
 ```bash
 export DATABASE_URL=postgres://postgres:postgres@localhost:5432/sme_erp
@@ -274,7 +393,7 @@ export DATABASE_URL=postgres://postgres:postgres@localhost:5432/sme_erp
 
 If `git remote add upstream` says the remote already exists, update it:
 
-```bash
+```powershell
 git remote set-url upstream https://github.com/ORIGINAL_OWNER/kovex-erp.git
 ```
 
