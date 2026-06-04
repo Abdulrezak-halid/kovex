@@ -159,7 +159,7 @@ Use Docker if you want a quick setup on Windows without installing all project t
 Install Docker Desktop, open it, wait until Docker is running, then run this from the project root:
 
 ```powershell
-docker compose up --build front-mock
+ 
 ```
 
 Open:
