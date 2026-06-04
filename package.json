@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "preinstall": "sh -c 'rm -f package-lock.json yarn.lock; case \"$npm_config_user_agent:$npm_execpath\" in pnpm/*:*|*:*/pnpm*|*:*/.pnpm/*) ;; *) echo \"Use pnpm instead\" >&2; exit 1 ;; esac'",
+    "preinstall": "node ./scripts/preinstall.mjs",
     "dev": "node ./scripts/dev.mjs",
-    "dev:front": "PORT=${PORT:-8081} BASE_PATH=${BASE_PATH:-/} pnpm --filter @sme-erp/front run dev",
+    "dev:front": "node ./scripts/dev-front.mjs",
     "dev:back": "DATABASE_URL=${DATABASE_URL:-postgres://postgres:postgres@localhost:5432/sme_erp} PORT=${PORT:-5000} pnpm --filter @sme-erp/back run dev",
     "dev:web": "pnpm run dev:front",
     "dev:api": "pnpm run dev:back",

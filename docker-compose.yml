@@ -1,0 +1,11 @@
+services:
+  front-mock:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8081
+      BASE_PATH: /
+    ports:
+      - "8081:8081"
