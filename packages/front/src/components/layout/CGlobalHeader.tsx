@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { searchItems } from "@/components/layout/CNavigationConfig";
 import { CLanguageDropdown } from "@/components/layout/CLanguageDropdown";
+import { CThemeToggle } from "@/components/layout/CThemeToggle";
 import { useCAuth } from "@/lib/auth";
 
 export function CGlobalHeader({ onMenuClick }: { onMenuClick: () => void }) {
@@ -83,6 +84,7 @@ export function CGlobalHeader({ onMenuClick }: { onMenuClick: () => void }) {
 
       <div className="ml-auto flex shrink-0 items-center gap-1.5">
         <CLanguageDropdown />
+        <CThemeToggle />
         <Button
           variant="ghost"
           size="icon"

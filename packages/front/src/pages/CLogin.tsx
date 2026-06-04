@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { CLanguageDropdown } from "@/components/layout/CLanguageDropdown";
+import { CThemeToggle } from "@/components/layout/CThemeToggle";
 
 export default function CLogin() {
   const { t } = useTranslation();
@@ -57,7 +59,14 @@ export default function CLogin() {
 
   return (
     <main className="min-h-screen bg-background">
-      <div className="mx-auto flex min-h-screen w-full max-w-6xl items-center justify-center px-4 py-8">
+      <header className="flex h-14 items-center justify-between border-b border-border bg-card px-4">
+        <p className="text-sm font-semibold text-foreground">Kovex ERP</p>
+        <div className="flex items-center gap-1.5">
+          <CLanguageDropdown />
+          <CThemeToggle />
+        </div>
+      </header>
+      <div className="mx-auto flex min-h-[calc(100vh-3.5rem)] w-full max-w-6xl items-center justify-center px-4 py-8">
         <div className="grid w-full items-center gap-8 lg:grid-cols-[1fr_420px]">
           <section className="hidden lg:block">
             <p className="text-sm font-medium uppercase tracking-normal text-primary">
