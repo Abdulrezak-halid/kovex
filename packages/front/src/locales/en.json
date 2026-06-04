@@ -252,6 +252,8 @@
   "stockLevels": "Stock Levels",
   "stockLevelsAndValuation": "Stock levels and valuation",
   "stockValue": "Stock Value",
+  "switchToDarkMode": "Switch to dark mode",
+  "switchToLightMode": "Switch to light mode",
   "supplier": "Supplier",
   "supplierCreated": "Supplier created",
   "supplierDeleted": "Supplier deleted",

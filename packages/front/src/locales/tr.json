@@ -252,6 +252,8 @@
   "stockLevels": "Stok Seviyeleri",
   "stockLevelsAndValuation": "Stok seviyeleri ve değerleme",
   "stockValue": "Stok Değeri",
+  "switchToDarkMode": "Koyu moda geç",
+  "switchToLightMode": "Açık moda geç",
   "supplier": "Tedarikçi",
   "supplierCreated": "Tedarikçi oluşturuldu",
   "supplierDeleted": "Tedarikçi silindi",

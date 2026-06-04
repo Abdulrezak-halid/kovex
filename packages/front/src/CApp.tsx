@@ -1,6 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, type ComponentType, type PropsWithChildren } from "react";
 import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ThemeProvider, type ThemeProviderProps } from "next-themes";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { CAppLayout } from "@/components/CAppLayout";
@@ -35,6 +36,10 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+const CThemeProvider = ThemeProvider as ComponentType<
+  PropsWithChildren<ThemeProviderProps>
+>;
 
 function CRouter() {
   const { loading, user, canManageUsers } = useCAuth();
@@ -103,14 +108,16 @@ function CRouter() {
 function CApp() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <CAuthProvider>
-          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-            <CRouter />
-          </WouterRouter>
-        </CAuthProvider>
-        <Toaster />
-      </TooltipProvider>
+      <CThemeProvider attribute="class" defaultTheme="light" enableSystem>
+        <TooltipProvider>
+          <CAuthProvider>
+            <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+              <CRouter />
+            </WouterRouter>
+          </CAuthProvider>
+          <Toaster />
+        </TooltipProvider>
+      </CThemeProvider>
     </QueryClientProvider>
   );
 }
