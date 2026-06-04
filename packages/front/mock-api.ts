@@ -464,6 +464,15 @@ const mockUsers: JsonObject[] = [
     active: true,
     createdAt: daysAgo(52),
   },
+  {
+    id: 6,
+    name: "Omar Yilmaz",
+    email: "omar.yilmaz@example.com",
+    role: "accountant",
+    department: "Finance",
+    active: true,
+    createdAt: daysAgo(44),
+  },
 ];
 
 let mockSessionUserId: number | null = null;
@@ -472,9 +481,73 @@ function currentMockUser() {
   return mockUsers.find((row) => row.id === mockSessionUserId) ?? null;
 }
 
-function canMockManageData() {
+type MockPermissionModule =
+  | "dashboard"
+  | "sales"
+  | "inventory"
+  | "purchases"
+  | "accounting"
+  | "reports"
+  | "planning"
+  | "settings";
+
+const mockRolePermissions: Record<string, MockPermissionModule[]> = {
+  admin: [
+    "dashboard",
+    "sales",
+    "inventory",
+    "purchases",
+    "accounting",
+    "reports",
+    "planning",
+    "settings",
+  ],
+  sysadmin: [
+    "dashboard",
+    "sales",
+    "inventory",
+    "purchases",
+    "accounting",
+    "reports",
+    "planning",
+    "settings",
+  ],
+  sales: ["dashboard", "sales"],
+  inventory: ["dashboard", "inventory"],
+  purchasing: ["dashboard", "purchases"],
+  accountant: ["dashboard", "accounting", "reports"],
+  planner: ["dashboard", "planning"],
+  user: ["dashboard"],
+};
+
+function mockPermissionModuleForPath(path: string): MockPermissionModule {
+  if (path.startsWith("/api/dashboard")) return "dashboard";
+  if (path.startsWith("/api/customers")) return "sales";
+  if (path.startsWith("/api/quotations")) return "sales";
+  if (path.startsWith("/api/orders")) return "sales";
+  if (path.startsWith("/api/invoices")) return "accounting";
+  if (path.startsWith("/api/products")) return "inventory";
+  if (path.startsWith("/api/stock")) return "inventory";
+  if (path.startsWith("/api/warehouses")) return "inventory";
+  if (path.startsWith("/api/suppliers")) return "purchases";
+  if (path.startsWith("/api/purchase-orders")) return "purchases";
+  if (path.startsWith("/api/purchase-invoices")) return "accounting";
+  if (path.startsWith("/api/reports")) return "reports";
+  if (path.startsWith("/api/projects")) return "planning";
+  if (path.startsWith("/api/tasks")) return "planning";
+  if (path.startsWith("/api/users")) return "settings";
+  return "dashboard";
+}
+
+function canMockAccessPath(path: string) {
   const role = String(currentMockUser()?.role ?? "");
-  return role === "admin" || role === "sysadmin";
+  const module = mockPermissionModuleForPath(path);
+  return mockRolePermissions[role]?.includes(module) ?? false;
+}
+
+function canMockWritePath(path: string) {
+  const module = mockPermissionModuleForPath(path);
+  return module !== "dashboard" && canMockAccessPath(path);
 }
 
 const mockQuotations: JsonObject[] = [
@@ -2436,10 +2509,14 @@ export function mockApiPlugin(): Plugin {
           return sendJson(res, { error: "Unauthenticated" }, 401);
         }
 
+        if (!publicPath && !canMockAccessPath(url.pathname)) {
+          return sendJson(res, { error: "Forbidden" }, 403);
+        }
+
         if (
           !publicPath &&
           !["GET", "HEAD", "OPTIONS"].includes(req.method ?? "GET") &&
-          !canMockManageData()
+          !canMockWritePath(url.pathname)
         ) {
           return sendJson(res, { error: "Forbidden" }, 403);
         }

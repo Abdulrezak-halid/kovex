@@ -50,8 +50,29 @@ const roles = [
   "sales",
   "purchasing",
   "inventory",
+  "accountant",
   "planner",
 ];
+
+const rolePermissionSummary: Record<string, { view: string; edit: string }> = {
+  admin: { view: "All system modules", edit: "All system modules" },
+  sysadmin: { view: "All system modules", edit: "All system modules" },
+  user: { view: "Dashboard only", edit: "No module editing" },
+  sales: { view: "Sales", edit: "Customers, quotations, and orders" },
+  purchasing: {
+    view: "Purchases",
+    edit: "Suppliers and purchase orders",
+  },
+  inventory: {
+    view: "Inventory",
+    edit: "Products, stock, and warehouses",
+  },
+  accountant: {
+    view: "Invoices and reports",
+    edit: "Sales invoices and purchase invoices",
+  },
+  planner: { view: "Planning", edit: "Projects and tasks" },
+};
 type UserForm = {
   name: string;
   email: string;
@@ -352,6 +373,22 @@ export default function CUsers() {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+            <div className="rounded-md border border-border bg-muted/30 p-3 text-xs">
+              <p className="font-medium">Role permissions</p>
+              <div className="mt-2 grid gap-1 text-muted-foreground">
+                <p>
+                  <span className="font-medium text-foreground">Can see:</span>{" "}
+                  {rolePermissionSummary[form.role]?.view ?? "Dashboard only"}
+                </p>
+                <p>
+                  <span className="font-medium text-foreground">
+                    Can edit/delete:
+                  </span>{" "}
+                  {rolePermissionSummary[form.role]?.edit ??
+                    "No module editing"}
+                </p>
+              </div>
             </div>
             <div>
               <Label>Department</Label>

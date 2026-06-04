@@ -7,7 +7,7 @@ import { useCAuth } from "@/lib/auth";
 
 export function CSidebar({ onNavigate }: { onNavigate?: () => void }) {
   const { t } = useTranslation();
-  const { canManageUsers } = useCAuth();
+  const { user } = useCAuth();
 
   return (
     <div className="flex flex-col h-full bg-sidebar text-sidebar-foreground">
@@ -49,7 +49,7 @@ export function CSidebar({ onNavigate }: { onNavigate?: () => void }) {
         </div>
       </div>
       <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-0.5">
-        {permittedNavItems(canManageUsers).map((item) => (
+        {permittedNavItems(user?.role).map((item) => (
           <CNavSection
             key={item.labelKey}
             item={item}

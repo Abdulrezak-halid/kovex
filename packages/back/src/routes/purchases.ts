@@ -10,6 +10,7 @@ import {
   warehousesTable,
 } from "@sme-erp/database";
 import { and, eq, desc } from "drizzle-orm";
+import { requireModulePermission } from "../lib/auth";
 import { applyListQuery, parseListQuery } from "./list-query";
 
 const router = Router();
@@ -17,6 +18,9 @@ const router = Router();
 function genRef(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 }
+
+router.use("/purchase-orders", requireModulePermission("purchases"));
+router.use("/purchase-invoices", requireModulePermission("accounting"));
 
 // ── PURCHASE ORDERS ───────────────────────────────────────────────────────
 router.get("/purchase-orders", async (req, res) => {

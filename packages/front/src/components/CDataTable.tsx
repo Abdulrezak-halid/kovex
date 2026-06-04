@@ -1,5 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "react-i18next";
+import { useLocation } from "wouter";
 import { translateText } from "@/lib/i18n";
 import { useCAuth } from "@/lib/auth";
 
@@ -28,9 +29,11 @@ export function CDataTable<T>({
   emptyAction,
 }: IDataTableProps<T>) {
   const { t } = useTranslation();
-  const { canManageData } = useCAuth();
+  const [location] = useLocation();
+  const { canWritePath } = useCAuth();
+  const canWriteHere = canWritePath(location);
   const visibleColumns = columns.filter(
-    (col) => canManageData || col.header.toLowerCase() !== "actions",
+    (col) => canWriteHere || col.header.toLowerCase() !== "actions",
   );
 
   return (

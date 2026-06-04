@@ -12,6 +12,7 @@ import {
   stockTable,
 } from "@sme-erp/database";
 import { eq, sql, desc } from "drizzle-orm";
+import { requireModulePermission } from "../lib/auth";
 import { applyListQuery, parseListQuery } from "./list-query";
 
 const router = Router();
@@ -19,6 +20,10 @@ const router = Router();
 function genRef(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 }
+
+router.use("/quotations", requireModulePermission("sales"));
+router.use("/orders", requireModulePermission("sales"));
+router.use("/invoices", requireModulePermission("accounting"));
 
 async function decreaseStockForSale(
   items: { productId: number; quantity: number; productName?: string }[],
@@ -153,18 +158,16 @@ router.post("/quotations", async (req, res) => {
       .select()
       .from(customersTable)
       .where(eq(customersTable.id, q.customerId));
-    res
-      .status(201)
-      .json({
-        ...q,
-        totalAmount: Number(q.totalAmount),
-        customerName: customer[0]?.name ?? "",
-        items: savedItems.map((i) => ({
-          ...i,
-          unitPrice: Number(i.unitPrice),
-          total: Number(i.total),
-        })),
-      });
+    res.status(201).json({
+      ...q,
+      totalAmount: Number(q.totalAmount),
+      customerName: customer[0]?.name ?? "",
+      items: savedItems.map((i) => ({
+        ...i,
+        unitPrice: Number(i.unitPrice),
+        total: Number(i.total),
+      })),
+    });
   } catch (err) {
     req.log.error({ err });
     res.status(500).json({ error: "Internal server error" });
@@ -312,18 +315,16 @@ router.post("/quotations/:id/convert", async (req, res) => {
       .select()
       .from(customersTable)
       .where(eq(customersTable.id, order.customerId));
-    res
-      .status(201)
-      .json({
-        ...order,
-        totalAmount: Number(order.totalAmount),
-        customerName: customer[0]?.name ?? "",
-        items: savedItems.map((i) => ({
-          ...i,
-          unitPrice: Number(i.unitPrice),
-          total: Number(i.total),
-        })),
-      });
+    res.status(201).json({
+      ...order,
+      totalAmount: Number(order.totalAmount),
+      customerName: customer[0]?.name ?? "",
+      items: savedItems.map((i) => ({
+        ...i,
+        unitPrice: Number(i.unitPrice),
+        total: Number(i.total),
+      })),
+    });
   } catch (err) {
     req.log.error({ err });
     res.status(500).json({ error: "Internal server error" });
@@ -429,18 +430,16 @@ router.post("/orders", async (req, res) => {
       .select()
       .from(customersTable)
       .where(eq(customersTable.id, order.customerId));
-    res
-      .status(201)
-      .json({
-        ...order,
-        totalAmount: Number(order.totalAmount),
-        customerName: customer[0]?.name ?? "",
-        items: savedItems.map((i) => ({
-          ...i,
-          unitPrice: Number(i.unitPrice),
-          total: Number(i.total),
-        })),
-      });
+    res.status(201).json({
+      ...order,
+      totalAmount: Number(order.totalAmount),
+      customerName: customer[0]?.name ?? "",
+      items: savedItems.map((i) => ({
+        ...i,
+        unitPrice: Number(i.unitPrice),
+        total: Number(i.total),
+      })),
+    });
   } catch (err) {
     req.log.error({ err });
     res.status(500).json({ error: "Internal server error" });
@@ -576,18 +575,16 @@ router.post("/orders/:id/invoice", async (req, res) => {
       .select()
       .from(customersTable)
       .where(eq(customersTable.id, inv.customerId));
-    res
-      .status(201)
-      .json({
-        ...inv,
-        totalAmount: Number(inv.totalAmount),
-        customerName: customer[0]?.name ?? "",
-        items: savedItems.map((i) => ({
-          ...i,
-          unitPrice: Number(i.unitPrice),
-          total: Number(i.total),
-        })),
-      });
+    res.status(201).json({
+      ...inv,
+      totalAmount: Number(inv.totalAmount),
+      customerName: customer[0]?.name ?? "",
+      items: savedItems.map((i) => ({
+        ...i,
+        unitPrice: Number(i.unitPrice),
+        total: Number(i.total),
+      })),
+    });
   } catch (err) {
     req.log.error({ err });
     res.status(500).json({ error: "Internal server error" });
@@ -699,18 +696,16 @@ router.post("/invoices", async (req, res) => {
       .select()
       .from(customersTable)
       .where(eq(customersTable.id, inv.customerId));
-    res
-      .status(201)
-      .json({
-        ...inv,
-        totalAmount: Number(inv.totalAmount),
-        customerName: customer[0]?.name ?? "",
-        items: savedItems.map((i) => ({
-          ...i,
-          unitPrice: Number(i.unitPrice),
-          total: Number(i.total),
-        })),
-      });
+    res.status(201).json({
+      ...inv,
+      totalAmount: Number(inv.totalAmount),
+      customerName: customer[0]?.name ?? "",
+      items: savedItems.map((i) => ({
+        ...i,
+        unitPrice: Number(i.unitPrice),
+        total: Number(i.total),
+      })),
+    });
   } catch (err) {
     req.log.error({ err });
     res.status(500).json({ error: "Internal server error" });

@@ -12,7 +12,45 @@ type AuthUser = Pick<
   "id" | "name" | "email" | "role" | "department" | "active" | "createdAt"
 >;
 
+export type PermissionModule =
+  | "dashboard"
+  | "sales"
+  | "inventory"
+  | "purchases"
+  | "accounting"
+  | "reports"
+  | "planning"
+  | "settings";
+
 const adminRoles = new Set(["admin", "sysadmin"]);
+const rolePermissions: Record<string, PermissionModule[]> = {
+  admin: [
+    "dashboard",
+    "sales",
+    "inventory",
+    "purchases",
+    "accounting",
+    "reports",
+    "planning",
+    "settings",
+  ],
+  sysadmin: [
+    "dashboard",
+    "sales",
+    "inventory",
+    "purchases",
+    "accounting",
+    "reports",
+    "planning",
+    "settings",
+  ],
+  sales: ["dashboard", "sales"],
+  inventory: ["dashboard", "inventory"],
+  purchasing: ["dashboard", "purchases"],
+  accountant: ["dashboard", "accounting", "reports"],
+  planner: ["dashboard", "planning"],
+  user: ["dashboard"],
+};
 
 declare global {
   namespace Express {
@@ -141,6 +179,21 @@ export async function requireAuth(
 
 export function isAdminRole(role: string | undefined) {
   return !!role && adminRoles.has(role);
+}
+
+export function roleCanAccessModule(
+  role: string | undefined,
+  module: PermissionModule,
+) {
+  if (!role) return false;
+  return rolePermissions[role]?.includes(module) ?? false;
+}
+
+export function requireModulePermission(module: PermissionModule) {
+  return (req: Request, res: Response, next: NextFunction) => {
+    if (roleCanAccessModule(req.authUser?.role, module)) return next();
+    return res.status(403).json({ error: "Forbidden" });
+  };
 }
 
 export function requireDataWritePermission(

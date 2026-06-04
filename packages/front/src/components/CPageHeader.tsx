@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { useLocation } from "wouter";
 import { translateText } from "@/lib/i18n";
 import { useCAuth } from "@/lib/auth";
 
@@ -10,7 +11,8 @@ interface IPageHeaderProps {
 
 export function CPageHeader({ title, description, action }: IPageHeaderProps) {
   const { t } = useTranslation();
-  const { canManageData } = useCAuth();
+  const [location] = useLocation();
+  const { canWritePath } = useCAuth();
 
   return (
     <div className="flex items-start justify-between mb-6">
@@ -24,7 +26,7 @@ export function CPageHeader({ title, description, action }: IPageHeaderProps) {
           </p>
         )}
       </div>
-      {action && canManageData && <div>{action}</div>}
+      {action && canWritePath(location) && <div>{action}</div>}
     </div>
   );
 }

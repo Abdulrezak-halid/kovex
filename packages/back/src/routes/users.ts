@@ -18,6 +18,7 @@ const roles = new Set([
   "sales",
   "purchasing",
   "inventory",
+  "accountant",
   "planner",
 ]);
 
@@ -81,7 +82,7 @@ function validateUserInput(input: any, options: { creating: boolean }) {
   return { value: { name, email, password, role, department, active } };
 }
 
-router.get("/users", async (req, res) => {
+router.get("/users", requireAdmin, async (req, res) => {
   try {
     const rows = await db.select().from(usersTable);
     res.json(rows.map(publicUser));
@@ -118,7 +119,7 @@ router.post("/users", requireAdmin, async (req, res) => {
   }
 });
 
-router.get("/users/:id", async (req, res) => {
+router.get("/users/:id", requireAdmin, async (req, res) => {
   try {
     const [row] = await db
       .select()

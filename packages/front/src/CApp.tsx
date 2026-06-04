@@ -42,7 +42,7 @@ const CThemeProvider = ThemeProvider as ComponentType<
 >;
 
 function CRouter() {
-  const { loading, user, canManageUsers } = useCAuth();
+  const { loading, user, canAccessPath } = useCAuth();
   const [location, setLocation] = useLocation();
 
   useEffect(() => {
@@ -74,31 +74,82 @@ function CRouter() {
     );
   }
 
+  const routeComponent = (path: string, component: React.ComponentType) =>
+    canAccessPath(path) ? component : CForbidden;
+
   return (
     <CAppLayout>
       <Switch>
         <Route path="/login" component={CDashboard} />
         <Route path="/" component={CDashboard} />
-        <Route path="/sales/customers" component={CCustomers} />
-        <Route path="/sales/quotations" component={CQuotations} />
-        <Route path="/sales/orders" component={COrders} />
-        <Route path="/sales/invoices" component={CInvoices} />
-        <Route path="/inventory/products" component={CProducts} />
-        <Route path="/inventory/stock" component={CStock} />
-        <Route path="/inventory/warehouses" component={CWarehouses} />
-        <Route path="/purchases/suppliers" component={CSuppliers} />
-        <Route path="/purchases/orders" component={CPurchaseOrders} />
-        <Route path="/purchases/invoices" component={CPurchaseInvoices} />
-        <Route path="/reports/sales" component={CSalesReport} />
-        <Route path="/reports/inventory" component={CInventoryReport} />
-        <Route path="/reports/purchases" component={CPurchasesReport} />
+        <Route
+          path="/sales/customers"
+          component={routeComponent("/sales/customers", CCustomers)}
+        />
+        <Route
+          path="/sales/quotations"
+          component={routeComponent("/sales/quotations", CQuotations)}
+        />
+        <Route
+          path="/sales/orders"
+          component={routeComponent("/sales/orders", COrders)}
+        />
+        <Route
+          path="/sales/invoices"
+          component={routeComponent("/sales/invoices", CInvoices)}
+        />
+        <Route
+          path="/inventory/products"
+          component={routeComponent("/inventory/products", CProducts)}
+        />
+        <Route
+          path="/inventory/stock"
+          component={routeComponent("/inventory/stock", CStock)}
+        />
+        <Route
+          path="/inventory/warehouses"
+          component={routeComponent("/inventory/warehouses", CWarehouses)}
+        />
+        <Route
+          path="/purchases/suppliers"
+          component={routeComponent("/purchases/suppliers", CSuppliers)}
+        />
+        <Route
+          path="/purchases/orders"
+          component={routeComponent("/purchases/orders", CPurchaseOrders)}
+        />
+        <Route
+          path="/purchases/invoices"
+          component={routeComponent("/purchases/invoices", CPurchaseInvoices)}
+        />
+        <Route
+          path="/reports/sales"
+          component={routeComponent("/reports/sales", CSalesReport)}
+        />
+        <Route
+          path="/reports/inventory"
+          component={routeComponent("/reports/inventory", CInventoryReport)}
+        />
+        <Route
+          path="/reports/purchases"
+          component={routeComponent("/reports/purchases", CPurchasesReport)}
+        />
         <Route
           path="/settings/users"
-          component={canManageUsers ? CUsers : CForbidden}
+          component={routeComponent("/settings/users", CUsers)}
         />
-        <Route path="/planning/projects" component={CProjects} />
-        <Route path="/planning/projects/:id" component={CProjectDetail} />
-        <Route path="/planning/tasks" component={CTasks} />
+        <Route
+          path="/planning/projects"
+          component={routeComponent("/planning/projects", CProjects)}
+        />
+        <Route
+          path="/planning/projects/:id"
+          component={routeComponent("/planning/projects", CProjectDetail)}
+        />
+        <Route
+          path="/planning/tasks"
+          component={routeComponent("/planning/tasks", CTasks)}
+        />
         <Route component={CNotFound} />
       </Switch>
     </CAppLayout>
