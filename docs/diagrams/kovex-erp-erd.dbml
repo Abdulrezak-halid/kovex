@@ -1,0 +1,251 @@
+// Kovex ERP - ERD source for dbdiagram.io
+// How to use:
+// 1. Open https://dbdiagram.io
+// 2. Create a new diagram
+// 3. Paste this whole file
+// 4. Export as PNG or PDF for the graduation report
+
+Project kovex_erp {
+  database_type: "PostgreSQL"
+  note: "Kovex ERP database model for sales, purchases, inventory, reports, planning, and users."
+}
+
+Table users {
+  id integer [primary key, increment]
+  name text [not null]
+  email text [not null, unique]
+  password_hash text
+  role text [not null, default: "user"]
+  department text
+  active boolean [not null, default: true]
+  created_at timestamp [not null]
+
+  Note: "System users and roles."
+}
+
+Table customers {
+  id integer [primary key, increment]
+  name text [not null]
+  email text
+  phone text
+  address text
+  company text
+  created_at timestamp [not null]
+
+  Note: "Sales-side customer records."
+}
+
+Table suppliers {
+  id integer [primary key, increment]
+  name text [not null]
+  email text
+  phone text
+  address text
+  company text
+  created_at timestamp [not null]
+
+  Note: "Purchase-side supplier records."
+}
+
+Table products {
+  id integer [primary key, increment]
+  name text [not null]
+  sku text [not null, unique]
+  description text
+  price numeric(12,2) [not null]
+  cost numeric(12,2)
+  unit text [not null, default: "pcs"]
+  minimum_stock integer [not null, default: 0]
+  created_at timestamp [not null]
+
+  Note: "Products sold, purchased, and tracked in stock."
+}
+
+Table warehouses {
+  id integer [primary key, increment]
+  name text [not null]
+  location text
+  created_at timestamp [not null]
+
+  Note: "Physical or logical stock locations."
+}
+
+Table stock {
+  id integer [primary key, increment]
+  product_id integer [not null]
+  warehouse_id integer [not null]
+  quantity integer [not null, default: 0]
+  updated_at timestamp [not null]
+
+  Note: "Current product quantity per warehouse."
+}
+
+Table quotations {
+  id integer [primary key, increment]
+  reference text [not null, unique]
+  customer_id integer [not null]
+  status text [not null, default: "draft"]
+  total_amount numeric(12,2) [not null, default: 0]
+  valid_until timestamp
+  notes text
+  created_at timestamp [not null]
+
+  Note: "Sales quotations prepared for customers."
+}
+
+Table quotation_items {
+  id integer [primary key, increment]
+  quotation_id integer [not null]
+  product_id integer [not null]
+  product_name text [not null]
+  quantity integer [not null]
+  unit_price numeric(12,2) [not null]
+  total numeric(12,2) [not null]
+
+  Note: "Line items belonging to a quotation."
+}
+
+Table orders {
+  id integer [primary key, increment]
+  reference text [not null, unique]
+  customer_id integer [not null]
+  status text [not null, default: "pending"]
+  total_amount numeric(12,2) [not null, default: 0]
+  notes text
+  quotation_id integer
+  created_at timestamp [not null]
+
+  Note: "Sales orders. Can be created directly or from quotations."
+}
+
+Table order_items {
+  id integer [primary key, increment]
+  order_id integer [not null]
+  product_id integer [not null]
+  product_name text [not null]
+  quantity integer [not null]
+  unit_price numeric(12,2) [not null]
+  total numeric(12,2) [not null]
+
+  Note: "Line items belonging to a sales order."
+}
+
+Table invoices {
+  id integer [primary key, increment]
+  reference text [not null, unique]
+  customer_id integer [not null]
+  order_id integer
+  status text [not null, default: "draft"]
+  total_amount numeric(12,2) [not null, default: 0]
+  due_date timestamp
+  notes text
+  created_at timestamp [not null]
+
+  Note: "Sales invoices. Can be created from orders."
+}
+
+Table invoice_items {
+  id integer [primary key, increment]
+  invoice_id integer [not null]
+  product_id integer [not null]
+  product_name text [not null]
+  quantity integer [not null]
+  unit_price numeric(12,2) [not null]
+  total numeric(12,2) [not null]
+
+  Note: "Line items belonging to a sales invoice."
+}
+
+Table purchase_orders {
+  id integer [primary key, increment]
+  reference text [not null, unique]
+  supplier_id integer [not null]
+  status text [not null, default: "draft"]
+  total_amount numeric(12,2) [not null, default: 0]
+  expected_date timestamp
+  notes text
+  created_at timestamp [not null]
+
+  Note: "Purchase orders sent to suppliers."
+}
+
+Table purchase_order_items {
+  id integer [primary key, increment]
+  purchase_order_id integer [not null]
+  product_id integer [not null]
+  product_name text [not null]
+  quantity integer [not null]
+  unit_cost numeric(12,2) [not null]
+  total numeric(12,2) [not null]
+
+  Note: "Line items belonging to a purchase order."
+}
+
+Table purchase_invoices {
+  id integer [primary key, increment]
+  reference text [not null, unique]
+  supplier_id integer [not null]
+  purchase_order_id integer
+  status text [not null, default: "pending"]
+  total_amount numeric(12,2) [not null, default: 0]
+  due_date timestamp
+  notes text
+  created_at timestamp [not null]
+
+  Note: "Invoices received from suppliers."
+}
+
+Table projects {
+  id integer [primary key, increment]
+  name text [not null]
+  description text
+  status text [not null, default: "planning"]
+  priority text [not null, default: "medium"]
+  start_date date
+  end_date date
+  budget numeric(12,2)
+  customer_id integer
+  created_at timestamp [not null]
+
+  Note: "Planning projects, optionally linked to customers."
+}
+
+Table tasks {
+  id integer [primary key, increment]
+  project_id integer [not null]
+  title text [not null]
+  description text
+  status text [not null, default: "todo"]
+  priority text [not null, default: "medium"]
+  assigned_to integer
+  due_date date
+  created_at timestamp [not null]
+
+  Note: "Planning tasks assigned to projects and optionally to users."
+}
+
+// Enforced relationships in the current Drizzle schema
+Ref: stock.product_id > products.id
+Ref: stock.warehouse_id > warehouses.id
+Ref: quotations.customer_id > customers.id
+Ref: orders.customer_id > customers.id
+Ref: invoices.customer_id > customers.id
+Ref: purchase_orders.supplier_id > suppliers.id
+Ref: purchase_invoices.supplier_id > suppliers.id
+Ref: quotation_items.quotation_id > quotations.id [delete: cascade]
+Ref: order_items.order_id > orders.id [delete: cascade]
+Ref: invoice_items.invoice_id > invoices.id [delete: cascade]
+Ref: purchase_order_items.purchase_order_id > purchase_orders.id [delete: cascade]
+
+// Logical business-flow relationships used by the application.
+// Some of these are not yet enforced as database foreign keys in the schema.
+Ref: quotation_items.product_id > products.id
+Ref: order_items.product_id > products.id
+Ref: invoice_items.product_id > products.id
+Ref: purchase_order_items.product_id > products.id
+Ref: orders.quotation_id > quotations.id
+Ref: invoices.order_id > orders.id
+Ref: purchase_invoices.purchase_order_id > purchase_orders.id
+Ref: projects.customer_id > customers.id
+Ref: tasks.project_id > projects.id
+Ref: tasks.assigned_to > users.id
