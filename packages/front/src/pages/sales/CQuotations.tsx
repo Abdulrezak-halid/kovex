@@ -112,6 +112,10 @@ export default function CQuotations() {
       })),
     );
     setDialogOpen(true);
+    toast({
+      title: "Edit mode opened",
+      description: `${row.reference} is ready to edit.`,
+    });
   }
 
   function addItem() {

@@ -86,6 +86,10 @@ export default function CTasks() {
       assignedTo: t.assignedTo ?? undefined,
       dueDate: t.dueDate ?? "",
     });
+    toast({
+      title: "Edit mode opened",
+      description: `${t.title} is ready to edit.`,
+    });
   }
 
   async function handleUpdate() {

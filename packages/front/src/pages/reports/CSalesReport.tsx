@@ -66,13 +66,19 @@ export default function CSalesReport() {
 
   const { data, isLoading } = useGetSalesReport(params);
   const { data: customers } = useListCustomers();
-  const applyFilters = () =>
+  const applyFilters = () => {
     setParams({
       from: from || undefined,
       to: to || undefined,
       customerId:
         customerId !== "all" && customerId ? Number(customerId) : undefined,
     });
+    toast({
+      title: "Filters applied",
+      description:
+        "The sales report now uses the selected date and customer filters.",
+    });
+  };
   const handleExport = async (format: ReportExportFormat) => {
     try {
       setExporting(format);
@@ -144,6 +150,11 @@ export default function CSalesReport() {
                 setTo("");
                 setCustomerId("all");
                 setParams({});
+                toast({
+                  title: "Filters cleared",
+                  description:
+                    "The sales report is showing all customers and dates again.",
+                });
               }}
             >
               {t("clear")}

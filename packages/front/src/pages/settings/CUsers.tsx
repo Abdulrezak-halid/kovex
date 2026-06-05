@@ -122,6 +122,10 @@ export default function CUsers() {
       active: row.active,
     });
     setDialogOpen(true);
+    toast({
+      title: "Edit mode opened",
+      description: `${row.name} is ready to edit.`,
+    });
   }
 
   async function handleSave() {

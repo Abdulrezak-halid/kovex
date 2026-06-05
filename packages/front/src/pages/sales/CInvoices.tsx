@@ -60,6 +60,10 @@ export default function CInvoices() {
     setEditing(row);
     setStatus(row.status);
     setDialogOpen(true);
+    toast({
+      title: "Edit mode opened",
+      description: `${row.reference} is ready to edit.`,
+    });
   }
 
   async function handleSave() {

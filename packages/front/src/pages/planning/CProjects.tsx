@@ -208,6 +208,10 @@ export default function CProjects() {
       budget: p.budget ?? undefined,
     });
     setDialogOpen(true);
+    toast({
+      title: "Edit mode opened",
+      description: `${p.name} is ready to edit.`,
+    });
   }
 
   async function handleSave() {

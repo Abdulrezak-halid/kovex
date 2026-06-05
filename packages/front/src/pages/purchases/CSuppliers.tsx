@@ -82,6 +82,10 @@ export default function CSuppliers() {
       company: row.company ?? "",
     });
     setDialogOpen(true);
+    toast({
+      title: "Edit mode opened",
+      description: `${row.name} is ready to edit.`,
+    });
   }
 
   async function handleSave() {

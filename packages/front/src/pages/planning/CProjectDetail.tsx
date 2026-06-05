@@ -200,6 +200,10 @@ export default function CProjectDetail() {
       dueDate: t.dueDate ?? "",
     });
     setDialogOpen(true);
+    toast({
+      title: "Edit mode opened",
+      description: `${t.title} is ready to edit.`,
+    });
   }
 
   async function handleSave() {

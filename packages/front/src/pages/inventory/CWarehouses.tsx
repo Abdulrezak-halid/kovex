@@ -60,6 +60,10 @@ export default function CWarehouses() {
     setName(row.name);
     setLocation(row.location ?? "");
     setDialogOpen(true);
+    toast({
+      title: "Edit mode opened",
+      description: `${row.name} is ready to edit.`,
+    });
   }
 
   async function handleSave() {

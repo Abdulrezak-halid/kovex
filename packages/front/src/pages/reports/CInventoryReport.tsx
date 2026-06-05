@@ -57,11 +57,16 @@ export default function CInventoryReport() {
   const [exporting, setExporting] = useState<ReportExportFormat | null>(null);
   const { data, isLoading } = useGetInventoryReport(params);
   const { data: products } = useListProducts();
-  const applyFilters = () =>
+  const applyFilters = () => {
     setParams({
       productId:
         productId !== "all" && productId ? Number(productId) : undefined,
     });
+    toast({
+      title: "Filters applied",
+      description: "The inventory report now uses the selected product filter.",
+    });
+  };
   const topStockValueRows =
     data?.rows
       ?.filter((row) => row.stockValue > 0)
@@ -117,6 +122,11 @@ export default function CInventoryReport() {
               onClick={() => {
                 setProductId("all");
                 setParams({});
+                toast({
+                  title: "Filters cleared",
+                  description:
+                    "The inventory report is showing all products again.",
+                });
               }}
             >
               {t("clear")}

@@ -64,13 +64,19 @@ export default function CPurchasesReport() {
 
   const { data, isLoading } = useGetPurchasesReport(params);
   const { data: suppliers } = useListSuppliers();
-  const applyFilters = () =>
+  const applyFilters = () => {
     setParams({
       from: from || undefined,
       to: to || undefined,
       supplierId:
         supplierId !== "all" && supplierId ? Number(supplierId) : undefined,
     });
+    toast({
+      title: "Filters applied",
+      description:
+        "The purchases report now uses the selected date and supplier filters.",
+    });
+  };
   const handleExport = async (format: ReportExportFormat) => {
     try {
       setExporting(format);
@@ -142,6 +148,11 @@ export default function CPurchasesReport() {
                 setTo("");
                 setSupplierId("all");
                 setParams({});
+                toast({
+                  title: "Filters cleared",
+                  description:
+                    "The purchases report is showing all suppliers and dates again.",
+                });
               }}
             >
               {t("clear")}

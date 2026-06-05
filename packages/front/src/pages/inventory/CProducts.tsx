@@ -93,6 +93,10 @@ export default function CProducts() {
       minimumStock: String(row.minimumStock),
     });
     setDialogOpen(true);
+    toast({
+      title: "Edit mode opened",
+      description: `${row.name} is ready to edit.`,
+    });
   }
 
   async function handleSave() {
