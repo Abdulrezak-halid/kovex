@@ -1240,6 +1240,90 @@ function withDefaults(
   return created;
 }
 
+function cloneJsonValue(value: JsonValue): JsonValue {
+  return JSON.parse(JSON.stringify(value)) as JsonValue;
+}
+
+function convertMockQuotationToOrder(id: number) {
+  const quotation = mockQuotations.find((row) => row.id === id);
+  if (!quotation) return null;
+
+  const orderId = nextId(mockOrders);
+  const order: JsonObject = {
+    id: orderId,
+    reference: `ORD-${String(orderId).padStart(4, "0")}`,
+    customerId: quotation.customerId,
+    customerName: quotation.customerName,
+    status: "confirmed",
+    totalAmount: quotation.totalAmount,
+    quotationId: quotation.id,
+    notes: quotation.notes,
+    items: cloneJsonValue(quotation.items),
+    createdAt: now(),
+  };
+
+  quotation.status = "accepted";
+  mockOrders.unshift(order);
+  return order;
+}
+
+function createMockInvoiceFromOrder(id: number) {
+  const order = mockOrders.find((row) => row.id === id);
+  if (!order) return null;
+
+  const invoiceId = nextId(mockInvoices);
+  const invoice: JsonObject = {
+    id: invoiceId,
+    reference: `INV-${String(invoiceId).padStart(4, "0")}`,
+    customerId: order.customerId,
+    customerName: order.customerName,
+    orderId: order.id,
+    status: "draft",
+    totalAmount: order.totalAmount,
+    dueDate: dueIn(28),
+    notes: order.notes,
+    items: cloneJsonValue(order.items),
+    createdAt: now(),
+  };
+
+  order.status = "delivered";
+  mockInvoices.unshift(invoice);
+  return invoice;
+}
+
+function receiveMockPurchaseOrder(id: number) {
+  const purchaseOrder = mockPurchaseOrders.find((row) => row.id === id);
+  if (!purchaseOrder) return null;
+
+  const items = Array.isArray(purchaseOrder.items) ? purchaseOrder.items : [];
+
+  for (const rawItem of items) {
+    const item = rawItem as JsonObject;
+    const productId = Number(item.productId);
+    const quantity = Number(item.quantity);
+    const existingStock = mockStock.find((row) => row.productId === productId);
+
+    if (existingStock) {
+      existingStock.quantity = Number(existingStock.quantity) + quantity;
+      continue;
+    }
+
+    const product = mockProducts.find((row) => row.id === productId);
+    mockStock.push({
+      productId,
+      productName: String(item.productName ?? product?.name ?? "Product"),
+      sku: String(product?.sku ?? ""),
+      warehouseId: 1,
+      warehouseName: "Main Warehouse",
+      quantity,
+      minimumStock: Number(product?.minimumStock ?? 0),
+    });
+  }
+
+  purchaseOrder.status = "received";
+  return purchaseOrder;
+}
+
 function sendJson(res: ServerResponse, data: JsonValue, status = 200) {
   res.statusCode = status;
   res.setHeader("Content-Type", "application/json");
@@ -2573,6 +2657,42 @@ export function mockApiPlugin(): Plugin {
             mockSessionUserId = null;
             res.statusCode = 204;
             return res.end();
+          }
+
+          const quotationConvertMatch = url.pathname.match(
+            /^\/api\/quotations\/(\d+)\/convert$/,
+          );
+          if (quotationConvertMatch) {
+            const order = convertMockQuotationToOrder(
+              Number(quotationConvertMatch[1]),
+            );
+            return order
+              ? sendJson(res, order, 201)
+              : sendJson(res, { error: "Mock quotation not found" }, 404);
+          }
+
+          const orderInvoiceMatch = url.pathname.match(
+            /^\/api\/orders\/(\d+)\/invoice$/,
+          );
+          if (orderInvoiceMatch) {
+            const invoice = createMockInvoiceFromOrder(
+              Number(orderInvoiceMatch[1]),
+            );
+            return invoice
+              ? sendJson(res, invoice, 201)
+              : sendJson(res, { error: "Mock order not found" }, 404);
+          }
+
+          const purchaseReceiveMatch = url.pathname.match(
+            /^\/api\/purchase-orders\/(\d+)\/receive$/,
+          );
+          if (purchaseReceiveMatch) {
+            const purchaseOrder = receiveMockPurchaseOrder(
+              Number(purchaseReceiveMatch[1]),
+            );
+            return purchaseOrder
+              ? sendJson(res, purchaseOrder)
+              : sendJson(res, { error: "Mock purchase order not found" }, 404);
           }
 
           const projectIdForTasks = projectTasksPath(url.pathname);

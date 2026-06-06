@@ -193,6 +193,7 @@ export default function COrders() {
     try {
       await invoiceMutation.mutateAsync({ id } as any);
       toast({ title: "Invoice created" });
+      qc.invalidateQueries({ queryKey: getListOrdersQueryKey() });
       qc.invalidateQueries({ queryKey: getListInvoicesQueryKey() });
     } catch {
       toast({ title: "Error", variant: "destructive" });
