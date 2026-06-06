@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { CGlobalHeader } from "@/components/layout/CGlobalHeader";
 import { CSidebar } from "@/components/layout/CSidebar";
+import { CBreadCrumb } from "@/components/CBreadCrumb";
 
 export function CAppLayout({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -27,7 +28,10 @@ export function CAppLayout({ children }: { children: React.ReactNode }) {
 
       <div className="flex-1 flex flex-col overflow-hidden">
         <CGlobalHeader onMenuClick={() => setMobileOpen(true)} />
-        <main className="flex-1 overflow-y-auto">{children}</main>
+        <main className="flex-1 overflow-y-auto">
+          <CBreadCrumb className="px-6 pt-4 -mb-2" />
+          {children}
+        </main>
       </div>
     </div>
   );

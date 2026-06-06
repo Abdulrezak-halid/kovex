@@ -97,7 +97,7 @@ export default function CInventoryReport() {
       <Card className="mb-6">
         <CardContent className="pt-4">
           <div className="flex flex-wrap items-end gap-4">
-            <div className="min-w-[240px]">
+            <div className="min-w-60">
               <Label className="text-xs">{t("product")}</Label>
               <Select value={productId} onValueChange={setProductId}>
                 <SelectTrigger className="mt-1 h-8 text-sm">
