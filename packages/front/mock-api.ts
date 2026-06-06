@@ -1116,6 +1116,642 @@ const mockStock: JsonObject[] = [
   },
 ];
 
+function demoDate(date: string) {
+  return new Date(`${date}T09:00:00.000Z`).toISOString();
+}
+
+function demoOrderItem(productId: number, quantity: number) {
+  const product = mockProducts.find((row) => row.id === productId);
+  const unitPrice = Number(product?.price ?? 0);
+
+  return {
+    productId,
+    productName: String(product?.name ?? "Product"),
+    quantity,
+    unitPrice,
+    unitCost: Number(product?.cost ?? 0),
+    total: money(quantity * unitPrice),
+  };
+}
+
+function demoPurchaseItem(productId: number, quantity: number) {
+  const product = mockProducts.find((row) => row.id === productId);
+  const unitCost = Number(product?.cost ?? 0);
+
+  return {
+    productId,
+    productName: String(product?.name ?? "Product"),
+    quantity,
+    unitCost,
+    total: money(quantity * unitCost),
+  };
+}
+
+function demoTotal(items: JsonObject[]) {
+  return money(items.reduce((sum, item) => sum + Number(item.total ?? 0), 0));
+}
+
+function seedRichDemoData() {
+  if (mockCustomers.some((row) => row.name === "Metro Hardware")) return;
+
+  mockCustomers.push(
+    {
+      id: 9,
+      name: "Metro Hardware",
+      email: "procurement@metro-hardware.example",
+      phone: "+1 555 0109",
+      company: "Metro Hardware",
+      createdAt: demoDate("2026-01-08"),
+    },
+    {
+      id: 10,
+      name: "Nova Clinic Group",
+      email: "ops@nova-clinic.example",
+      phone: "+1 555 0110",
+      company: "Nova Clinic Group",
+      createdAt: demoDate("2026-01-18"),
+    },
+    {
+      id: 11,
+      name: "Pioneer Printworks",
+      email: "orders@pioneer-print.example",
+      phone: "+1 555 0111",
+      company: "Pioneer Printworks",
+      createdAt: demoDate("2026-02-02"),
+    },
+    {
+      id: 12,
+      name: "Riverfront Cafe Supplies",
+      email: "supply@riverfront-cafe.example",
+      phone: "+1 555 0112",
+      company: "Riverfront Cafe Supplies",
+      createdAt: demoDate("2026-02-21"),
+    },
+    {
+      id: 13,
+      name: "Skyline Fitout",
+      email: "admin@skyline-fitout.example",
+      phone: "+1 555 0113",
+      company: "Skyline Fitout",
+      createdAt: demoDate("2026-03-04"),
+    },
+    {
+      id: 14,
+      name: "Luma Education",
+      email: "facilities@luma-education.example",
+      phone: "+1 555 0114",
+      company: "Luma Education",
+      createdAt: demoDate("2026-03-17"),
+    },
+    {
+      id: 15,
+      name: "Orion Repair Services",
+      email: "parts@orion-repair.example",
+      phone: "+1 555 0115",
+      company: "Orion Repair Services",
+      createdAt: demoDate("2026-04-11"),
+    },
+    {
+      id: 16,
+      name: "Beacon Distribution",
+      email: "sales@beacon-distribution.example",
+      phone: "+1 555 0116",
+      company: "Beacon Distribution",
+      createdAt: demoDate("2026-05-06"),
+    },
+  );
+
+  mockSuppliers.push(
+    {
+      id: 5,
+      name: "Vertex Industrial",
+      email: "sales@vertex-industrial.example",
+      phone: "+1 555 0205",
+      company: "Vertex Industrial",
+      createdAt: demoDate("2026-01-05"),
+    },
+    {
+      id: 6,
+      name: "Mediline Supply",
+      email: "orders@mediline.example",
+      phone: "+1 555 0206",
+      company: "Mediline Supply",
+      createdAt: demoDate("2026-01-26"),
+    },
+    {
+      id: 7,
+      name: "LabelPro Materials",
+      email: "team@labelpro.example",
+      phone: "+1 555 0207",
+      company: "LabelPro Materials",
+      createdAt: demoDate("2026-02-13"),
+    },
+    {
+      id: 8,
+      name: "Workspace Direct",
+      email: "accounts@workspace-direct.example",
+      phone: "+1 555 0208",
+      company: "Workspace Direct",
+      createdAt: demoDate("2026-03-02"),
+    },
+    {
+      id: 9,
+      name: "ScanEdge Technologies",
+      email: "supply@scanedge.example",
+      phone: "+1 555 0209",
+      company: "ScanEdge Technologies",
+      createdAt: demoDate("2026-03-18"),
+    },
+  );
+
+  mockProducts.push(
+    {
+      id: 13,
+      name: "Industrial Fastener Kit",
+      sku: "IND-FK-130",
+      description: "Assorted fastener kit for field installations",
+      price: 38,
+      cost: 17,
+      unit: "kit",
+      minimumStock: 90,
+      createdAt: demoDate("2026-01-10"),
+    },
+    {
+      id: 14,
+      name: "Compact POS Terminal",
+      sku: "POS-CT-140",
+      description: "Compact counter terminal for small retail branches",
+      price: 420,
+      cost: 255,
+      unit: "pcs",
+      minimumStock: 10,
+      createdAt: demoDate("2026-01-22"),
+    },
+    {
+      id: 15,
+      name: "Medical Storage Tray",
+      sku: "MED-ST-150",
+      description: "Stackable storage tray for clinic supplies",
+      price: 32,
+      cost: 14,
+      unit: "pcs",
+      minimumStock: 70,
+      createdAt: demoDate("2026-02-14"),
+    },
+    {
+      id: 16,
+      name: "Thermal Printer Pro",
+      sku: "PRN-TP-160",
+      description: "Thermal printer for shipping and barcode labels",
+      price: 560,
+      cost: 330,
+      unit: "pcs",
+      minimumStock: 8,
+      createdAt: demoDate("2026-02-20"),
+    },
+    {
+      id: 17,
+      name: "Warehouse Safety Vest",
+      sku: "SAF-VS-170",
+      description: "High visibility safety vest",
+      price: 24,
+      cost: 9,
+      unit: "pcs",
+      minimumStock: 120,
+      createdAt: demoDate("2026-03-09"),
+    },
+    {
+      id: 18,
+      name: "Portable Tool Cart",
+      sku: "TLS-TC-180",
+      description: "Mobile tool cart for repair teams",
+      price: 690,
+      cost: 410,
+      unit: "pcs",
+      minimumStock: 5,
+      createdAt: demoDate("2026-03-29"),
+    },
+  );
+
+  const demoOrders = [
+    {
+      id: 7,
+      reference: "ORD-1007",
+      customerId: 9,
+      customerName: "Metro Hardware",
+      status: "delivered",
+      notes: "January branch replenishment",
+      createdAt: demoDate("2026-01-12"),
+      items: [
+        demoOrderItem(13, 160),
+        demoOrderItem(1, 120),
+        demoOrderItem(17, 75),
+      ],
+    },
+    {
+      id: 8,
+      reference: "ORD-1008",
+      customerId: 10,
+      customerName: "Nova Clinic Group",
+      status: "confirmed",
+      notes: "Clinic storage setup",
+      createdAt: demoDate("2026-01-28"),
+      items: [
+        demoOrderItem(15, 95),
+        demoOrderItem(11, 80),
+        demoOrderItem(8, 5),
+      ],
+    },
+    {
+      id: 9,
+      reference: "ORD-1009",
+      customerId: 11,
+      customerName: "Pioneer Printworks",
+      status: "shipped",
+      notes: "Print room barcode refresh",
+      createdAt: demoDate("2026-02-09"),
+      items: [
+        demoOrderItem(16, 4),
+        demoOrderItem(4, 240),
+        demoOrderItem(8, 10),
+      ],
+    },
+    {
+      id: 10,
+      reference: "ORD-1010",
+      customerId: 12,
+      customerName: "Riverfront Cafe Supplies",
+      status: "delivered",
+      notes: "Fulfillment shelf labels",
+      createdAt: demoDate("2026-02-23"),
+      items: [
+        demoOrderItem(4, 320),
+        demoOrderItem(6, 42),
+        demoOrderItem(13, 80),
+      ],
+    },
+    {
+      id: 11,
+      reference: "ORD-1011",
+      customerId: 13,
+      customerName: "Skyline Fitout",
+      status: "confirmed",
+      notes: "Office fitout wave one",
+      createdAt: demoDate("2026-03-08"),
+      items: [demoOrderItem(10, 36), demoOrderItem(7, 4), demoOrderItem(18, 2)],
+    },
+    {
+      id: 12,
+      reference: "ORD-1012",
+      customerId: 14,
+      customerName: "Luma Education",
+      status: "pending",
+      notes: "Campus resource room setup",
+      createdAt: demoDate("2026-03-21"),
+      items: [
+        demoOrderItem(14, 6),
+        demoOrderItem(16, 2),
+        demoOrderItem(17, 160),
+      ],
+    },
+    {
+      id: 13,
+      reference: "ORD-1013",
+      customerId: 15,
+      customerName: "Orion Repair Services",
+      status: "confirmed",
+      notes: "Repair van equipment",
+      createdAt: demoDate("2026-04-04"),
+      items: [
+        demoOrderItem(18, 3),
+        demoOrderItem(9, 38),
+        demoOrderItem(13, 140),
+      ],
+    },
+    {
+      id: 14,
+      reference: "ORD-1014",
+      customerId: 16,
+      customerName: "Beacon Distribution",
+      status: "shipped",
+      notes: "Distribution starter package",
+      createdAt: demoDate("2026-04-17"),
+      items: [demoOrderItem(3, 8), demoOrderItem(8, 12), demoOrderItem(4, 360)],
+    },
+    {
+      id: 15,
+      reference: "ORD-1015",
+      customerId: 2,
+      customerName: "Bright Retail Group",
+      status: "delivered",
+      notes: "Retail POS expansion",
+      createdAt: demoDate("2026-05-03"),
+      items: [demoOrderItem(14, 9), demoOrderItem(8, 9), demoOrderItem(16, 3)],
+    },
+    {
+      id: 16,
+      reference: "ORD-1016",
+      customerId: 7,
+      customerName: "Summit Logistics",
+      status: "pending",
+      notes: "Cold-chain scanner reserve",
+      createdAt: demoDate("2026-05-12"),
+      items: [
+        demoOrderItem(12, 58),
+        demoOrderItem(8, 14),
+        demoOrderItem(5, 25),
+      ],
+    },
+    {
+      id: 17,
+      reference: "ORD-1017",
+      customerId: 9,
+      customerName: "Metro Hardware",
+      status: "confirmed",
+      notes: "June fastener promotion stock",
+      createdAt: demoDate("2026-06-02"),
+      items: [
+        demoOrderItem(13, 260),
+        demoOrderItem(1, 170),
+        demoOrderItem(17, 220),
+      ],
+    },
+    {
+      id: 18,
+      reference: "ORD-1018",
+      customerId: 10,
+      customerName: "Nova Clinic Group",
+      status: "pending",
+      notes: "June clinic replenishment",
+      createdAt: demoDate("2026-06-05"),
+      items: [
+        demoOrderItem(15, 130),
+        demoOrderItem(11, 115),
+        demoOrderItem(10, 8),
+      ],
+    },
+  ].map((order) => ({
+    ...order,
+    quotationId: null,
+    totalAmount: demoTotal(order.items),
+  }));
+
+  mockOrders.push(...demoOrders);
+
+  mockInvoices.push(
+    ...demoOrders
+      .filter((order) => !["pending"].includes(String(order.status)))
+      .slice(0, 9)
+      .map((order, index) => ({
+        id: 5 + index,
+        reference: `INV-${String(1005 + index)}`,
+        customerId: order.customerId,
+        customerName: order.customerName,
+        orderId: order.id,
+        status: index % 4 === 0 ? "sent" : index % 5 === 0 ? "overdue" : "paid",
+        totalAmount: order.totalAmount,
+        dueDate: demoDate(`2026-0${Math.min(index + 2, 6)}-24`),
+        notes: order.notes,
+        items: cloneJsonValue(order.items),
+        createdAt: order.createdAt,
+      })),
+  );
+
+  mockPurchaseOrders.push(
+    {
+      id: 5,
+      reference: "PO-1005",
+      supplierId: 5,
+      supplierName: "Vertex Industrial",
+      status: "received",
+      expectedDate: demoDate("2026-01-20"),
+      notes: "Fastener and clamps restock",
+      createdAt: demoDate("2026-01-09"),
+      items: [
+        demoPurchaseItem(13, 420),
+        demoPurchaseItem(9, 90),
+        demoPurchaseItem(1, 340),
+      ],
+    },
+    {
+      id: 6,
+      reference: "PO-1006",
+      supplierId: 6,
+      supplierName: "Mediline Supply",
+      status: "received",
+      expectedDate: demoDate("2026-02-12"),
+      notes: "Clinic storage supplies",
+      createdAt: demoDate("2026-01-30"),
+      items: [demoPurchaseItem(15, 300), demoPurchaseItem(11, 260)],
+    },
+    {
+      id: 7,
+      reference: "PO-1007",
+      supplierId: 7,
+      supplierName: "LabelPro Materials",
+      status: "received",
+      expectedDate: demoDate("2026-03-08"),
+      notes: "Label and tape stock",
+      createdAt: demoDate("2026-02-19"),
+      items: [demoPurchaseItem(4, 900), demoPurchaseItem(6, 180)],
+    },
+    {
+      id: 8,
+      reference: "PO-1008",
+      supplierId: 8,
+      supplierName: "Workspace Direct",
+      status: "sent",
+      expectedDate: demoDate("2026-06-14"),
+      notes: "Office furniture replenishment",
+      createdAt: demoDate("2026-05-22"),
+      items: [
+        demoPurchaseItem(10, 90),
+        demoPurchaseItem(7, 12),
+        demoPurchaseItem(18, 8),
+      ],
+    },
+    {
+      id: 9,
+      reference: "PO-1009",
+      supplierId: 9,
+      supplierName: "ScanEdge Technologies",
+      status: "sent",
+      expectedDate: demoDate("2026-06-18"),
+      notes: "Scanner and POS pipeline",
+      createdAt: demoDate("2026-06-01"),
+      items: [
+        demoPurchaseItem(8, 45),
+        demoPurchaseItem(14, 20),
+        demoPurchaseItem(16, 12),
+      ],
+    },
+  );
+
+  for (const order of mockPurchaseOrders.slice(4)) {
+    const items = order.items as JsonObject[];
+    order.totalAmount = demoTotal(items);
+  }
+
+  mockPurchaseInvoices.push(
+    {
+      id: 4,
+      reference: "PI-1004",
+      supplierId: 5,
+      supplierName: "Vertex Industrial",
+      purchaseOrderId: 5,
+      status: "paid",
+      totalAmount:
+        mockPurchaseOrders.find((order) => order.id === 5)?.totalAmount ?? 0,
+      dueDate: demoDate("2026-02-05"),
+      notes: "Paid after January receipt",
+      createdAt: demoDate("2026-01-21"),
+    },
+    {
+      id: 5,
+      reference: "PI-1005",
+      supplierId: 7,
+      supplierName: "LabelPro Materials",
+      purchaseOrderId: 7,
+      status: "paid",
+      totalAmount:
+        mockPurchaseOrders.find((order) => order.id === 7)?.totalAmount ?? 0,
+      dueDate: demoDate("2026-03-21"),
+      notes: "March label stock invoice",
+      createdAt: demoDate("2026-03-09"),
+    },
+    {
+      id: 6,
+      reference: "PI-1006",
+      supplierId: 9,
+      supplierName: "ScanEdge Technologies",
+      purchaseOrderId: 9,
+      status: "pending",
+      totalAmount:
+        mockPurchaseOrders.find((order) => order.id === 9)?.totalAmount ?? 0,
+      dueDate: demoDate("2026-06-28"),
+      notes: "Pending receipt verification",
+      createdAt: demoDate("2026-06-02"),
+    },
+  );
+
+  mockStock.push(
+    {
+      productId: 13,
+      productName: "Industrial Fastener Kit",
+      sku: "IND-FK-130",
+      warehouseId: 1,
+      warehouseName: "Main Warehouse",
+      quantity: 64,
+      minimumStock: 90,
+    },
+    {
+      productId: 14,
+      productName: "Compact POS Terminal",
+      sku: "POS-CT-140",
+      warehouseId: 2,
+      warehouseName: "East Fulfillment",
+      quantity: 7,
+      minimumStock: 10,
+    },
+    {
+      productId: 15,
+      productName: "Medical Storage Tray",
+      sku: "MED-ST-150",
+      warehouseId: 2,
+      warehouseName: "East Fulfillment",
+      quantity: 210,
+      minimumStock: 70,
+    },
+    {
+      productId: 16,
+      productName: "Thermal Printer Pro",
+      sku: "PRN-TP-160",
+      warehouseId: 1,
+      warehouseName: "Main Warehouse",
+      quantity: 6,
+      minimumStock: 8,
+    },
+    {
+      productId: 17,
+      productName: "Warehouse Safety Vest",
+      sku: "SAF-VS-170",
+      warehouseId: 1,
+      warehouseName: "Main Warehouse",
+      quantity: 92,
+      minimumStock: 120,
+    },
+    {
+      productId: 18,
+      productName: "Portable Tool Cart",
+      sku: "TLS-TC-180",
+      warehouseId: 3,
+      warehouseName: "Service Van Stock",
+      quantity: 4,
+      minimumStock: 5,
+    },
+  );
+
+  mockProjects.push({
+    id: 4,
+    name: "June Demo Data Readiness",
+    description:
+      "Prepare dashboard, reports, and screenshots for committee review",
+    status: "active",
+    priority: "high",
+    startDate: "2026-06-01",
+    endDate: "2026-06-12",
+    budget: 6200,
+    customerId: 1,
+    taskCount: 3,
+    completedTaskCount: 1,
+    createdAt: demoDate("2026-06-01"),
+  });
+
+  mockTasks.push(
+    {
+      id: 12,
+      projectId: 4,
+      projectName: "June Demo Data Readiness",
+      title: "Capture dashboard screenshots",
+      description: "Capture full dashboard in light and dark mode",
+      status: "in_progress",
+      priority: "high",
+      assignedTo: 1,
+      assigneeName: "Operations Manager",
+      dueDate: "2026-06-07",
+      createdAt: demoDate("2026-06-02"),
+    },
+    {
+      id: 13,
+      projectId: 4,
+      projectName: "June Demo Data Readiness",
+      title: "Verify reports export",
+      description: "Generate sales, purchases, and inventory report files",
+      status: "done",
+      priority: "medium",
+      assignedTo: 6,
+      assigneeName: "Omar Yilmaz",
+      dueDate: "2026-06-08",
+      createdAt: demoDate("2026-06-02"),
+    },
+    {
+      id: 14,
+      projectId: 4,
+      projectName: "June Demo Data Readiness",
+      title: "Review Swagger API examples",
+      description: "Open Swagger UI and prepare API demonstration endpoints",
+      status: "todo",
+      priority: "medium",
+      assignedTo: 3,
+      assigneeName: "Ahmed Shablak",
+      dueDate: "2026-06-10",
+      createdAt: demoDate("2026-06-03"),
+    },
+  );
+}
+
+seedRichDemoData();
+
 const collections: Record<string, JsonObject[]> = {
   "/api/customers": mockCustomers,
   "/api/products": mockProducts,
@@ -2124,10 +2760,12 @@ function salesReport(searchParams?: URLSearchParams) {
       salesDocuments.reduce((sum, document) => sum + document.totalAmount, 0),
     ),
     totalOrders: orders.length,
-    rows: [...byMonth.values()].map((row) => ({
-      ...row,
-      revenue: money(row.revenue),
-    })),
+    rows: [...byMonth.values()]
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .map((row) => ({
+        ...row,
+        revenue: money(row.revenue),
+      })),
     topCustomers: [...byCustomer.values()].sort(
       (a, b) => Number(b.totalSpent) - Number(a.totalSpent),
     ),
@@ -2266,10 +2904,12 @@ function purchasesReport(searchParams?: URLSearchParams) {
       ),
     ),
     totalPurchaseOrders: purchaseOrders.length,
-    rows: [...byMonth.values()].map((row) => ({
-      ...row,
-      totalSpent: money(row.totalSpent),
-    })),
+    rows: [...byMonth.values()]
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .map((row) => ({
+        ...row,
+        totalSpent: money(row.totalSpent),
+      })),
     topSuppliers: [...bySupplier.values()].sort(
       (a, b) => Number(b.totalPurchased) - Number(a.totalPurchased),
     ),
