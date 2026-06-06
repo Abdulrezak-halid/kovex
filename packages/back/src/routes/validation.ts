@@ -1,4 +1,11 @@
-export function validationErrorDetails(err: unknown) {
+export type ValidationErrorDetail = {
+  field: string;
+  message: string;
+};
+
+export const validationErrorTitle = "Validation failed";
+
+export function validationErrorDetails(err: unknown): ValidationErrorDetail[] {
   if (err && typeof err === "object" && "issues" in err) {
     const issues = (
       err as { issues?: { path?: unknown[]; message?: string }[] }
@@ -17,9 +24,7 @@ export function validationErrorDetails(err: unknown) {
 export function validationErrorMessage(err: unknown) {
   const details = validationErrorDetails(err);
   if (details.length) {
-    return details
-      .map((detail) => `${detail.field}: ${detail.message}`)
-      .join("; ");
+    return validationErrorTitle;
   }
 
   return err instanceof Error ? err.message : "Invalid input";
@@ -30,6 +35,6 @@ export function validationErrorResponse(err: unknown) {
 
   return {
     error: validationErrorMessage(err),
-    ...(details.length ? { details } : {}),
+    details,
   };
 }

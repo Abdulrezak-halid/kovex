@@ -9,7 +9,7 @@ import {
   DeleteCustomerParams,
   UpdateCustomerParams,
 } from "@sme-erp/api-validation";
-import { validationErrorMessage } from "./validation";
+import { validationErrorResponse } from "./validation";
 import { applyListQuery, parseListQuery } from "./list-query";
 
 const router = Router();
@@ -51,7 +51,7 @@ router.post("/customers", async (req, res) => {
     res.status(201).json(row);
   } catch (err) {
     req.log.error({ err });
-    res.status(400).json({ error: validationErrorMessage(err) });
+    res.status(400).json(validationErrorResponse(err));
   }
 });
 
@@ -83,7 +83,7 @@ router.patch("/customers/:id", async (req, res) => {
     res.json(row);
   } catch (err) {
     req.log.error({ err });
-    res.status(400).json({ error: validationErrorMessage(err) });
+    res.status(400).json(validationErrorResponse(err));
   }
 });
 
