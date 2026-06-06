@@ -9,7 +9,7 @@ import {
   DeleteProductParams,
   UpdateProductParams,
 } from "@sme-erp/api-validation";
-import { validationErrorMessage } from "./validation";
+import { validationErrorResponse } from "./validation";
 import { applyListQuery, parseListQuery } from "./list-query";
 
 const router = Router();
@@ -75,7 +75,7 @@ router.post("/products", async (req, res) => {
       });
   } catch (err) {
     req.log.error({ err });
-    res.status(400).json({ error: validationErrorMessage(err) });
+    res.status(400).json(validationErrorResponse(err));
   }
 });
 
@@ -118,7 +118,7 @@ router.patch("/products/:id", async (req, res) => {
     });
   } catch (err) {
     req.log.error({ err });
-    res.status(400).json({ error: validationErrorMessage(err) });
+    res.status(400).json(validationErrorResponse(err));
   }
 });
 

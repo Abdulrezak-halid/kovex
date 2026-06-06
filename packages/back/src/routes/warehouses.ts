@@ -2,7 +2,7 @@ import { Router } from "express";
 import { db, warehousesTable, stockTable, productsTable } from "@sme-erp/database";
 import { eq, sql } from "drizzle-orm";
 import { CreateWarehouseBody, UpdateWarehouseBody, GetWarehouseParams, DeleteWarehouseParams, UpdateWarehouseParams, ListStockQueryParams } from "@sme-erp/api-validation";
-import { validationErrorMessage } from "./validation";
+import { validationErrorResponse } from "./validation";
 
 const router = Router();
 
@@ -23,7 +23,7 @@ router.post("/warehouses", async (req, res) => {
     res.status(201).json(row);
   } catch (err) {
     req.log.error({ err });
-    res.status(400).json({ error: validationErrorMessage(err) });
+    res.status(400).json(validationErrorResponse(err));
   }
 });
 
@@ -48,7 +48,7 @@ router.patch("/warehouses/:id", async (req, res) => {
     res.json(row);
   } catch (err) {
     req.log.error({ err });
-    res.status(400).json({ error: validationErrorMessage(err) });
+    res.status(400).json(validationErrorResponse(err));
   }
 });
 

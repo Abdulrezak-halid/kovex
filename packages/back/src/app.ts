@@ -6,6 +6,7 @@ import path from "node:path";
 import swaggerUi from "swagger-ui-express";
 import router from "./routes";
 import { logger } from "./lib/logger";
+import { errorHandler, notFoundHandler } from "./lib/errors";
 
 const app: Express = express();
 const openApiPath = path.resolve(__dirname, "../../api-contract/openapi.yaml");
@@ -57,5 +58,7 @@ app.use(
 );
 
 app.use("/api", router);
+app.use("/api", notFoundHandler);
+app.use(errorHandler);
 
 export default app;
