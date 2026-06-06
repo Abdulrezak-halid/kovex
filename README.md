@@ -1,48 +1,80 @@
-# Kovex ERP
+<p align="center">
+  <img src="packages/front/public/assets/images/logos/project-logo-horizontal.png" alt="Kovex ERP logo" width="360" />
+</p>
 
-Kovex ERP is a TypeScript monorepo for small and medium businesses. It combines a React frontend, an Express REST API, generated API client/validation packages, and a PostgreSQL database layer built with Drizzle.
+<p align="center">
+  <strong>Smart Business Management for SMEs</strong>
+</p>
 
-Full name: Kovex ERP
+<p align="center">
+  <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-Noncommercial-blue.svg" /></a>
+  <img alt="Node.js" src="https://img.shields.io/badge/node-%3E%3D24-339933.svg" />
+  <img alt="pnpm" src="https://img.shields.io/badge/pnpm-11.3.0-F69220.svg" />
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5.9-3178C6.svg" />
+  <img alt="PostgreSQL" src="https://img.shields.io/badge/database-PostgreSQL-4169E1.svg" />
+</p>
 
-Subtitle: Smart Business Management for SMEs
+![Kovex ERP cover](packages/front/public/assets/images/screenshots/Kovex-ERP-couver.png)
 
-The name Kovex ERP is derived from `KO`, referring to KOBI, small and medium-sized businesses, and `VEX`, which gives the product a modern, technical, and scalable identity.
+## Overview
 
-The project is organized so the main application code is easy to understand:
+Kovex ERP is a TypeScript monorepo for small and medium-sized businesses. It brings together a React frontend, an Express REST API, generated API client and validation packages, and a PostgreSQL database layer built with Drizzle.
 
-- `packages/front` - the frontend application.
-- `packages/back` - the backend server and REST API.
-- `packages/database` - database connection, Drizzle schema, and migrations/push config.
-- `packages/api-contract` - OpenAPI contract that describes the API.
-- `packages/api-client` - generated frontend API client.
-- `packages/api-validation` - generated backend validation schemas and types.
-- `docs` - project explanation and diagram-ready documentation.
+The name combines `KO`, referring to KOBI and SMEs, with `VEX`, giving the product a modern, technical, and scalable identity.
+
+## Features
+
+- Dashboard summaries for sales, purchases, inventory, and low-stock alerts.
+- Sales workflows for customers, quotations, orders, and invoices.
+- Purchase workflows for suppliers, purchase orders, and purchase invoices.
+- Inventory management for products, warehouses, and stock levels.
+- Planning pages for projects and tasks.
+- Reports with export support for sales, purchases, and inventory.
+- Generated API client and validation types from one OpenAPI contract.
+
+## Tech Stack
+
+- **Frontend:** React, Vite, TypeScript
+- **Backend:** Node.js, Express, TypeScript
+- **Database:** PostgreSQL, Drizzle ORM
+- **API contract:** OpenAPI with generated client and validation packages
+- **Package manager:** pnpm workspaces
+
+## Architecture
+
+The frontend can run against a local mock API for fast UI development, or against the real Express API backed by PostgreSQL. The OpenAPI contract keeps the frontend client and backend validation types aligned.
+
+![Kovex ERP system architecture](docs/diagrams/Kovex%20ERP%20-%20System%20Architecture.png)
+
+## Data Flow
+
+This diagram shows how user actions move through the frontend, API client, backend routes, validation layer, database package, and PostgreSQL.
+
+![Kovex ERP data flow diagram](docs/diagrams/Kovex%20ERP%20-%20Data%20Flow%20Diagram.png)
+
+## Database Model
+
+The ERD covers the core business entities for customers, suppliers, products, warehouses, stock, sales, purchases, users, projects, and tasks.
+
+![Kovex ERP ERD diagram](docs/diagrams/Kovex%20ERP%20-%20ERD%20Diagram.png)
 
 ## Requirements
 
 - Node.js 24 or newer
-- pnpm
+- pnpm 11.3.0
 - Git
-- PostgreSQL, only required when running the real backend/database
+- PostgreSQL, only when running the real backend/database
 
-Check versions:
-
-```bash
-node --version
-pnpm --version
-git --version
-```
-
-If pnpm is not installed, enable it with Corepack:
+Enable pnpm with Corepack if it is not installed:
 
 ```bash
 corepack enable
 corepack prepare pnpm@11.3.0 --activate
 ```
 
-## Install And Run
+## Quick Start
 
-Install all workspace dependencies:
+Install dependencies:
 
 ```bash
 pnpm install
@@ -60,165 +92,76 @@ Open:
 http://localhost:8081/
 ```
 
-This is the fastest mode for UI development because it does not require PostgreSQL or the real backend.
+This is the fastest development mode. It does not require PostgreSQL or the backend.
 
-## Run With Real Backend
+For full onboarding, Windows setup, Docker notes, and real backend/database setup, see the [Developer Setup Guide](docs/developer-setup.md).
 
-Start PostgreSQL and create a database, for example `sme_erp`.
+## Real Backend Mode
 
-Set your database URL:
+Create a PostgreSQL database, then set `DATABASE_URL`:
 
 ```bash
 export DATABASE_URL=postgres://user:password@localhost:5432/sme_erp
 ```
 
-Push the database schema:
+Push the schema and start the backend:
 
 ```bash
-pnpm --filter @sme-erp/database run push
+pnpm run db:push
+pnpm run dev:back
 ```
 
-Start the backend API:
-
-```bash
-PORT=5000 pnpm --filter @sme-erp/back run dev
-```
-
-In another terminal, start the frontend in real API mode:
+In another terminal, start the frontend against the real API:
 
 ```bash
 MOCK_API=false PORT=8081 BASE_PATH=/ pnpm --filter @sme-erp/front run dev
 ```
 
-Open:
+The API documentation is available when the backend is running:
 
 ```text
-http://localhost:8081/
+http://localhost:5000/api-docs/
 ```
 
 ## Useful Commands
 
-```bash
-pnpm run typecheck
-pnpm run build
-pnpm run dev:front
-pnpm run dev:back
-pnpm --filter @sme-erp/api-contract run codegen
-pnpm --filter @sme-erp/database run push
-```
+| Command               | Purpose                                       |
+| --------------------- | --------------------------------------------- |
+| `pnpm run dev:front`  | Start the frontend with the mock API          |
+| `pnpm run dev:back`   | Start the backend API                         |
+| `pnpm run typecheck`  | Run TypeScript checks                         |
+| `pnpm run build`      | Typecheck and build workspace packages        |
+| `pnpm run api:schema` | Regenerate API client and validation packages |
+| `pnpm run db:push`    | Push the Drizzle schema to PostgreSQL         |
 
-Legacy aliases are still available:
+Legacy aliases are still available: `pnpm run dev:web` and `pnpm run dev:api`.
 
-```bash
-pnpm run dev:web
-pnpm run dev:api
-```
+## Documentation
 
-## Project Explanation
+- [Developer Setup Guide](docs/developer-setup.md)
+- [System Architecture](docs/diagrams/system-architecture.md)
+- [Project Flowchart](docs/project-flowchart.txt)
+- [Database and API Access](docs/database-and-api-access.txt)
+- [GitHub Releases Guide](docs/github-releases.md)
+- [License](LICENSE)
+- [Final Graduation Report - English](docs/reports/final-graduation-report-en.md)
+- [Final Graduation Report - Turkish](docs/reports/final-graduation-report-tr.md)
 
-The system has three main runtime layers:
+## Diagrams
 
-1. The user works in `packages/front`, a React/Vite application. The frontend contains pages for dashboard, sales, purchases, inventory, planning, reports, and settings.
-2. The frontend calls `/api` endpoints using the generated client from `packages/api-client`. In mock mode, Vite serves an in-memory mock API. In real mode, requests are proxied to the backend.
-3. The backend in `packages/back` receives REST requests, validates inputs using `packages/api-validation`, executes business logic inside route modules, and reads/writes PostgreSQL through `packages/database`.
+The most important diagrams are embedded above. Additional workflow diagrams are available for deeper review:
 
-The API contract is the center of the project flow. `packages/api-contract/openapi.yaml` describes the available endpoints and schemas. Code generation uses that contract to create the frontend API client and backend validation types. This keeps the frontend, backend, and documentation aligned.
+- [Use Case Diagram](docs/diagrams/Kovex%20ERP%20-%20Use%20Case%20Diagram.png)
+- [Quotation to Order Sequence Diagram](docs/diagrams/Kovex%20ERP%20-%20Quotation%20to%20Order%20Sequence%20Diagram.png)
+- [Order to Invoice Sequence Diagram](docs/diagrams/Kovex%20ERP%20-%20Order%20to%20Invoice%20Sequence%20Diagram.png)
+- [Purchase to Stock Sequence Diagram](docs/diagrams/Kovex%20ERP%20-%20Purchase%20to%20Stock%20Sequence%20Diagram.png)
 
-The database package contains the business entities: customers, suppliers, products, warehouses, stock, quotations, orders, invoices, purchase orders, purchase invoices, users, projects, and tasks. The backend route modules map business workflows onto these entities.
+## Development Notes
 
-## Logical Flowchart Text
+The OpenAPI contract in `packages/api-contract/openapi.yaml` is the source of truth for REST endpoints and schemas. After contract changes, run `pnpm run api:schema` to regenerate the frontend client and backend validation types.
 
-Use this flow when creating a diagram:
+Generated files, build output, dependencies, local environment files, and `.env` files should not be committed.
 
-```text
-User
-  -> Frontend Application (packages/front)
-    -> Navigation and UI Pages
-      -> Dashboard
-      -> Sales: Customers, Quotations, Orders, Invoices
-      -> Purchases: Suppliers, Purchase Orders, Purchase Invoices
-      -> Inventory: Products, Warehouses, Stock
-      -> Planning: Projects, Tasks
-      -> Reports: Sales, Purchases, Inventory
-      -> Settings: Users
-    -> API Client (packages/api-client)
-      -> Mock API in development mode
-      OR
-      -> Real REST API over /api
-        -> Backend Server (packages/back)
-          -> Express App
-          -> Route Modules
-            -> Dashboard Routes
-            -> Sales Routes
-            -> Purchase Routes
-            -> Inventory Routes
-            -> Planning Routes
-            -> Report Routes
-            -> User Routes
-          -> API Validation (packages/api-validation)
-          -> Database Layer (packages/database)
-            -> Drizzle ORM
-            -> PostgreSQL Database
-```
+## License
 
-Main business flow:
-
-```text
-Customer
-  -> Quotation
-    -> Sales Order
-      -> Invoice
-        -> Stock decreases
-        -> Sales reports update
-
-Supplier
-  -> Purchase Order
-    -> Purchase Invoice
-      -> Stock increases
-      -> Purchase reports update
-
-Products and Warehouses
-  -> Stock Levels
-    -> Inventory Report
-    -> Low Stock Alerts
-
-Users
-  -> Access the system
-  -> Manage operational records
-  -> Support audit and ownership of data
-```
-
-## Troubleshooting
-
-If `pnpm install` says to use pnpm, make sure you are not running `npm install`.
-
-If port `8081` is already in use, run the frontend with another port:
-
-```bash
-PORT=8082 BASE_PATH=/ pnpm --filter @sme-erp/front run dev
-```
-
-If the browser shows API errors such as `ERR_CONNECTION_REFUSED`, either run the frontend in mock mode:
-
-```bash
-pnpm run dev:front
-```
-
-or start the real backend on port `5000` and run the frontend with `MOCK_API=false`.
-
-If the backend fails with `DATABASE_URL must be set`, export the variable before starting the backend:
-
-```bash
-export DATABASE_URL=postgres://user:password@localhost:5432/sme_erp
-```
-
-## Git Notes
-
-Do not commit generated or local files such as:
-
-- `node_modules`
-- `dist`
-- `.local`
-- `.env`
-
-These are already covered by `.gitignore`.
+Kovex ERP is available for personal, educational, and research use under the [Kovex ERP Educational Use License](LICENSE). Commercial use, resale, hosted services, rebranding, redistribution, or productization requires prior written permission from the copyright holder.
