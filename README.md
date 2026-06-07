@@ -129,6 +129,8 @@ http://localhost:5000/api-docs/
 | --------------------- | --------------------------------------------- |
 | `pnpm run dev:front`  | Start the frontend with the mock API          |
 | `pnpm run dev:back`   | Start the backend API                         |
+| `pnpm run dev:docker` | Start the mock frontend with Docker Compose   |
+| `pnpm run docker:down` | Stop the Docker Compose development service  |
 | `pnpm run typecheck`  | Run TypeScript checks                         |
 | `pnpm run build`      | Typecheck and build workspace packages        |
 | `pnpm run api:schema` | Regenerate API client and validation packages |
@@ -138,6 +140,8 @@ Legacy aliases are still available: `pnpm run dev:web` and `pnpm run dev:api`.
 
 ## Documentation
 
+- [Project Rules](PROJECT_RULES.md)
+- [GitHub Project Sprint Tasks](docs/github-project-sprint-tasks/README.md)
 - [Developer Setup Guide](docs/developer-setup.md)
 - [System Architecture](docs/diagrams/system-architecture.md)
 - [Project Flowchart](docs/project-flowchart.txt)

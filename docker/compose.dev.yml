@@ -1,8 +1,8 @@
 services:
   front-mock:
     build:
-      context: .
-      dockerfile: Dockerfile.dev
+      context: ..
+      dockerfile: docker/Dockerfile.dev
     environment:
       HOST: 0.0.0.0
       PORT: 8081

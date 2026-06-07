@@ -159,7 +159,7 @@ Use Docker if you want a quick setup on Windows without installing all project t
 Install Docker Desktop, open it, wait until Docker is running, then run this from the project root:
 
 ```powershell
- 
+pnpm run dev:docker
 ```
 
 Open:
@@ -176,10 +176,11 @@ Stop Docker when finished:
 2. Then run:
 
 ```powershell
-docker compose down
+pnpm run docker:down
 ```
 
-If port `8081` is already used, change the left side of the port mapping in `docker-compose.yml`:
+If port `8081` is already used, change the left side of the port mapping in
+`docker/compose.dev.yml`:
 
 ```yaml
 ports:

@@ -7,6 +7,8 @@
     "dev": "node ./scripts/dev.mjs",
     "dev:front": "node ./scripts/dev-front.mjs",
     "dev:back": "DATABASE_URL=${DATABASE_URL:-postgres://postgres:postgres@localhost:5432/sme_erp} PORT=${PORT:-5000} pnpm --filter @sme-erp/back run dev",
+    "dev:docker": "docker compose -f docker/compose.dev.yml up --build",
+    "docker:down": "docker compose -f docker/compose.dev.yml down",
     "dev:web": "pnpm run dev:front",
     "dev:api": "pnpm run dev:back",
     "api:ui": "echo Swagger UI: http://localhost:5000/api-docs/",
