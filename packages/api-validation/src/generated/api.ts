@@ -1431,3 +1431,50 @@ export const ExportPurchasesReportQueryParams = zod.object({
     .nullish()
     .describe("Optional supplier filter for the purchases report"),
 });
+
+/**
+ * Accounting: Accounts
+ */
+export const CreateAccountBody = zod.object({
+  name: zod.string(),
+  type: zod.string(),
+  currency: zod.string().optional(),
+  metadata: zod.any().optional(),
+});
+
+export const UpdateAccountBody = zod.object({
+  name: zod.string().optional(),
+  type: zod.string().optional(),
+  currency: zod.string().optional(),
+  metadata: zod.any().optional(),
+});
+
+export const GetAccountParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+/**
+ * Accounting: Expenses
+ */
+export const CreateExpenseBody = zod.object({
+  accountId: zod.coerce.number(),
+  amount: zod.coerce.number(),
+  currency: zod.string().optional(),
+  description: zod.string().optional(),
+  incurredAt: zod.string().optional(),
+  status: zod.string().optional(),
+  reference: zod.string().optional(),
+});
+
+/**
+ * Accounting: Payments
+ */
+export const CreatePaymentBody = zod.object({
+  fromAccountId: zod.coerce.number(),
+  toAccountId: zod.coerce.number(),
+  amount: zod.coerce.number(),
+  currency: zod.string().optional(),
+  method: zod.string().optional(),
+  reference: zod.string().optional(),
+  paidAt: zod.string().optional(),
+});

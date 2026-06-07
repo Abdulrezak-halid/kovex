@@ -12,6 +12,7 @@ import purchasesRouter from "./purchases";
 import usersRouter from "./users";
 import reportsRouter from "./reports";
 import planningRouter from "./planning";
+import accountingRouter from "./accounting";
 
 const router: IRouter = Router();
 
@@ -28,5 +29,6 @@ router.use(purchasesRouter);
 router.use(usersRouter);
 router.use(requireModulePermission("reports"), reportsRouter);
 router.use(requireModulePermission("planning"), planningRouter);
+router.use(requireModulePermission("accounting"), accountingRouter);
 
 export default router;
