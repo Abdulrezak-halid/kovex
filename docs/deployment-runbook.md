@@ -20,6 +20,12 @@ The selected first deployment is a same-origin Render web service:
 DATABASE_URL="postgres://..." pnpm run db:push
 ```
 
+5. Create or reset the production admin user:
+
+```bash
+DATABASE_URL="postgres://..." pnpm run db:seed-admin
+```
+
 ## 2. Prepare Render
 
 1. Connect the GitHub repository to Render.

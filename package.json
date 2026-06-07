@@ -15,6 +15,7 @@
     "api:schema": "pnpm --filter @sme-erp/api-contract run codegen",
     "db:push": "DATABASE_URL=${DATABASE_URL:-postgres://postgres:postgres@localhost:5432/sme_erp} pnpm --filter @sme-erp/database run push",
     "db:migrate": "pnpm run db:push",
+    "db:seed-admin": "pnpm --filter @sme-erp/database run seed:admin",
     "build": "pnpm run typecheck && pnpm -r --if-present run build",
     "typecheck:libs": "tsc --build",
     "typecheck": "pnpm run typecheck:libs && pnpm -r --filter @sme-erp/front --filter @sme-erp/back --if-present run typecheck"
