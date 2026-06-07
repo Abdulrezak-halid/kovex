@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: kovex-erp-web
+    runtime: docker
+    plan: starter
+    dockerfilePath: docker/Dockerfile.prod
+    dockerContext: .
+    healthCheckPath: /api/healthz
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: LOG_LEVEL
+        value: info
+      - key: BASE_PATH
+        value: /
+      - key: MOCK_API
+        value: "false"
+      - key: DATABASE_URL
+        sync: false
+      - key: AUTH_SECRET
+        sync: false

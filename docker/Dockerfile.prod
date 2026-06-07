@@ -1,0 +1,21 @@
+FROM node:24-slim
+
+WORKDIR /app
+
+RUN corepack enable && corepack prepare pnpm@11.3.0 --activate
+
+ENV PORT=8081
+ENV BASE_PATH=/
+ENV MOCK_API=false
+
+COPY . .
+
+RUN pnpm install --frozen-lockfile
+RUN pnpm run build
+
+ENV NODE_ENV=production
+ENV FRONTEND_DIST_DIR=/app/packages/front/dist/public
+
+EXPOSE 10000
+
+CMD ["node", "--enable-source-maps", "packages/back/dist/index.mjs"]

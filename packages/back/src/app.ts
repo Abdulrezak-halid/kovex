@@ -2,6 +2,7 @@ import express, { type Express } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import pinoHttp from "pino-http";
+import fs from "node:fs";
 import path from "node:path";
 import swaggerUi from "swagger-ui-express";
 import router from "./routes";
@@ -10,6 +11,9 @@ import { errorHandler, notFoundHandler } from "./lib/errors";
 
 const app: Express = express();
 const openApiPath = path.resolve(__dirname, "../../api-contract/openapi.yaml");
+const frontendDistPath =
+  process.env.FRONTEND_DIST_DIR ??
+  path.resolve(__dirname, "../../front/dist/public");
 
 app.use(
   pinoHttp({
@@ -59,6 +63,14 @@ app.use(
 
 app.use("/api", router);
 app.use("/api", notFoundHandler);
+
+if (fs.existsSync(frontendDistPath)) {
+  app.use(express.static(frontendDistPath));
+  app.get(/^\/(?!api(?:\/|$)|api-docs(?:\/|$)).*/, (_req, res) => {
+    res.sendFile(path.join(frontendDistPath, "index.html"));
+  });
+}
+
 app.use(errorHandler);
 
 export default app;

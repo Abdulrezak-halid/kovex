@@ -140,9 +140,13 @@ Legacy aliases are still available: `pnpm run dev:web` and `pnpm run dev:api`.
 
 ## Documentation
 
-- [Project Rules](PROJECT_RULES.md)
+- [Project Rules](docs/PROJECT_RULES.md)
 - [GitHub Project Sprint Tasks](docs/github-project-sprint-tasks/README.md)
 - [Developer Setup Guide](docs/developer-setup.md)
+- [Deployment Strategy](docs/deployment-strategy.md)
+- [Deployment Environment Variables](docs/deployment-environment.md)
+- [Deployment Runbook](docs/deployment-runbook.md)
+- [Cloud PostgreSQL Setup](docs/cloud-postgresql.md)
 - [System Architecture](docs/diagrams/system-architecture.md)
 - [Project Flowchart](docs/project-flowchart.txt)
 - [Database and API Access](docs/database-and-api-access.txt)
