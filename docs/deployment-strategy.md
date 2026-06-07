@@ -53,6 +53,12 @@ Recommended service name:
 kovex-erp-web
 ```
 
+Recommended instance type:
+
+```text
+Free
+```
+
 Recommended runtime:
 
 ```text

@@ -26,13 +26,23 @@ DATABASE_URL="postgres://..." pnpm run db:push
 2. Create a Blueprint from `render.yaml`, or create a Docker web service
    manually.
 3. Use `docker/Dockerfile.prod`.
-4. Set health check path:
+4. Select the Free instance type for the first demo deployment.
+5. Set health check path:
 
 ```text
 /api/healthz
 ```
 
-5. Add environment variables from `docs/deployment-environment.md`.
+6. Add environment variables from `docs/deployment-environment.md`.
+
+If Render asks for payment, confirm that `render.yaml` uses:
+
+```yaml
+plan: free
+```
+
+You can also skip Blueprint and create a manual **Web Service** using the Free
+instance type.
 
 ## 3. Deploy Backend
 
@@ -82,4 +92,3 @@ Browser API requests should use same-origin `/api` URLs.
 The repository now includes the deployment configuration, but TASK-078 and
 TASK-079 can only be marked completed after a real Render URL exists and the
 verification checks pass.
-

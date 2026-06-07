@@ -2,7 +2,7 @@ services:
   - type: web
     name: kovex-erp-web
     runtime: docker
-    plan: starter
+    plan: free
     dockerfilePath: docker/Dockerfile.prod
     dockerContext: .
     healthCheckPath: /api/healthz
