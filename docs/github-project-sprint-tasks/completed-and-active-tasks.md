@@ -996,7 +996,7 @@ Status: Ready
 Priority: P0 Critical
 Sprint: Sprint 6
 Labels: database, documentation, graduation
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Document database tables and relationships.
 Acceptance Criteria:
 
@@ -1010,7 +1010,7 @@ Status: Ready
 Priority: P0 Critical
 Sprint: Sprint 6
 Labels: documentation, architecture
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Show frontend, backend, API contract, validation, database, and external tools.
 Acceptance Criteria:
 
@@ -1024,7 +1024,7 @@ Status: Ready
 Priority: P1 High
 Sprint: Sprint 6
 Labels: documentation, graduation
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Show how data moves through sales, purchases, inventory, and reports.
 Acceptance Criteria:
 
@@ -1038,7 +1038,7 @@ Status: Ready
 Priority: P1 High
 Sprint: Sprint 6
 Labels: documentation, graduation
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Show actors and system use cases.
 Acceptance Criteria:
 
@@ -1052,7 +1052,7 @@ Status: Ready
 Priority: P2 Medium
 Sprint: Sprint 6
 Labels: documentation, graduation
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Add diagrams for important workflows.
 Acceptance Criteria:
 
@@ -1066,7 +1066,7 @@ Status: Ready
 Priority: P0 Critical
 Sprint: Sprint 6
 Labels: documentation, graduation
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Write the final academic report.
 Acceptance Criteria:
 
@@ -1089,7 +1089,7 @@ Status: Ready
 Priority: P0 Critical
 Sprint: Sprint 6
 Labels: presentation, graduation
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Create a concise presentation for the committee.
 Acceptance Criteria:
 
@@ -1108,7 +1108,7 @@ Status: Ready
 Priority: P1 High
 Sprint: Sprint 6
 Labels: demo, graduation
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Record a clear practical demo.
 Acceptance Criteria:
 
@@ -1124,7 +1124,7 @@ Status: Ready
 Priority: P2 Medium
 Sprint: Sprint 6
 Labels: documentation
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Explain how a user operates the system.
 Acceptance Criteria:
 
@@ -1138,7 +1138,7 @@ Status: Ready
 Priority: P2 Medium
 Sprint: Sprint 6
 Labels: documentation
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Organize setup instructions for developers.
 Acceptance Criteria:
 
@@ -1151,11 +1151,11 @@ Acceptance Criteria:
 Sprint 7 - Deployment And Project Management
 
 TASK-075 - Choose deployment strategy
-Status: Ready
+Status: Completed
 Priority: P1 High
 Sprint: Sprint 7
 Labels: deployment
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Decide where and how to deploy the system.
 Acceptance Criteria:
 
@@ -1164,12 +1164,17 @@ Acceptance Criteria:
 - Database hosting option selected.
 - Environment variable strategy selected.
 
+Completion Note: Selected first deployment strategy in
+`docs/deployment-strategy.md`: built Vite frontend served by the Render web
+service, Express backend hosted as a Render Web Service, Supabase managed
+PostgreSQL, and production secrets stored in platform environment variables.
+
 TASK-076 - Add Docker workflow
-Status: Ready
+Status: Completed
 Priority: P2 Medium
 Sprint: Sprint 7
 Labels: deployment, docker
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Make local deployment easier with Docker.
 Acceptance Criteria:
 
@@ -1177,12 +1182,16 @@ Acceptance Criteria:
 - PostgreSQL service is documented.
 - App can be started predictably.
 
+Completion Note: Added `docker/Dockerfile.prod`, expanded
+`docker/compose.dev.yml` with a PostgreSQL service, and documented Docker usage
+through the deployment runbook and existing developer setup.
+
 TASK-077 - Configure production environment variables
-Status: Ready
+Status: Completed
 Priority: P1 High
 Sprint: Sprint 7
 Labels: deployment, security
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Prepare safe production configuration.
 Acceptance Criteria:
 
@@ -1190,8 +1199,12 @@ Acceptance Criteria:
 - Sensitive values are not committed.
 - Example env file exists if appropriate.
 
+Completion Note: Added `.env.production.example` and
+`docs/deployment-environment.md`. Production secrets are documented for Render
+and Supabase dashboards, not committed values.
+
 TASK-078 - Deploy frontend
-Status: Ready
+Status: In Progress
 Priority: P2 Medium
 Sprint: Sprint 7
 Labels: deployment, frontend
@@ -1203,8 +1216,12 @@ Acceptance Criteria:
 - Build works in deployment environment.
 - API URL is configured.
 
+Progress Note: Added same-origin production static serving in the Express app,
+`docker/Dockerfile.prod`, `render.yaml`, and `docs/deployment-runbook.md`.
+Completion still requires a real Render deployment URL.
+
 TASK-079 - Deploy backend
-Status: Ready
+Status: In Progress
 Priority: P2 Medium
 Sprint: Sprint 7
 Labels: deployment, backend
@@ -1216,8 +1233,13 @@ Acceptance Criteria:
 - Health endpoint works.
 - Swagger UI works.
 
+Progress Note: Added Render Blueprint configuration in `render.yaml`,
+production Docker startup, and deployment verification steps in
+`docs/deployment-runbook.md`. Completion still requires a real Render backend
+URL and successful `/api/healthz` plus `/api-docs/` checks.
+
 TASK-080 - Prepare PostgreSQL cloud database
-Status: Ready
+Status: In Progress
 Priority: P2 Medium
 Sprint: Sprint 7
 Labels: deployment, database
@@ -1229,18 +1251,26 @@ Acceptance Criteria:
 - Schema is pushed.
 - Backend connects successfully.
 
+Progress Note: Added Supabase setup guidance in `docs/cloud-postgresql.md` and
+documented `DATABASE_URL` handling. Completion still requires creating the
+Supabase project and pushing schema to the real database.
+
 TASK-081 - Add CI/CD pipeline
-Status: Ready
+Status: Completed
 Priority: P3 Low
 Sprint: Sprint 7
 Labels: deployment, testing
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Add automated checks on GitHub.
 Acceptance Criteria:
 
 - GitHub Action runs typecheck.
 - GitHub Action runs build.
 - Workflow status is visible in repository.
+
+Completion Note: Added `.github/workflows/ci.yml` with pnpm install,
+typecheck, and build checks. Workflow status will appear in GitHub after this
+change is pushed.
 
 TASK-082 - Maintain GitHub Project board
 Status: Ready
