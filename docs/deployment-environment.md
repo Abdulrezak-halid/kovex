@@ -16,6 +16,7 @@ Set these in the Render service environment:
 NODE_ENV=production
 LOG_LEVEL=info
 DATABASE_URL=<Supabase Postgres connection string>
+DATABASE_SSL=true
 AUTH_SECRET=<strong random secret>
 ```
 
@@ -65,8 +66,19 @@ Never commit the generated value.
 ## Validation Checklist
 
 - `DATABASE_URL` is set in Render.
+- `DATABASE_SSL=true` is set in Render for Supabase.
 - `AUTH_SECRET` is set in Render and is not the development fallback.
 - `NODE_ENV=production`.
 - `LOG_LEVEL=info`.
 - No real secret appears in `.env`, docs, screenshots, or Git history.
 
+## Troubleshooting
+
+If Render logs show an error like this:
+
+```text
+getaddrinfo ENOTFOUND base
+```
+
+then `DATABASE_URL` is malformed in Render. Re-enter the full Supabase Session
+Pooler URL as one line, with no quotes, no brackets, and no line breaks.

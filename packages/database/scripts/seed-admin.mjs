@@ -26,7 +26,13 @@ function hashPassword(value) {
   return `scrypt:${salt}:${hash}`;
 }
 
-const pool = new Pool({ connectionString: databaseUrl });
+const useSsl =
+  process.env.DATABASE_SSL === "true" || databaseUrl.includes("supabase.com");
+
+const pool = new Pool({
+  connectionString: databaseUrl,
+  ssl: useSsl ? { rejectUnauthorized: false } : undefined,
+});
 
 try {
   await pool.query(

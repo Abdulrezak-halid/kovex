@@ -766,7 +766,7 @@ Status: In Progress
 Priority: P1 High
 Sprint: Sprint 4
 Labels: frontend, testing
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Confirm the app works on desktop, tablet, and mobile.
 Acceptance Criteria:
 
@@ -781,7 +781,7 @@ Status: In Progress
 Priority: P1 High
 Sprint: Sprint 4
 Labels: frontend, ux
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Display professional messages for loading, errors, and empty data.
 Acceptance Criteria:
 
@@ -826,7 +826,7 @@ Status: Ready
 Priority: P1 High
 Sprint: Sprint 5
 Labels: backend, quality
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Handle backend errors professionally.
 Acceptance Criteria:
 
@@ -840,7 +840,7 @@ Status: Ready
 Priority: P1 High
 Sprint: Sprint 5
 Labels: backend, logging
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Track important system events and errors.
 Acceptance Criteria:
 
@@ -1208,7 +1208,7 @@ Status: In Progress
 Priority: P2 Medium
 Sprint: Sprint 7
 Labels: deployment, frontend
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Deploy frontend to a public or demo-accessible environment.
 Acceptance Criteria:
 
@@ -1225,7 +1225,7 @@ Status: In Progress
 Priority: P2 Medium
 Sprint: Sprint 7
 Labels: deployment, backend
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Deploy backend API to a public or demo-accessible environment.
 Acceptance Criteria:
 
@@ -1243,7 +1243,7 @@ Status: In Progress
 Priority: P2 Medium
 Sprint: Sprint 7
 Labels: deployment, database
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Prepare cloud database for deployed demo.
 Acceptance Criteria:
 
@@ -1277,7 +1277,7 @@ Status: Ready
 Priority: P0 Critical
 Sprint: Every Sprint
 Labels: project-management
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Track work systematically.
 Acceptance Criteria:
 
