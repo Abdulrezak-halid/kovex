@@ -569,6 +569,24 @@ function parseNumber(value: TableCell) {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
+function compactChartLabel(value: TableCell, maxLength: number) {
+  const label = String(value).replace(/\s+/g, " ").trim();
+  if (label.length <= maxLength) return label;
+  return `${label.slice(0, Math.max(maxLength - 3, 1)).trimEnd()}...`;
+}
+
+function chartTickIndexes(total: number, maxTicks: number) {
+  if (total <= maxTicks) {
+    return new Set(Array.from({ length: total }, (_, index) => index));
+  }
+
+  return new Set(
+    Array.from({ length: maxTicks }, (_, index) =>
+      Math.round((index * (total - 1)) / Math.max(maxTicks - 1, 1)),
+    ),
+  );
+}
+
 function chartData(sections: ExportSection[]) {
   const detailSections = sections.filter(
     (section) => section.title !== "Summary",
@@ -616,6 +634,7 @@ function renderLineSvg(points: ChartPoint[]) {
   const max = Math.max(...points.map((point) => point.value), 1);
   const step =
     points.length > 1 ? chartWidth / (points.length - 1) : chartWidth;
+  const tickIndexes = chartTickIndexes(points.length, 6);
   const coords = points.map((point, index) => {
     const x = left + index * step;
     const y = top + chartHeight - (point.value / max) * chartHeight;
@@ -636,7 +655,10 @@ function renderLineSvg(points: ChartPoint[]) {
     ${points
       .map((point, index) => {
         const [x, y] = coords[index].split(",");
-        return `<circle cx="${x}" cy="${y}" r="5" fill="${brand.navy}" /><text x="${x}" y="${height - 24}" font-size="11" text-anchor="middle" fill="#52616f">${htmlEscape(point.label)}</text>`;
+        const label = tickIndexes.has(index)
+          ? `<text x="${x}" y="${height - 24}" font-size="11" text-anchor="middle" fill="#52616f">${htmlEscape(compactChartLabel(point.label, 13))}</text>`
+          : "";
+        return `<circle cx="${x}" cy="${y}" r="5" fill="${brand.navy}"><title>${htmlEscape(point.label)}</title></circle>${label}`;
       })
       .join("")}
   </svg>`;
@@ -759,23 +781,17 @@ function renderExcelHtml(title: string, sections: ExportSection[]) {
 </html>`;
 }
 
+function pdfSafeText(value: TableCell) {
+  return String(value)
+    .replace(/þÿ|ÿþ/g, "")
+    .replace(/[\uFEFF\uFFFE]/g, "")
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^\x20-\x7e]/g, "?");
+}
+
 function pdfText(value: TableCell) {
-  const text = String(value);
-  const hex = ["feff"];
-
-  for (const char of text) {
-    const code = char.codePointAt(0) ?? 0;
-    if (code <= 0xffff) {
-      hex.push(code.toString(16).padStart(4, "0"));
-      continue;
-    }
-
-    const adjusted = code - 0x10000;
-    hex.push(((adjusted >> 10) + 0xd800).toString(16).padStart(4, "0"));
-    hex.push(((adjusted & 0x3ff) + 0xdc00).toString(16).padStart(4, "0"));
-  }
-
-  return `<${hex.join("")}>`;
+  return `(${pdfSafeText(value).replace(/[\\()]/g, "\\$&")})`;
 }
 
 function renderPdf(title: string, sections: ExportSection[]) {
@@ -881,6 +897,7 @@ function renderPdf(title: string, sections: ExportSection[]) {
         stroke(brand.border);
         commands.push("38 455 250 150 re S");
         const max = Math.max(...trend.map((point) => point.value), 1);
+        const tickIndexes = chartTickIndexes(trend.length, 5);
         const coords = trend.map((point, pointIndex) => {
           const x = 56 + pointIndex * (210 / Math.max(trend.length - 1, 1));
           const y = 475 + (point.value / max) * 108;
@@ -899,8 +916,12 @@ function renderPdf(title: string, sections: ExportSection[]) {
           commands.push(`${point.x - 2} ${point.y - 2} 4 4 re f`),
         );
         coords
-          .slice(0, 6)
-          .forEach((point) => text(point.label, point.x - 10, 462, 6));
+          .filter((_, pointIndex) => tickIndexes.has(pointIndex))
+          .forEach((point) => {
+            const label = compactChartLabel(point.label, 9);
+            const labelWidth = pdfSafeText(label).length * 3.1;
+            text(label, point.x - labelWidth / 2, 462, 6);
+          });
       }
 
       if (breakdown.length) {
@@ -924,7 +945,7 @@ function renderPdf(title: string, sections: ExportSection[]) {
     const truncate = (value: TableCell, maxLength: number) => {
       const textValue = String(value);
       return textValue.length > maxLength
-        ? `${textValue.slice(0, maxLength - 1)}…`
+        ? `${textValue.slice(0, maxLength - 3)}...`
         : textValue;
     };
     const drawTable = (section: ExportSection, startY: number) => {
