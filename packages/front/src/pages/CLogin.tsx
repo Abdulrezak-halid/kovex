@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useTheme } from "next-themes";
 import { useLocation } from "wouter";
 import { AlertCircle, LogIn } from "lucide-react";
 import { useCAuth } from "@/lib/auth";
@@ -18,17 +19,26 @@ import { Label } from "@/components/ui/label";
 import { CLanguageDropdown } from "@/components/layout/CLanguageDropdown";
 import { CThemeToggle } from "@/components/layout/CThemeToggle";
 
-const kovexLogo = "/assets/images/logos/project-logo-primary.png";
+const lightLogo = "/assets/images/logos/project-logo-primary-light.png";
+const darkLogo = "/assets/images/logos/project-logo-horizontal.png";
 
 export default function CLogin() {
   const { t } = useTranslation();
+  const { resolvedTheme } = useTheme();
   const [, setLocation] = useLocation();
   const { login } = useCAuth();
+  const [mounted, setMounted] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const kovexLogo = mounted && resolvedTheme === "dark" ? darkLogo : lightLogo;
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
