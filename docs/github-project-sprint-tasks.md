@@ -849,17 +849,18 @@ Acceptance Criteria:
 - Important business operations are logged where needed.
 
 TASK-055 - Add unit tests
-Status: Ready
+Status: Completed
 Priority: P1 High
 Sprint: Sprint 5
 Labels: testing
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Test important isolated logic.
 Acceptance Criteria:
 
 - Test framework is selected.
 - At least core utility/business functions have tests.
 - Tests run with one command.
+  Completion Note: Vitest was selected and configured with `npm test`, covering frontend form validation, frontend permission helpers, API error messages, and backend auth token/password helpers.
 
 TASK-056 - Add integration tests
 Status: Ready

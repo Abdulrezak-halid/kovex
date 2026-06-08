@@ -13,13 +13,15 @@
     "api:schema": "pnpm --filter @sme-erp/api-contract run codegen",
     "db:push": "DATABASE_URL=${DATABASE_URL:-postgres://postgres:postgres@localhost:5432/sme_erp} pnpm --filter @sme-erp/database run push",
     "db:migrate": "pnpm run db:push",
+    "test": "vitest run",
     "build": "pnpm run typecheck && pnpm -r --if-present run build",
     "typecheck:libs": "tsc --build",
     "typecheck": "pnpm run typecheck:libs && pnpm -r --filter @sme-erp/front --filter @sme-erp/back --if-present run typecheck"
   },
   "private": true,
   "devDependencies": {
+    "prettier": "^3.8.1",
     "typescript": "~5.9.2",
-    "prettier": "^3.8.1"
+    "vitest": "^4.1.8"
   }
 }
