@@ -1270,7 +1270,7 @@ Acceptance Criteria:
 
 - Accounting scope is defined.
 - Basic accounting entities are designed.
-  Completion Note: Accounting scope and basic entity design are documented in docs/accounting-module-design.md.
+  Completion Note: Accounting scope, backend/data entities, and frontend UI/view-model design are documented in docs/accounting-module-design.md and docs/accounting-frontend-design.md.
 
 TASK-084 - Add notification system
 Status: Future

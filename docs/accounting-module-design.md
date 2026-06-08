@@ -247,6 +247,7 @@ First accounting UI pages:
 - Supplier payments list and payment form.
 - Balances page with customer, supplier, and account tabs.
 - Accounting summary cards for unpaid invoices, unpaid purchase invoices, monthly expenses, and cash/bank balance.
+- Frontend page, route, form, and view-model details are documented in `docs/accounting-frontend-design.md`.
 
 ## Implementation Order
 
@@ -261,3 +262,4 @@ First accounting UI pages:
 
 - Accounting scope is defined in the "Accounting Scope", "Existing System Links", and "UI Scope" sections.
 - Basic accounting entities are designed in the "Basic Accounting Entity Design" and "Balance Views" sections.
+- Frontend scope and frontend-facing entities are documented in `docs/accounting-frontend-design.md`.
