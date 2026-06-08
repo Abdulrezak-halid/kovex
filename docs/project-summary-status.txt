@@ -180,7 +180,7 @@ Set up PostgreSQL database for real backend mode.
 Test all backend endpoints with real data.
 Add authentication and permissions if required.
 Add more reports and charts.
-Add accounting module in the future.
+Add accounting module in the future. Initial scope and entity design are documented in docs/accounting-module-design.md.
 Add notifications in the future.
 Add mobile support in the future.
 

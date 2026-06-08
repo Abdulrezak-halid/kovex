@@ -1260,16 +1260,17 @@ Acceptance Criteria:
 Optional / Future Work - 16 Suggestions
 
 TASK-083 - Add accounting module
-Status: Future
+Status: Completed
 Priority: P3 Low
 Sprint: Future
 Labels: future, accounting
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Add accounting features such as expenses, payments, and balances.
 Acceptance Criteria:
 
 - Accounting scope is defined.
 - Basic accounting entities are designed.
+  Completion Note: Accounting scope and basic entity design are documented in docs/accounting-module-design.md.
 
 TASK-084 - Add notification system
 Status: Future
