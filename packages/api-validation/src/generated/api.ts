@@ -15,6 +15,70 @@ export const HealthCheckResponse = zod.object({
 });
 
 /**
+ * @summary List notifications for the current user
+ */
+export const listNotificationsQueryLimitDefault = 20;
+export const listNotificationsQueryLimitMax = 50;
+
+export const ListNotificationsQueryParams = zod.object({
+  limit: zod.coerce
+    .number()
+    .min(1)
+    .max(listNotificationsQueryLimitMax)
+    .default(listNotificationsQueryLimitDefault),
+});
+
+export const ListNotificationsResponseItem = zod.object({
+  id: zod.number(),
+  userId: zod.number(),
+  type: zod.enum(["low_stock", "overdue_invoice", "task_deadline"]),
+  title: zod.string(),
+  message: zod.string(),
+  entityType: zod.enum(["product", "invoice", "task"]),
+  entityId: zod.number(),
+  isRead: zod.boolean(),
+  createdAt: zod.string(),
+  readAt: zod.string().nullish(),
+});
+export const ListNotificationsResponse = zod.array(
+  ListNotificationsResponseItem,
+);
+
+/**
+ * @summary Get unread notification count for the current user
+ */
+export const GetUnreadNotificationCountResponse = zod.object({
+  count: zod.number(),
+});
+
+/**
+ * @summary Mark one notification as read
+ */
+export const MarkNotificationReadParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const MarkNotificationReadResponse = zod.object({
+  id: zod.number(),
+  userId: zod.number(),
+  type: zod.enum(["low_stock", "overdue_invoice", "task_deadline"]),
+  title: zod.string(),
+  message: zod.string(),
+  entityType: zod.enum(["product", "invoice", "task"]),
+  entityId: zod.number(),
+  isRead: zod.boolean(),
+  createdAt: zod.string(),
+  readAt: zod.string().nullish(),
+});
+
+/**
+ * @summary Mark all current user notifications as read
+ */
+export const MarkAllNotificationsReadResponse = zod.object({
+  updated: zod.number(),
+});
+
+/**
  * @summary List projects
  */
 export const ListProjectsQueryParams = zod.object({

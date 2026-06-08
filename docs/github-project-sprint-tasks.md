@@ -1272,17 +1272,18 @@ Acceptance Criteria:
 - Basic accounting entities are designed.
 
 TASK-084 - Add notification system
-Status: Future
+Status: Completed
 Priority: P2 Medium
 Sprint: Future
 Labels: future, notifications
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Notify users about low stock, overdue invoices, and task deadlines.
 Acceptance Criteria:
 
 - Notification types are defined.
 - UI notification area exists.
 - Backend creates notifications from events.
+  Completion Note: Notification schema, event creation service, current-user API endpoints, generated client hooks, header bell dropdown, mock API support, and focused tests were added.
 
 TASK-085 - Add mobile support or mobile app
 Status: Future

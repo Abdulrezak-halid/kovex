@@ -9,6 +9,46 @@ export interface HealthStatus {
   status: string;
 }
 
+export type NotificationType =
+  (typeof NotificationType)[keyof typeof NotificationType];
+
+export const NotificationType = {
+  low_stock: "low_stock",
+  overdue_invoice: "overdue_invoice",
+  task_deadline: "task_deadline",
+} as const;
+
+export type NotificationEntityType =
+  (typeof NotificationEntityType)[keyof typeof NotificationEntityType];
+
+export const NotificationEntityType = {
+  product: "product",
+  invoice: "invoice",
+  task: "task",
+} as const;
+
+export interface Notification {
+  id: number;
+  userId: number;
+  type: NotificationType;
+  title: string;
+  message: string;
+  entityType: NotificationEntityType;
+  entityId: number;
+  isRead: boolean;
+  createdAt: string;
+  /** @nullable */
+  readAt?: string | null;
+}
+
+export interface NotificationUnreadCount {
+  count: number;
+}
+
+export interface NotificationsMarkAllReadResult {
+  updated: number;
+}
+
 export interface DashboardSummary {
   totalSalesThisMonth: number;
   totalOrdersThisMonth: number;
@@ -478,6 +518,14 @@ export interface TaskInput {
   assignedTo?: number;
   dueDate?: string;
 }
+
+export type ListNotificationsParams = {
+  /**
+   * @minimum 1
+   * @maximum 50
+   */
+  limit?: number;
+};
 
 export type ListProjectsParams = {
   status?: string;

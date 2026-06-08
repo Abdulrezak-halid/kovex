@@ -532,6 +532,7 @@ function mockPermissionModuleForPath(path: string): MockPermissionModule {
   if (path.startsWith("/api/suppliers")) return "purchases";
   if (path.startsWith("/api/purchase-orders")) return "purchases";
   if (path.startsWith("/api/purchase-invoices")) return "accounting";
+  if (path.startsWith("/api/notifications")) return "dashboard";
   if (path.startsWith("/api/reports")) return "reports";
   if (path.startsWith("/api/projects")) return "planning";
   if (path.startsWith("/api/tasks")) return "planning";
@@ -546,6 +547,7 @@ function canMockAccessPath(path: string) {
 }
 
 function canMockWritePath(path: string) {
+  if (path.startsWith("/api/notifications")) return true;
   const module = mockPermissionModuleForPath(path);
   return module !== "dashboard" && canMockAccessPath(path);
 }
@@ -1003,6 +1005,68 @@ const mockTasks: JsonObject[] = [
     assigneeName: "Nora Patel",
     dueDate: "2026-06-18",
     createdAt: daysAgo(5),
+  },
+];
+const mockNotifications: JsonObject[] = [
+  {
+    id: 1,
+    userId: 1,
+    type: "low_stock",
+    title: "Low stock: Steel Bracket",
+    message: "Steel Bracket (STL-BR-001) has 42 in stock. Minimum stock is 50.",
+    entityType: "product",
+    entityId: 1,
+    isRead: false,
+    createdAt: daysAgo(1),
+    readAt: null,
+  },
+  {
+    id: 2,
+    userId: 1,
+    type: "overdue_invoice",
+    title: "Overdue invoice: INV-1004",
+    message: "INV-1004 for Acme Manufacturing was due on 2026-06-05.",
+    entityType: "invoice",
+    entityId: 4,
+    isRead: false,
+    createdAt: daysAgo(0),
+    readAt: null,
+  },
+  {
+    id: 3,
+    userId: 5,
+    type: "task_deadline",
+    title: "Task due soon: Train warehouse team",
+    message: "Train warehouse team in Warehouse Barcode Rollout is due on 2026-06-14.",
+    entityType: "task",
+    entityId: 3,
+    isRead: false,
+    createdAt: daysAgo(0),
+    readAt: null,
+  },
+  {
+    id: 4,
+    userId: 4,
+    type: "task_deadline",
+    title: "Task overdue: Install scanner workstations",
+    message: "Install scanner workstations in Warehouse Barcode Rollout is due on 2026-06-07.",
+    entityType: "task",
+    entityId: 2,
+    isRead: true,
+    createdAt: daysAgo(2),
+    readAt: daysAgo(1),
+  },
+  {
+    id: 5,
+    userId: 6,
+    type: "overdue_invoice",
+    title: "Overdue invoice: INV-1004",
+    message: "INV-1004 for Acme Manufacturing was due on 2026-06-05.",
+    entityType: "invoice",
+    entityId: 4,
+    isRead: false,
+    createdAt: daysAgo(0),
+    readAt: null,
   },
 ];
 const mockStock: JsonObject[] = [
@@ -3093,6 +3157,27 @@ function mockGet(
     return user ? { user: publicMockUser(user) } : undefined;
   }
 
+  if (path === "/api/notifications/unread-count") {
+    return {
+      count: mockNotifications.filter(
+        (notification) =>
+          notification.userId === mockSessionUserId && !notification.isRead,
+      ).length,
+    };
+  }
+
+  if (path === "/api/notifications") {
+    const limit = Math.min(Number(searchParams.get("limit") ?? 20), 50);
+    return mockNotifications
+      .filter((notification) => notification.userId === mockSessionUserId)
+      .sort(
+        (a, b) =>
+          new Date(String(b.createdAt)).getTime() -
+          new Date(String(a.createdAt)).getTime(),
+      )
+      .slice(0, Number.isFinite(limit) && limit > 0 ? limit : 20);
+  }
+
   if (path === "/api/customers")
     return applyMockListQuery(
       mockCustomers,
@@ -3364,6 +3449,38 @@ export function mockApiPlugin(): Plugin {
 
         if (req.method === "PATCH") {
           const body = await readBody(req);
+          const markNotificationReadMatch = url.pathname.match(
+            /^\/api\/notifications\/(\d+)\/read$/,
+          );
+          if (markNotificationReadMatch) {
+            const id = Number(markNotificationReadMatch[1]);
+            const notification = mockNotifications.find(
+              (row) => row.id === id && row.userId === mockSessionUserId,
+            );
+            if (!notification) {
+              return sendJson(res, { error: "Mock notification not found" }, 404);
+            }
+            notification.isRead = true;
+            notification.readAt = now();
+            return sendJson(res, notification);
+          }
+
+          if (url.pathname === "/api/notifications/read-all") {
+            let updated = 0;
+            mockNotifications
+              .filter(
+                (notification) =>
+                  notification.userId === mockSessionUserId &&
+                  !notification.isRead,
+              )
+              .forEach((notification) => {
+                notification.isRead = true;
+                notification.readAt = now();
+                updated += 1;
+              });
+            return sendJson(res, { updated });
+          }
+
           const basePath = collectionPath(url.pathname);
           if (!basePath)
             return sendJson(res, { id: 1, createdAt: now(), ...body });

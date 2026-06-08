@@ -13,6 +13,10 @@ import {
 } from "@sme-erp/database";
 import { eq, sql, desc } from "drizzle-orm";
 import { requireModulePermission } from "../lib/auth";
+import {
+  createLowStockNotifications,
+  createOverdueInvoiceNotifications,
+} from "../lib/notifications";
 import { applyListQuery, parseListQuery } from "./list-query";
 
 const router = Router();
@@ -28,6 +32,8 @@ router.use("/invoices", requireModulePermission("accounting"));
 async function decreaseStockForSale(
   items: { productId: number; quantity: number; productName?: string }[],
 ) {
+  const affectedProductIds = new Set<number>();
+
   for (const item of items) {
     const stockRows = await db
       .select()
@@ -52,7 +58,11 @@ async function decreaseStockForSale(
         .where(eq(stockTable.id, row.id));
       remaining -= deducted;
     }
+
+    affectedProductIds.add(item.productId);
   }
+
+  await createLowStockNotifications([...affectedProductIds]);
 }
 
 // ── QUOTATIONS ────────────────────────────────────────────────────────────
@@ -575,6 +585,7 @@ router.post("/orders/:id/invoice", async (req, res) => {
       .select()
       .from(customersTable)
       .where(eq(customersTable.id, inv.customerId));
+    await createOverdueInvoiceNotifications([inv.id]);
     res.status(201).json({
       ...inv,
       totalAmount: Number(inv.totalAmount),
@@ -791,6 +802,7 @@ router.patch("/invoices/:id", async (req, res) => {
       .select()
       .from(invoiceItemsTable)
       .where(eq(invoiceItemsTable.invoiceId, id));
+    await createOverdueInvoiceNotifications([inv.id]);
     res.json({
       ...inv,
       totalAmount: Number(inv.totalAmount),

@@ -12,12 +12,14 @@ import purchasesRouter from "./purchases";
 import usersRouter from "./users";
 import reportsRouter from "./reports";
 import planningRouter from "./planning";
+import notificationsRouter from "./notifications";
 
 const router: IRouter = Router();
 
 router.use(healthRouter);
 router.use(authRouter);
 router.use(requireAuth);
+router.use(notificationsRouter);
 router.use(dashboardRouter);
 router.use(requireModulePermission("sales"), customersRouter);
 router.use(requireModulePermission("inventory"), productsRouter);

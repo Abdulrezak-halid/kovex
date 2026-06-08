@@ -15,11 +15,13 @@
     "db:migrate": "pnpm run db:push",
     "build": "pnpm run typecheck && pnpm -r --if-present run build",
     "typecheck:libs": "tsc --build",
-    "typecheck": "pnpm run typecheck:libs && pnpm -r --filter @sme-erp/front --filter @sme-erp/back --if-present run typecheck"
+    "typecheck": "pnpm run typecheck:libs && pnpm -r --filter @sme-erp/front --filter @sme-erp/back --if-present run typecheck",
+    "test": "tsx --test packages/back/src/lib/notification-rules.test.ts packages/front/src/lib/notifications.test.ts"
   },
   "private": true,
   "devDependencies": {
     "typescript": "~5.9.2",
-    "prettier": "^3.8.1"
+    "prettier": "^3.8.1",
+    "tsx": "catalog:"
   }
 }

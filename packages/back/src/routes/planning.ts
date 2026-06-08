@@ -1,6 +1,10 @@
 import { Router } from "express";
 import { db, projectsTable, tasksTable, usersTable } from "@sme-erp/database";
 import { eq, sql } from "drizzle-orm";
+import {
+  createTaskDeadlineNotifications,
+  removeTaskDeadlineNotificationsForOtherUsers,
+} from "../lib/notifications";
 
 const router = Router();
 
@@ -185,6 +189,7 @@ router.post("/projects/:id/tasks", async (req, res) => {
 
     const users = await db.select().from(usersTable);
     const userMap = new Map(users.map((u) => [u.id, u.name]));
+    await createTaskDeadlineNotifications([row.id]);
 
     res.status(201).json({
       ...row,
@@ -261,6 +266,12 @@ router.patch("/tasks/:id", async (req, res) => {
     const [project] = await db.select().from(projectsTable).where(eq(projectsTable.id, row.projectId));
     const users = await db.select().from(usersTable);
     const userMap = new Map(users.map((u) => [u.id, u.name]));
+    await createTaskDeadlineNotifications([row.id]);
+    if (row.assignedTo) {
+      await removeTaskDeadlineNotificationsForOtherUsers(row.id, [
+        row.assignedTo,
+      ]);
+    }
 
     res.json({
       ...row,

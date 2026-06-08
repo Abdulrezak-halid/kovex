@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "wouter";
-import { Bell, Info, LogIn, LogOut, Menu, Search } from "lucide-react";
+import { Info, LogIn, LogOut, Menu, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { searchItems } from "@/components/layout/CNavigationConfig";
 import { CLanguageDropdown } from "@/components/layout/CLanguageDropdown";
 import { CThemeToggle } from "@/components/layout/CThemeToggle";
+import { CNotificationBell } from "@/components/layout/CNotificationBell";
 import { useCAuth } from "@/lib/auth";
 
 export function CGlobalHeader({ onMenuClick }: { onMenuClick: () => void }) {
@@ -85,16 +86,7 @@ export function CGlobalHeader({ onMenuClick }: { onMenuClick: () => void }) {
       <div className="ml-auto flex shrink-0 items-center gap-1.5">
         <CLanguageDropdown />
         <CThemeToggle />
-        <Button
-          variant="ghost"
-          size="icon"
-          className="relative h-8 w-8 text-muted-foreground hover:text-foreground"
-          aria-label={t("notifications")}
-          title={t("notifications")}
-        >
-          <Bell className="h-4 w-4" />
-          <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-accent" />
-        </Button>
+        <CNotificationBell />
         <Button
           asChild
           variant="ghost"

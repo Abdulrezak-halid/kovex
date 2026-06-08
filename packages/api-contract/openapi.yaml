@@ -22,6 +22,7 @@ tags:
   - name: users
   - name: reports
   - name: planning
+  - name: notifications
 
 paths:
   /healthz:
@@ -36,6 +37,77 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  # Notifications
+  /notifications:
+    get:
+      operationId: listNotifications
+      tags: [notifications]
+      summary: List notifications for the current user
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 50
+      responses:
+        "200":
+          description: Current user notifications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Notification"
+
+  /notifications/unread-count:
+    get:
+      operationId: getUnreadNotificationCount
+      tags: [notifications]
+      summary: Get unread notification count for the current user
+      responses:
+        "200":
+          description: Unread notification count
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationUnreadCount"
+
+  /notifications/{id}/read:
+    patch:
+      operationId: markNotificationRead
+      tags: [notifications]
+      summary: Mark one notification as read
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Updated notification
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Notification"
+        "404":
+          description: Notification not found for current user
+
+  /notifications/read-all:
+    patch:
+      operationId: markAllNotificationsRead
+      tags: [notifications]
+      summary: Mark all current user notifications as read
+      responses:
+        "200":
+          description: Mark-all result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationsMarkAllReadResult"
 
   # Planning - Projects
   /projects:
@@ -1649,6 +1721,57 @@ components:
         status:
           type: string
       required: [status]
+
+    # Notifications
+    Notification:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        type:
+          type: string
+          enum: [low_stock, overdue_invoice, task_deadline]
+        title:
+          type: string
+        message:
+          type: string
+        entityType:
+          type: string
+          enum: [product, invoice, task]
+        entityId:
+          type: integer
+        isRead:
+          type: boolean
+        createdAt:
+          type: string
+        readAt:
+          type: ["string", "null"]
+      required:
+        - id
+        - userId
+        - type
+        - title
+        - message
+        - entityType
+        - entityId
+        - isRead
+        - createdAt
+
+    NotificationUnreadCount:
+      type: object
+      properties:
+        count:
+          type: integer
+      required: [count]
+
+    NotificationsMarkAllReadResult:
+      type: object
+      properties:
+        updated:
+          type: integer
+      required: [updated]
 
     # Dashboard
     DashboardSummary:
