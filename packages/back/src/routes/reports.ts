@@ -759,23 +759,15 @@ function renderExcelHtml(title: string, sections: ExportSection[]) {
 </html>`;
 }
 
+function pdfSafeText(value: TableCell) {
+  return String(value)
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^\x20-\x7e]/g, "?");
+}
+
 function pdfText(value: TableCell) {
-  const text = String(value);
-  const hex = ["feff"];
-
-  for (const char of text) {
-    const code = char.codePointAt(0) ?? 0;
-    if (code <= 0xffff) {
-      hex.push(code.toString(16).padStart(4, "0"));
-      continue;
-    }
-
-    const adjusted = code - 0x10000;
-    hex.push(((adjusted >> 10) + 0xd800).toString(16).padStart(4, "0"));
-    hex.push(((adjusted & 0x3ff) + 0xdc00).toString(16).padStart(4, "0"));
-  }
-
-  return `<${hex.join("")}>`;
+  return `(${pdfSafeText(value).replace(/[\\()]/g, "\\$&")})`;
 }
 
 function renderPdf(title: string, sections: ExportSection[]) {
@@ -924,7 +916,7 @@ function renderPdf(title: string, sections: ExportSection[]) {
     const truncate = (value: TableCell, maxLength: number) => {
       const textValue = String(value);
       return textValue.length > maxLength
-        ? `${textValue.slice(0, maxLength - 1)}…`
+        ? `${textValue.slice(0, maxLength - 3)}...`
         : textValue;
     };
     const drawTable = (section: ExportSection, startY: number) => {
