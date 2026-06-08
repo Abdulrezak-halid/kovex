@@ -875,11 +875,11 @@ Acceptance Criteria:
 - CRUD flows have integration tests.
 
 TASK-057 - Add API testing collection
-Status: Ready
+Status: Completed
 Priority: P2 Medium
 Sprint: Sprint 5
 Labels: testing, api
-Checkbox: [ ]
+Checkbox: [x]
 Goal: Prepare Postman or Thunder Client tests for committee demonstration.
 Acceptance Criteria:
 
@@ -887,6 +887,7 @@ Acceptance Criteria:
 - Auth tests exist after auth implementation.
 - CRUD endpoint tests exist.
 - Reports endpoint tests exist.
+  Completion Note: Postman collection and local environment were added under docs/api-tests with health, auth, CRUD, and reports endpoint tests for the committee demo.
 
 TASK-058 - Verify production build
 Status: Completed
