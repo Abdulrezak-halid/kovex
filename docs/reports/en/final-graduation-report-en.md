@@ -24,7 +24,7 @@ Kovex ERP is a web-based enterprise resource planning system designed for small 
 
 The system provides an integrated platform where customers, suppliers, products, quotations, sales orders, invoices, purchase orders, stock records, reports, projects, tasks, and users can be managed through one application. Kovex ERP was developed as a graduation project to demonstrate requirements analysis, system design, database modeling, backend development, frontend implementation, API documentation, testing, and project documentation.
 
-The project uses modern technologies including React, TypeScript, Tailwind CSS, Node.js, Express, PostgreSQL, Drizzle ORM, OpenAPI, Swagger UI, Docker, and Docker Compose. The interface also supports dark and light mode, and the user interface design was prepared using Stitch before implementation.
+The project uses modern technologies including React, TypeScript, Tailwind CSS, Node.js, Express, PostgreSQL, Drizzle ORM, OpenAPI, Swagger UI, Docker, Docker Compose, Render, and Supabase. The interface also supports dark and light mode, and the user interface design was prepared using Stitch before implementation.
 
 ---
 
@@ -44,8 +44,9 @@ The project uses modern technologies including React, TypeScript, Tailwind CSS, 
 12. Sprint Planning and Team Work
 13. User Interface and Screenshots
 14. Docker and Swagger UI
-15. Testing and Verification
-16. Conclusion
+15. Deployment and Live Demo
+16. Testing and Verification
+17. Conclusion
 
 ---
 
@@ -217,6 +218,7 @@ Kovex ERP uses a layered web application architecture:
 | Contract and Validation Layer | OpenAPI YAML, Orval, API validation package |
 | Data Access Layer | Drizzle ORM |
 | Database Layer | PostgreSQL |
+| Deployment Layer | Render Web Service, Supabase PostgreSQL |
 | Development Tools | Docker, Docker Compose, Swagger UI, pnpm workspace |
 
 **Figure 2. System Architecture Diagram**
@@ -304,6 +306,8 @@ The project includes sequence and activity diagrams for important workflows:
 | API Client Generation | Orval |
 | Development Workspace | pnpm workspace |
 | Containerization | Docker, Docker Compose |
+| Deployment Hosting | Render Web Service |
+| Cloud Database | Supabase PostgreSQL |
 
 ### 11.2 Frontend Implementation
 
@@ -373,7 +377,35 @@ Swagger UI was included to document and inspect REST API endpoints. It allows de
 
 ---
 
-## 15. Testing and Verification
+## 15. Deployment and Live Demo
+
+Kovex ERP was deployed as a live web application to demonstrate that the system can run outside the local development environment. The selected deployment strategy uses Render for hosting the web service and Supabase for the cloud PostgreSQL database.
+
+The deployed application is available at:
+
+```text
+https://kovex-erp-web.onrender.com/
+```
+
+The deployment architecture uses a same-origin approach. The React frontend is built as static files and served by the Express backend. The backend exposes the REST API under `/api`, serves Swagger UI under `/api-docs`, and connects to the Supabase PostgreSQL database using a secure production database connection string.
+
+| Deployment Area | Technology / Service |
+| --- | --- |
+| Web Application Hosting | Render Web Service |
+| Backend Runtime | Node.js and Express inside a Docker-based deployment |
+| Frontend Delivery | Built Vite frontend served by the Express application |
+| Cloud Database | Supabase PostgreSQL |
+| Database Access | Drizzle ORM with PostgreSQL connection |
+| API Documentation | Swagger UI available from the deployed backend |
+| Environment Management | Render environment variables for production secrets |
+
+The deployment uses environment variables for sensitive values such as the database connection string and authentication secret. These values are stored in the hosting platform and are not committed to the source code repository. This approach improves security and follows common deployment best practices.
+
+This live deployment is important for the graduation project because it shows that Kovex ERP is not only a local prototype. It can be built, deployed, connected to a cloud database, and accessed through a public URL for demonstration and review.
+
+---
+
+## 16. Testing and Verification
 
 Manual test cases were prepared to verify the main workflows and quality checks.
 
@@ -394,10 +426,10 @@ Testing covered authentication, dashboard visibility, list controls, form valida
 
 ---
 
-## 16. Conclusion
+## 17. Conclusion
 
 Kovex ERP successfully demonstrates a small business ERP system with integrated sales, purchasing, inventory, reporting, planning, authentication, authorization, and user management modules. The project addresses a real problem faced by SMEs: fragmented business data and disconnected daily workflows.
 
-The system includes academic documentation, requirements analysis, feasibility study, comparison with existing systems, ERD diagram, system architecture diagram, data flow diagram, use case diagram, sequence diagrams, activity diagrams, Docker support, Swagger UI, dark/light mode, and UI design prepared in Stitch.
+The system includes academic documentation, requirements analysis, feasibility study, comparison with existing systems, ERD diagram, system architecture diagram, data flow diagram, use case diagram, sequence diagrams, activity diagrams, Docker support, Swagger UI, Render deployment, Supabase cloud database integration, dark/light mode, and UI design prepared in Stitch.
 
 As a graduation project, Kovex ERP shows the ability to analyze a business problem, design a suitable software solution, implement a full-stack system, document the architecture, and verify the main workflows through testing.
