@@ -2074,6 +2074,24 @@ function parseNumber(value: TableCell) {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
+function compactChartLabel(value: TableCell, maxLength: number) {
+  const label = String(value).replace(/\s+/g, " ").trim();
+  if (label.length <= maxLength) return label;
+  return `${label.slice(0, Math.max(maxLength - 3, 1)).trimEnd()}...`;
+}
+
+function chartTickIndexes(total: number, maxTicks: number) {
+  if (total <= maxTicks) {
+    return new Set(Array.from({ length: total }, (_, index) => index));
+  }
+
+  return new Set(
+    Array.from({ length: maxTicks }, (_, index) =>
+      Math.round((index * (total - 1)) / Math.max(maxTicks - 1, 1)),
+    ),
+  );
+}
+
 function chartData(sections: ExportSection[]) {
   const detailSections = sections.filter(
     (section) => section.title !== "Summary",
@@ -2121,6 +2139,7 @@ function renderLineSvg(points: ChartPoint[]) {
   const max = Math.max(...points.map((point) => point.value), 1);
   const step =
     points.length > 1 ? chartWidth / (points.length - 1) : chartWidth;
+  const tickIndexes = chartTickIndexes(points.length, 6);
   const coords = points.map((point, index) => {
     const x = left + index * step;
     const y = top + chartHeight - (point.value / max) * chartHeight;
@@ -2141,7 +2160,10 @@ function renderLineSvg(points: ChartPoint[]) {
     ${points
       .map((point, index) => {
         const [x, y] = coords[index].split(",");
-        return `<circle cx="${x}" cy="${y}" r="5" fill="${brand.navy}" /><text x="${x}" y="${height - 24}" font-size="11" text-anchor="middle" fill="#52616f">${htmlEscape(point.label)}</text>`;
+        const label = tickIndexes.has(index)
+          ? `<text x="${x}" y="${height - 24}" font-size="11" text-anchor="middle" fill="#52616f">${htmlEscape(compactChartLabel(point.label, 13))}</text>`
+          : "";
+        return `<circle cx="${x}" cy="${y}" r="5" fill="${brand.navy}"><title>${htmlEscape(point.label)}</title></circle>${label}`;
       })
       .join("")}
   </svg>`;

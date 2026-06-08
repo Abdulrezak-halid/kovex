@@ -658,7 +658,7 @@ function renderLineSvg(points: ChartPoint[]) {
         const label = tickIndexes.has(index)
           ? `<text x="${x}" y="${height - 24}" font-size="11" text-anchor="middle" fill="#52616f">${htmlEscape(compactChartLabel(point.label, 13))}</text>`
           : "";
-        return `<circle cx="${x}" cy="${y}" r="5" fill="${brand.navy}" />${label}`;
+        return `<circle cx="${x}" cy="${y}" r="5" fill="${brand.navy}"><title>${htmlEscape(point.label)}</title></circle>${label}`;
       })
       .join("")}
   </svg>`;
