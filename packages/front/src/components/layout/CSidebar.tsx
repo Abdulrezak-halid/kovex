@@ -3,6 +3,7 @@ import { ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CNavSection } from "@/components/layout/CNavSection";
 import { permittedNavItems } from "@/components/layout/CNavigationConfig";
+import { CSidebarFooterActions } from "@/components/layout/CSidebarFooterActions";
 import { useCAuth } from "@/lib/auth";
 
 export function CSidebar({ onNavigate }: { onNavigate?: () => void }) {
@@ -57,6 +58,7 @@ export function CSidebar({ onNavigate }: { onNavigate?: () => void }) {
           />
         ))}
       </nav>
+      <CSidebarFooterActions onNavigate={onNavigate} />
       <div className="px-4 py-3 border-t border-sidebar-border">
         <img
           src="/assets/images/logos/project-logo-horizontal.png"
