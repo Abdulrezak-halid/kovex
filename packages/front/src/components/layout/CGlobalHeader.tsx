@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { searchItems } from "@/components/layout/CNavigationConfig";
 import { CLanguageDropdown } from "@/components/layout/CLanguageDropdown";
+import { CLogoutConfirmDialog } from "@/components/layout/CLogoutConfirmDialog";
 import { CThemeToggle } from "@/components/layout/CThemeToggle";
 import { useCAuth } from "@/lib/auth";
 
@@ -13,7 +14,7 @@ export function CGlobalHeader({ onMenuClick }: { onMenuClick: () => void }) {
   const { t } = useTranslation();
   const [, setLocation] = useLocation();
   const [search, setSearch] = useState("");
-  const { user, logout } = useCAuth();
+  const { user } = useCAuth();
 
   const matches = search
     ? searchItems(user?.role)
@@ -34,11 +35,6 @@ export function CGlobalHeader({ onMenuClick }: { onMenuClick: () => void }) {
     if (matches[0]) {
       navigateTo(matches[0].href);
     }
-  }
-
-  async function handleLogout() {
-    await logout();
-    setLocation("/login");
   }
 
   return (
@@ -111,20 +107,30 @@ export function CGlobalHeader({ onMenuClick }: { onMenuClick: () => void }) {
             <Info className="h-4 w-4" />
           </a>
         </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 text-muted-foreground hover:text-foreground"
-          onClick={user ? handleLogout : () => setLocation("/login")}
-          aria-label={user ? t("logout") : t("login")}
-          title={user ? t("logout") : t("login")}
-        >
-          {user ? (
-            <LogOut className="h-4 w-4" />
-          ) : (
+        {user ? (
+          <CLogoutConfirmDialog>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-muted-foreground hover:text-foreground"
+              aria-label={t("logout")}
+              title={t("logout")}
+            >
+              <LogOut className="h-4 w-4" />
+            </Button>
+          </CLogoutConfirmDialog>
+        ) : (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-muted-foreground hover:text-foreground"
+            onClick={() => setLocation("/login")}
+            aria-label={t("login")}
+            title={t("login")}
+          >
             <LogIn className="h-4 w-4" />
-          )}
-        </Button>
+          </Button>
+        )}
       </div>
     </header>
   );
