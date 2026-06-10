@@ -125,16 +125,16 @@ http://localhost:5000/api-docs/
 
 ## Useful Commands
 
-| Command               | Purpose                                       |
-| --------------------- | --------------------------------------------- |
-| `pnpm run dev:front`  | Start the frontend with the mock API          |
-| `pnpm run dev:back`   | Start the backend API                         |
-| `pnpm run dev:docker` | Start the mock frontend with Docker Compose   |
-| `pnpm run docker:down` | Stop the Docker Compose development service  |
-| `pnpm run typecheck`  | Run TypeScript checks                         |
-| `pnpm run build`      | Typecheck and build workspace packages        |
-| `pnpm run api:schema` | Regenerate API client and validation packages |
-| `pnpm run db:push`    | Push the Drizzle schema to PostgreSQL         |
+| Command                | Purpose                                       |
+| ---------------------- | --------------------------------------------- |
+| `pnpm run dev:front`   | Start the frontend with the mock API          |
+| `pnpm run dev:back`    | Start the backend API                         |
+| `pnpm run dev:docker`  | Start the mock frontend with Docker Compose   |
+| `pnpm run docker:down` | Stop the Docker Compose development service   |
+| `pnpm run typecheck`   | Run TypeScript checks                         |
+| `pnpm run build`       | Typecheck and build workspace packages        |
+| `pnpm run api:schema`  | Regenerate API client and validation packages |
+| `pnpm run db:push`     | Push the Drizzle schema to PostgreSQL         |
 
 Legacy aliases are still available: `pnpm run dev:web` and `pnpm run dev:api`.
 
@@ -159,7 +159,10 @@ Legacy aliases are still available: `pnpm run dev:web` and `pnpm run dev:api`.
 
 The most important diagrams are embedded above. Additional workflow diagrams are available for deeper review:
 
+- [ERD Diagram](docs/diagrams/Kovex%20ERP%20-%20ERD%20Diagram.png)
 - [Use Case Diagram](docs/diagrams/Kovex%20ERP%20-%20Use%20Case%20Diagram.png)
+- [Data Flow Diagram](docs/diagrams/Kovex%20ERP%20-%20Use%20Case%20Diagram.png)
+- [System Architecture ](docs/diagrams/Kovex%20ERP%20-%20System%20Architecture.png)
 - [Quotation to Order Sequence Diagram](docs/diagrams/Kovex%20ERP%20-%20Quotation%20to%20Order%20Sequence%20Diagram.png)
 - [Order to Invoice Sequence Diagram](docs/diagrams/Kovex%20ERP%20-%20Order%20to%20Invoice%20Sequence%20Diagram.png)
 - [Purchase to Stock Sequence Diagram](docs/diagrams/Kovex%20ERP%20-%20Purchase%20to%20Stock%20Sequence%20Diagram.png)
