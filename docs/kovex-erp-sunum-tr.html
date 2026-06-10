@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kovex ERP Sunumu</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f8fb;
+        --slide: #ffffff;
+        --text: #111827;
+        --muted: #4b5563;
+        --line: #d9e2ec;
+        --primary: #2563eb;
+        --primary-dark: #1e3a8a;
+        --accent: #0f766e;
+        --soft: #eff6ff;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+      }
+
+      main {
+        height: 100vh;
+        overflow-y: auto;
+        scroll-snap-type: y mandatory;
+      }
+
+      section {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 42px;
+        scroll-snap-align: start;
+      }
+
+      .slide {
+        width: min(1180px, 100%);
+        min-height: min(680px, calc(100vh - 84px));
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 26px;
+        padding: 56px 64px;
+        background: var(--slide);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        box-shadow: 0 22px 70px rgba(15, 23, 42, 0.08);
+      }
+
+      .cover {
+        background:
+          linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(15, 118, 110, 0.08)),
+          var(--slide);
+      }
+
+      .kicker {
+        margin: 0;
+        color: var(--primary);
+        font-size: 18px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2 {
+        margin: 0;
+        color: var(--primary-dark);
+        line-height: 1.08;
+      }
+
+      h1 {
+        max-width: 900px;
+        font-size: clamp(48px, 7vw, 86px);
+      }
+
+      h2 {
+        max-width: 980px;
+        font-size: clamp(36px, 5vw, 58px);
+      }
+
+      p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 28px;
+        line-height: 1.42;
+      }
+
+      ul,
+      ol {
+        margin: 0;
+        padding-left: 1.2em;
+        color: var(--text);
+        font-size: 29px;
+        line-height: 1.45;
+      }
+
+      li + li {
+        margin-top: 12px;
+      }
+
+      strong {
+        color: var(--primary-dark);
+      }
+
+      .subtitle {
+        max-width: 920px;
+        font-size: 31px;
+      }
+
+      .two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 34px;
+        align-items: center;
+      }
+
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .card {
+        min-height: 118px;
+        padding: 22px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #fbfdff;
+      }
+
+      .card h3 {
+        margin: 0 0 10px;
+        color: var(--primary-dark);
+        font-size: 25px;
+      }
+
+      .card p {
+        font-size: 21px;
+      }
+
+      .flow {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        align-items: center;
+      }
+
+      .step {
+        padding: 16px 20px;
+        border: 1px solid #bfdbfe;
+        border-radius: 12px;
+        background: var(--soft);
+        color: var(--primary-dark);
+        font-size: 24px;
+        font-weight: 750;
+      }
+
+      .arrow {
+        color: var(--accent);
+        font-size: 28px;
+        font-weight: 900;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        font-size: 23px;
+      }
+
+      th,
+      td {
+        padding: 16px 18px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        background: var(--soft);
+        color: var(--primary-dark);
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .image-frame {
+        width: 100%;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #f8fafc;
+      }
+
+      .image-frame img {
+        display: block;
+        width: 100%;
+        max-height: 420px;
+        object-fit: contain;
+      }
+
+      .footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        color: #64748b;
+        font-size: 16px;
+      }
+
+      .note {
+        padding: 18px 20px;
+        border-left: 5px solid var(--accent);
+        background: #ecfdf5;
+        color: #064e3b;
+        font-size: 24px;
+        line-height: 1.45;
+      }
+
+      @media (max-width: 860px) {
+        section {
+          padding: 18px;
+        }
+
+        .slide {
+          padding: 32px 28px;
+          border-radius: 12px;
+        }
+
+        .two-col,
+        .cards {
+          grid-template-columns: 1fr;
+        }
+
+        p,
+        ul,
+        ol {
+          font-size: 22px;
+        }
+
+        table {
+          font-size: 18px;
+        }
+      }
+
+      @media print {
+        main {
+          height: auto;
+          overflow: visible;
+        }
+
+        section {
+          min-height: auto;
+          page-break-after: always;
+          padding: 0;
+        }
+
+        .slide {
+          min-height: 100vh;
+          border: 0;
+          border-radius: 0;
+          box-shadow: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section>
+        <div class="slide cover">
+          <p class="kicker">Bitirme Projesi Sunumu</p>
+          <h1>Kovex ERP</h1>
+          <p class="subtitle">Küçük ve orta ölçekli işletmeler için web tabanlı kurumsal kaynak planlama sistemi.</p>
+          <div class="footer">
+            <span>Satış, satın alma, envanter, raporlama ve planlama</span>
+            <span>Smart Business Management for SMEs</span>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="slide">
+          <h2>Projenin Amacı</h2>
+          <ul>
+            <li>Günlük işletme süreçlerini tek merkezden yönetmek.</li>
+            <li>Müşteri, tedarikçi, ürün, sipariş, fatura ve stok kayıtlarını bir araya getirmek.</li>
+            <li>Dağınık veri girişini ve manuel takip hatalarını azaltmak.</li>
+            <li>İşletme yöneticilerine anlaşılır operasyon görünümü sunmak.</li>
+            <li>Uçtan uca bir full-stack geliştirme sürecini göstermek.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <div class="slide">
+          <h2>Problem Tanımı</h2>
+          <div class="cards">
+            <div class="card">
+              <h3>Dağınık Kayıtlar</h3>
+              <p>Veriler Excel, kâğıt ve mesajlaşma uygulamalarında ayrı ayrı tutulur.</p>
+            </div>
+            <div class="card">
+              <h3>Güncel Olmayan Stok</h3>
+              <p>Satış ve satın alma hareketleri stokla her zaman eşleşmeyebilir.</p>
+            </div>
+            <div class="card">
+              <h3>Mükerrer Veri Girişi</h3>
+              <p>Aynı bilgiler farklı yerlerde tekrar girilir ve hata riski artar.</p>
+            </div>
+            <div class="card">
+              <h3>Zor Raporlama</h3>
+              <p>Karar alma için gereken özet bilgilere hızlı ulaşmak zorlaşır.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="slide">
+          <h2>Önerilen Çözüm</h2>
+          <p>Kovex ERP, işletmenin temel süreçlerini tek web uygulamasında birleştirir.</p>
+          <div class="flow">
+            <span class="step">Dashboard</span>
+            <span class="step">Satış</span>
+            <span class="step">Satın Alma</span>
+            <span class="step">Envanter</span>
+            <span class="step">Raporlar</span>
+            <span class="step">Planlama</span>
+            <span class="step">Kullanıcı Yönetimi</span>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="slide">
+          <h2>Sistem Mimarisi</h2>
+          <div class="two-col">
+            <ul>
+              <li><strong>Frontend:</strong> React, Vite, TypeScript</li>
+              <li><strong>Backend:</strong> Node.js, Express REST API</li>
+              <li><strong>API:</strong> OpenAPI tabanlı sözleşme</li>
+              <li><strong>Veri erişimi:</strong> Drizzle ORM</li>
+              <li><strong>Veritabanı:</strong> PostgreSQL</li>
+            </ul>
+            <div class="image-frame">
+              <img src="diagrams/Kovex%20ERP%20-%20System%20Architecture.png" alt="Kovex ERP sistem mimarisi diyagramı" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="slide">
+          <h2>Paket Yapısı</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Paket</th>
+                <th>Görev</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>packages/front</td>
+                <td>Kullanıcı arayüzü, sayfalar, tablolar ve formlar</td>
+              </tr>
+              <tr>
+                <td>packages/back</td>
+                <td>Express API, route modülleri ve iş mantığı</td>
+              </tr>
+              <tr>
+                <td>packages/database</td>
+                <td>Drizzle şemaları ve veritabanı erişim katmanı</td>
+              </tr>
+              <tr>
+                <td>packages/api-contract</td>
+                <td>OpenAPI sözleşmesi</td>
+              </tr>
+              <tr>
+                <td>packages/api-client / api-validation</td>
+                <td>Üretilen API istemcisi ve doğrulama tipleri</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <div class="slide">
+          <h2>Ana Modüller</h2>
+          <div class="cards">
+            <div class="card">
+              <h3>Satış</h3>
+              <p>Müşteri, teklif, sipariş ve satış faturası süreçleri.</p>
+            </div>
+            <div class="card">
+              <h3>Satın Alma</h3>
+              <p>Tedarikçi, satın alma siparişi ve satın alma faturası yönetimi.</p>
+            </div>
+            <div class="card">
+              <h3>Envanter</h3>
+              <p>Ürün, depo, stok seviyesi ve düşük stok takibi.</p>
+            </div>
+            <div class="card">
+              <h3>Raporlar</h3>
+              <p>Satış, satın alma ve envanter verilerinin özetlenmesi.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="slide">
+          <h2>Satış Süreci</h2>
+          <div class="flow">
+            <span class="step">Müşteri</span>
+            <span class="arrow">→</span>
+            <span class="step">Teklif</span>
+            <span class="arrow">→</span>
+            <span class="step">Sipariş</span>
+            <span class="arrow">→</span>
+            <span class="step">Fatura</span>
+            <span class="arrow">→</span>
+            <span class="step">Stok Azalır</span>
+            <span class="arrow">→</span>
+            <span class="step">Rapor Güncellenir</span>
+          </div>
+          <p>Satış tamamlandığında sistem yalnızca belge üretmez; envanter ve raporlama tarafını da etkiler.</p>
+        </div>
+      </section>
+
+      <section>
+        <div class="slide">
+          <h2>Satın Alma ve Stok Süreci</h2>
+          <div class="flow">
+            <span class="step">Tedarikçi</span>
+            <span class="arrow">→</span>
+            <span class="step">Satın Alma Siparişi</span>
+            <span class="arrow">→</span>
+            <span class="step">Satın Alma Faturası</span>
+            <span class="arrow">→</span>
+            <span class="step">Stok Artar</span>
+            <span class="arrow">→</span>
+            <span class="step">Dashboard Güncellenir</span>
+          </div>
+          <p>Satın alma işlemleri, satışın ters yönünde stok hareketi oluşturur ve ürün miktarını artırır.</p>
+        </div>
+      </section>
+
+      <section>
+        <div class="slide">
+          <h2>Gerçek Hayat Örneği</h2>
+          <p><strong>Küçük ölçekli bir mobilya üretim fabrikası, bir okuldan 40 adet çalışma masası siparişi alır.</strong></p>
+          <ol>
+            <li>Okul müşteri olarak kaydedilir ve teklif hazırlanır.</li>
+            <li>Teklif onaylandığında satış siparişine dönüştürülür.</li>
+            <li>Masa, MDF levha, metal ayak ve vida stokları kontrol edilir.</li>
+            <li>Eksik malzeme için tedarikçiye satın alma siparişi açılır.</li>
+            <li>Malzemeler teslim alınınca stok artar ve üretim planlanır.</li>
+            <li>Ürün teslim edilince satış faturası kesilir ve raporlar güncellenir.</li>
+          </ol>
+        </div>
+      </section>
+
+      <section>
+        <div class="slide">
+          <h2>Fabrika Senaryosunun Etkisi</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>İşlem</th>
+                <th>Etkilenen Modül</th>
+                <th>Sonuç</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Okulun müşteri olarak kaydedilmesi</td>
+                <td>Satış / Müşteriler</td>
+                <td>Müşteri bilgisi merkezi sistemde tutulur.</td>
+              </tr>
+              <tr>
+                <td>40 masa için teklif ve sipariş</td>
+                <td>Satış</td>
+                <td>Onaylanmış satış süreci başlar.</td>
+              </tr>
+              <tr>
+                <td>Malzeme stok kontrolü</td>
+                <td>Envanter</td>
+                <td>Eksik MDF levha ve metal ayak görülebilir.</td>
+              </tr>
+              <tr>
+                <td>Tedarik ve satın alma faturası</td>
+                <td>Satın Alma / Envanter</td>
+                <td>Ham madde stoğu artar.</td>
+              </tr>
+              <tr>
+                <td>Üretim görevinin takip edilmesi</td>
+                <td>Planlama</td>
+                <td>Üretim süreci izlenebilir hâle gelir.</td>
+              </tr>
+              <tr>
+                <td>Teslimat, fatura ve raporlar</td>
+                <td>Dashboard / Raporlar</td>
+                <td>Yönetim satış, satın alma ve stok durumunu görür.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <div class="slide">
+          <h2>Raporlama ve Dashboard</h2>
+          <div class="two-col">
+            <ul>
+              <li>Toplam satış ve satın alma özetleri</li>
+              <li>Envanter durumu ve düşük stok uyarıları</li>
+              <li>En çok satılan ürünler</li>
+              <li>Öne çıkan müşteriler ve tedarikçiler</li>
+              <li>PDF veya Excel dışa aktarma desteği</li>
+            </ul>
+            <div class="image-frame">
+              <img src="../packages/front/public/assets/images/screenshots/Kovex%20ERP%20-%20Dashboard%20Light-1.png" alt="Kovex ERP dashboard ekran görüntüsü" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="slide">
+          <h2>Güvenlik ve Kullanılabilirlik</h2>
+          <ul>
+            <li>Kullanıcı girişi ve oturum yönetimi</li>
+            <li>Rol tabanlı erişim kontrolü</li>
+            <li>Yetkisiz sayfalara erişimin engellenmesi</li>
+            <li>Form doğrulama ve anlaşılır geri bildirimler</li>
+            <li>Türkçe ve İngilizce dil desteği</li>
+            <li>Açık ve koyu tema desteği</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <div class="slide">
+          <h2>Test ve Doğrulama</h2>
+          <ul>
+            <li>Geçerli kullanıcı ile giriş testi</li>
+            <li>Dashboard verilerinin yüklenmesi</li>
+            <li>Müşteri listesinde arama ve filtreleme</li>
+            <li>Ürün formu doğrulaması</li>
+            <li>Satış raporu tarih filtresi</li>
+            <li>Envanter raporu dışa aktarma</li>
+            <li>Dil, tema ve yetkisiz rota kontrolleri</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <div class="slide">
+          <h2>Sonuç</h2>
+          <ul>
+            <li>Kovex ERP, KOBİ'lerdeki dağınık iş süreci problemini hedefler.</li>
+            <li>Satış, satın alma, envanter, raporlama ve planlama süreçlerini birleştirir.</li>
+            <li>Modern full-stack teknolojilerle geliştirilmiştir.</li>
+            <li>API, veritabanı, arayüz, doğrulama, test ve dokümantasyon süreçlerini kapsar.</li>
+          </ul>
+          <p class="note">Proje, gerçek bir işletme ihtiyacına çözüm sunarken yazılım mühendisliği sürecini uçtan uca göstermektedir.</p>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
