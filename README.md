@@ -149,7 +149,6 @@ Legacy aliases are still available: `pnpm run dev:web` and `pnpm run dev:api`.
 - [GitHub Releases Guide](docs/github-releases.md)
 - [Final Graduation Report - English](docs/reports/final-graduation-report-en.md)
 - [Final Graduation Report - Turkish](docs/reports/final-graduation-report-tr.md)
-- [License](LICENSE)
 
 ## Diagrams
 
