@@ -166,7 +166,7 @@ The most important diagrams are embedded above. Additional workflow diagrams are
 
 The OpenAPI contract in `packages/api-contract/openapi.yaml` is the source of truth for REST endpoints and schemas. After contract changes, run `pnpm run api:schema` to regenerate the frontend client and backend validation types.
 
-Generated files, build output, dependencies, local environment files, and `.env` files should not be committed.
+Generated files, build output, dependencies, local environment files, and `.env` files should not be committed
 
 ## License
 
